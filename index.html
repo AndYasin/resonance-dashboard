@@ -50,10 +50,17 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 .pinned-section{flex:1;overflow-y:auto;overflow-x:hidden;min-height:0;border-bottom:1px solid rgba(255,255,255,0.06)}.pinned-section::-webkit-scrollbar{width:2px}.pinned-section::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08)}
 .pc{margin:0.45rem 0.5rem;padding:0.65rem 0.75rem;border-radius:2px;position:relative;transition:border-color 0.3s,background 0.3s}
 .pc.res{border:1.5px solid #f72585;background:rgba(247,37,133,0.07)}
-.pc-xl{padding:0.65rem 0.75rem}
-.pc-lg{padding:0.5rem 0.7rem}
-.pc-sm{padding:0.38rem 0.7rem}
-.pc-xs{padding:0.28rem 0.8rem;border-radius:0;border-left-width:2px;border-right:none;border-top:none;border-bottom:1px solid rgba(255,255,255,0.04)!important}
+.pc-xl{padding:0.45rem 0.65rem}
+.pc-lg{padding:0.4rem 0.65rem}
+.pc-sm{padding:0.3rem 0.7rem}
+.pc-xs{padding:0.22rem 0.8rem;border-radius:0;border-left-width:2px;border-right:none;border-top:none;border-bottom:1px solid rgba(255,255,255,0.04)!important}
+.pc-xl .pc-title{font-size:0.95rem}
+.pc-xl .pc-stat-v{font-size:0.95rem}
+.pc-xl .pc-desc{font-size:0.58rem;margin-top:0.15rem;margin-bottom:0.15rem}
+.pc-xl .pc-meta{margin-bottom:0.15rem}
+.pc-xl .pc-stats{margin-bottom:0.18rem}
+.pc-xl .pc-badges{margin-bottom:0.15rem}
+.pc-xl .pc-signals{margin-bottom:0.15rem}
 .pc-top-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.18rem}
 .pc-score-badge{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;line-height:1;text-align:right;flex-shrink:0}
 .pc-score-badge span{display:block;font-family:'IBM Plex Mono',monospace;font-size:0.46rem;opacity:0.5;text-align:center}
@@ -174,6 +181,19 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 .asl-g{display:flex;align-items:flex-end;gap:2px;height:16px}
 .ab{flex:1;min-width:3px;border-radius:1px 1px 0 0}
 
+/* HOF */
+.hof-sec{flex-shrink:0;border-top:1px solid rgba(255,255,255,0.05)}
+.hof-row{display:flex;align-items:center;gap:0.4rem;padding:0.28rem 0.8rem;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:background 0.15s}
+.hof-row:hover{background:rgba(255,255,255,0.02)}
+.hof-rank{font-size:0.55rem;color:rgba(255,255,255,0.2);width:14px;text-align:center;flex-shrink:0}
+.hof-rank.gold{color:#ffc800}
+.hof-rank.silver{color:rgba(255,255,255,0.5)}
+.hof-rank.bronze{color:#cd7f32}
+.hof-title{font-size:0.8rem;color:rgba(255,255,255,0.8);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hof-score{font-weight:bold;font-size:0.9rem;flex-shrink:0}
+.hof-meta{font-size:0.52rem;color:rgba(255,255,255,0.25);flex-shrink:0}
+.hof-type{font-size:0.5rem;padding:1px 4px;border-radius:2px;flex-shrink:0}
+
 /* AI MODAL */
 #aiModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9999;align-items:center;justify-content:center}
 .aim-box{background:#0d0d1a;border:1px solid rgba(100,255,218,0.2);border-radius:3px;width:min(580px,92vw);max-height:80vh;display:flex;flex-direction:column;overflow:hidden;font-family:'IBM Plex Mono',monospace}
@@ -252,6 +272,14 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
     <div class="stream-section">
       <div class="sec-header">Нові · <span id="streamCnt">0</span></div>
       <div class="pb" id="streamList"></div>
+    </div>
+    <!-- ЗАЛА СЛАВИ -->
+    <div class="hof-sec">
+      <div class="ph" style="cursor:pointer" onclick="toggleHof()">
+        <span>🏆 зала слави <span style="font-size:0.48rem;opacity:0.4;text-transform:none">топ за 24г</span></span>
+        <span class="gd" id="hofCnt">0</span>
+      </div>
+      <div id="hofList" style="display:none"></div>
     </div>
     <!-- SUSTAINED -->
     <div class="sust-sec">
@@ -409,12 +437,9 @@ function isRes(title){return trendData.some(t=>t.article.toLowerCase()===title.t
 
 // ── RENDER PINNED CARDS ──
 function getCardSize(score, type, rank, total) {
-  // Резонанс завжди xl
-  if(type==='res') return 'xl';
-  // Відносне масштабування — топ завжди великий
-  if(rank === 0) return 'xl';
-  if(rank === 1) return total > 2 ? 'lg' : 'xl';
-  if(rank === 2) return 'sm';
+  if(type==='res'||rank===0) return 'xl';
+  if(rank===1) return 'xl';
+  if(rank<=5) return 'sm';
   return 'xs';
 }
 
@@ -880,6 +905,12 @@ function rowToPinned(row) {
 
 async function loadFromSupabase() {
   try {
+    // Preload HOF count
+    fetch(SB_URL+'/rest/v1/anomalies?created_at=gte.'+new Date(Date.now()-24*3600000).toISOString()+'&select=id&limit=100',
+      {headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}})
+      .then(r=>r.json()).then(rows=>{
+        if(Array.isArray(rows))document.getElementById('hofCnt').textContent=rows.length;
+      }).catch(()=>{});
     const since = new Date(Date.now() - 6*3600000).toISOString();
     const r = await fetch(
       SB_URL + '/rest/v1/anomalies?created_at=gte.' + since + '&order=score.desc&limit=100',
@@ -960,6 +991,7 @@ function subscribeRealtime() {
       if (sl) { sl.insertBefore(el, sl.firstChild); while(sl.children.length>40) sl.removeChild(sl.lastChild); }
       updHdr();
       renderPinned();
+      if(hofVisible)loadHof();
     } catch(err) {}
   };
 
@@ -971,6 +1003,57 @@ function subscribeRealtime() {
   ws.onerror = () => ws.close();
 }
 
+
+// ── ЗАЛА СЛАВИ ──
+let hofData=[];
+let hofVisible=false;
+
+function toggleHof(){
+  hofVisible=!hofVisible;
+  document.getElementById('hofList').style.display=hofVisible?'block':'none';
+  if(hofVisible&&!hofData.length)loadHof();
+}
+
+async function loadHof(){
+  try{
+    const since=new Date(Date.now()-24*3600000).toISOString();
+    const r=await fetch(
+      SB_URL+'/rest/v1/anomalies?created_at=gte.'+since+'&order=score.desc&limit=30',
+      {headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}}
+    );
+    hofData=await r.json();
+    if(!Array.isArray(hofData))return;
+    renderHof();
+  }catch(e){console.log('HOF error:',e.message);}
+}
+
+function renderHof(){
+  const el=document.getElementById('hofList');if(!el)return;
+  if(!hofData.length){el.innerHTML='<div class="hint">Порожньо</div>';return;}
+  document.getElementById('hofCnt').textContent=hofData.length;
+  el.innerHTML='';
+  hofData.forEach((row,i)=>{
+    const sc=Math.round(row.score||0);
+    const col=sc>=50?'#ff4757':sc>=25?'#ffc800':'#64ffda';
+    const rankCls=i===0?'gold':i===1?'silver':i===2?'bronze':'';
+    const rankIco=i===0?'①':i===1?'②':i===2?'③':(i+1);
+    const time=new Date(row.created_at).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
+    const date=new Date(row.created_at).toLocaleDateString('uk-UA',{month:'short',day:'numeric'});
+    const typeCol=row.article_type==='СМЕРТЬ'?'#ff4757':row.article_type==='ПОЛІТИК'?'#f72585':row.article_type==='ГЕОПОЛІТИКА'?'#f72585':'rgba(255,255,255,0.2)';
+    const div=document.createElement('div');
+    div.className='hof-row';
+    div.addEventListener('click',()=>window.open(row.url||'#','_blank'));
+    div.innerHTML='<div class="hof-rank '+rankCls+'">'+rankIco+'</div>'
+      +(row.article_type?'<div class="hof-type" style="background:'+typeCol+'22;color:'+typeCol+';border:1px solid '+typeCol+'44">'+row.article_type+'</div>':'')
+      +'<div class="hof-title" title="'+row.title+'">'+row.title+'</div>'
+      +'<div class="hof-meta">'+date+' '+time+'</div>'
+      +'<div class="hof-score" style="color:'+col+'">'+sc+'</div>';
+    el.appendChild(div);
+  });
+}
+
+// Оновлюємо HOF кожні 5 хвилин і при нових аномаліях
+setInterval(()=>{if(hofVisible)loadHof();},300000);
 
 // ── CONNECT ──
 function connect(){
