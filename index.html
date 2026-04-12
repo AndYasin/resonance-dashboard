@@ -636,6 +636,12 @@ function renderHofList(rows,elId,subId,cntId){
   const el=document.getElementById(elId);const sub=document.getElementById(subId);const cnt=document.getElementById(cntId);
   if(!el)return;
   if(!rows||!rows.length){el.innerHTML='<div class="hint">Порожньо</div>';return;}
+  // Дедуплікація по title — беремо найвищий score
+  const seen={};
+  rows=rows.filter(row=>{
+    if(seen[row.title]){return false;}
+    seen[row.title]=true;return true;
+  });
   if(cnt)cnt.textContent=rows.length;
   el.innerHTML='';
   rows.forEach((row,i)=>{
@@ -785,13 +791,17 @@ async function loadFromSupabase(){
     const r=await fetch(SB_URL+'/rest/v1/anomalies?created_at=gte.'+since+'&order=score.desc&limit=100',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
     const rows=await r.json();
     if(!Array.isArray(rows)||!rows.length)return;
+    // Дедуплікація — беремо тільки найвищий score для кожного title
+    const best={};
     rows.forEach(row=>{
       if(Date.now()-new Date(row.created_at).getTime()>7200000)return;
+      const key=(row.wiki||row.lang+'wiki')+':'+row.title;
+      if(!best[key]||best[key].score<(row.score||0))best[key]=row;
+    });
+    Object.values(best).forEach(row=>{
       const p=rowToPinned(row);
       if(!pinned[p.key]||pinned[p.key].score<p.score){
         pinned[p.key]=p;
-        if(row.type==='res')resCnt++;else if(row.type==='mul')mulCnt++;else sngCnt++;
-        anomCnt++;
       }
     });
     updHdr();renderRank();
