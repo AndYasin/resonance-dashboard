@@ -732,7 +732,7 @@ async function loadHof(){
   try{
     const today=new Date();today.setHours(0,0,0,0);
     const since=today.toISOString();
-    const r=await fetch(SB_URL+'/rest/v1/anomalies?created_at=gte.'+since+'&order=score.desc&limit=100',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+    const r=await fetch(SB_URL+'/rest/v1/anomalies?created_at=gte.'+since+'&order=created_at.desc&limit=200',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
     const rows=await r.json();if(!Array.isArray(rows))return;
     const seen={};const uniq=rows.filter(r=>{if(seen[r.title])return false;seen[r.title]=true;return true;});
     const d=document.getElementById('hofSub');if(d)d.textContent='сьогодні · '+uniq.length+' подій';
