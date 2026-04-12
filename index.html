@@ -435,8 +435,8 @@ function renderPinned(){
     const icon=p.type==='res'?'★ РЕЗОНАНС':p.type==='mul'?'👥 МУЛЬТІ':'⚡ SPIKE';
     const gUrl='https://www.google.com/search?q='+encodeURIComponent(p.title+' news '+new Date().getFullYear());
     const size=getCardSize(Math.round(p.score),p.type,rank,sorted.length);
-    const prog=Math.min(p.edits/20*100,100);
-    const progCol=p.score>=40?'#ff4757':p.score>=20?'#ffc800':'#64ffda';
+    const prog=Math.min(Math.round(p.score),100);
+    const progCol=p.score>=50?'#ff4757':p.score>=25?'#ffc800':'#64ffda';
     const sc=Math.round(p.score);
     const ageMin=Math.round((Date.now()-p.firstSeen)/60000);
 
@@ -463,7 +463,7 @@ function renderPinned(){
         +'<div class="pc-stats">'
           +'<div class="pc-stat"><div class="pc-stat-v" style="color:'+progCol+'">'+p.edits+'</div><div class="pc-stat-l">правок</div></div>'
           +'<div class="pc-stat"><div class="pc-stat-v" style="color:#64ffda">'+p.editors+'</div><div class="pc-stat-l">редакторів</div></div>'
-          +'<div class="pc-stat"><div class="pc-stat-v" style="color:rgba(255,255,255,0.5)">'+ageMin+'хв</div><div class="pc-stat-l">активна</div></div>'
+          +'<div class="pc-stat"><div class="pc-stat-v" style="color:rgba(255,255,255,0.5)">'+(ageMin<1?'<1':ageMin)+'хв</div><div class="pc-stat-l">активна</div></div>'
         +'</div>'
         +(p.badges?'<div class="pc-badges">'+p.badges+'</div>':'')
         +(sigs?'<div class="pc-signals">'+sigs+'</div>':'')
@@ -484,7 +484,7 @@ function renderPinned(){
         +'</div>'
         +'<div class="pc-progress"><div class="pc-prog-fill" style="width:'+prog+'%;background:'+progCol+'"></div></div>'
         +'<div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.25rem">'
-          +'<div style="font-size:0.58rem;color:rgba(255,255,255,0.45)">'+p.edits+' правок · '+p.editors+' ред · '+ageMin+'хв'+(sigs?' · '+sigs:'')+'</div>'
+          +'<div style="font-size:0.58rem;color:rgba(255,255,255,0.45)">'+p.edits+' правок · '+p.editors+' ред · '+(ageMin<1?'<1':ageMin)+'хв'+(sigs?' · '+sigs:'')+'</div>'
           +'<div style="display:flex;gap:0.25rem">'
             +'<a class="btn-g" href="'+gUrl+'" target="_blank" style="font-size:0.5rem;padding:1px 6px">🔍</a>'
             +'<button class="btn-ai" data-title="'+p.title.replace(/"/g,'&quot;')+'" style="font-size:0.5rem;padding:1px 6px">✦ AI</button>'
@@ -852,87 +852,125 @@ async function fetchAiCtx(article){
   el.innerHTML=html;
 }
 
-// ── SUPABASE READ — завантаження при старті ──
+// ── SUPABASE ──
 const SB_URL = 'https://ovedzfpptsnxzxioyzkr.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92ZWR6ZnBwdHNueHp4aW95emtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5NDIzNTIsImV4cCI6MjA5MTUxODM1Mn0.Z4XFvR7I4HcaoOckDSpsZ4_DDZRAlWENr2VQphTdTx0';
 
+function rowToPinned(row) {
+  const key = (row.wiki||row.lang+'wiki') + ':' + row.title;
+  const created = new Date(row.created_at).getTime();
+  return {
+    key, title: row.title,
+    wiki: row.wiki || row.lang+'wiki',
+    type: row.type || 'sng',
+    edits: row.edits || 0,
+    editors: row.editors || 0,
+    firstSeen: created, lastSeen: created,
+    url: row.url || getUrl(row.title, row.wiki||row.lang+'wiki'),
+    lang: row.lang || 'en',
+    score: row.score || 0,
+    isWar: false, isRet: 0, isProt: false,
+    desc: '', pvText: '', badges: '',
+    trendPct: row.trend_pct,
+    langCount: row.lang_count || 0,
+    articleType: row.article_type || '',
+    pvRatio: 0
+  };
+}
+
 async function loadFromSupabase() {
   try {
-    // Завантажуємо останні 50 аномалій за останні 6 годин
     const since = new Date(Date.now() - 6*3600000).toISOString();
     const r = await fetch(
-      SB_URL + '/rest/v1/anomalies?created_at=gte.' + since + '&order=created_at.desc&limit=50',
+      SB_URL + '/rest/v1/anomalies?created_at=gte.' + since + '&order=score.desc&limit=100',
       { headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY } }
     );
     const rows = await r.json();
     if (!Array.isArray(rows) || !rows.length) return;
-
     console.log('Loaded', rows.length, 'anomalies from Supabase');
 
     rows.forEach(row => {
-      // Відновлюємо pinned картки
-      const key = row.wiki + ':' + row.title;
-      const created = new Date(row.created_at).getTime();
-      const ageMs = Date.now() - created;
-
-      // Тільки якщо молодші 2 годин
+      const ageMs = Date.now() - new Date(row.created_at).getTime();
       if (ageMs > 7200000) return;
-
-      if (!pinned[key]) {
-        pinned[key] = {
-          key,
-          title: row.title,
-          wiki: row.wiki || row.lang + 'wiki',
-          type: row.type || 'sng',
-          edits: row.edits || 0,
-          editors: row.editors || 0,
-          firstSeen: created,
-          lastSeen: created,
-          url: row.url || getUrl(row.title, row.wiki || row.lang + 'wiki'),
-          lang: row.lang || 'en',
-          score: row.score || 0,
-          isWar: false,
-          isRet: 0,
-          isProt: false,
-          desc: '',
-          pvText: '',
-          badges: row.article_type
-            ? '<span class="pb2" style="background:rgba(100,255,218,0.1);color:#64ffda;border:1px solid rgba(100,255,218,0.2)">' + row.article_type + '</span>'
-            : '',
-          trendPct: row.trend_pct
-        };
+      const p = rowToPinned(row);
+      // Merge — якщо вже є то оновлюємо тільки якщо score вищий
+      if (!pinned[p.key] || pinned[p.key].score < p.score) {
+        pinned[p.key] = p;
       }
-
-      // Рахуємо лічильники
+      // Stream list
       anomCnt++;
-      if (row.type === 'res') resCnt++;
-      else if (row.type === 'mul') mulCnt++;
+      if (row.type==='res') resCnt++;
+      else if (row.type==='mul') mulCnt++;
       else sngCnt++;
-
-      // Додаємо в stream list
-      const url = row.url || getUrl(row.title, row.lang || 'en');
-      const icon = row.type === 'res' ? '★' : row.type === 'mul' ? '👥' : '⚡';
-      const col = row.type === 'res' ? '#f72585' : row.type === 'mul' ? '#ffc800' : '#ff4757';
-      const timeStr = new Date(row.created_at).toLocaleTimeString('uk-UA', {hour:'2-digit',minute:'2-digit'});
-      const row2 = document.createElement('div');
-      row2.className = 'al';
-      row2.addEventListener('click', () => window.open(url, '_blank'));
-      row2.innerHTML = '<div class="al-label" style="color:' + col + '">' + icon + ' ' + (row.lang||'en') + '</div>'
-        + '<div class="al-title">' + row.title + '</div>'
-        + '<div class="al-meta">' + timeStr + '</div>';
-      const sl = document.getElementById('streamList');
-      if (sl) sl.appendChild(row2);
       streamCnt++;
     });
 
     document.getElementById('streamCnt').textContent = streamCnt;
     updHdr();
     renderPinned();
-    console.log('Restored', Object.keys(pinned).length, 'pinned cards from history');
-  } catch(e) {
-    console.log('Supabase load error:', e.message);
-  }
+  } catch(e) { console.log('Supabase load error:', e.message); }
 }
+
+// ── SUPABASE REALTIME — всі бачать одне і те саме ──
+function subscribeRealtime() {
+  const url = SB_URL.replace('https://', 'wss://') + '/realtime/v1/websocket?apikey=' + SB_KEY + '&vsn=1.0.0';
+  const ws = new WebSocket(url);
+  let hb;
+
+  ws.onopen = () => {
+    console.log('Supabase Realtime connected');
+    // Join channel
+    ws.send(JSON.stringify({
+      topic: 'realtime:public:anomalies',
+      event: 'phx_join',
+      payload: { config: { broadcast: { self: false }, presence: { key: '' }, postgres_changes: [{ event: 'INSERT', schema: 'public', table: 'anomalies' }] } },
+      ref: '1'
+    }));
+    hb = setInterval(() => {
+      ws.send(JSON.stringify({ topic: 'phoenix', event: 'heartbeat', payload: {}, ref: '0' }));
+    }, 20000);
+  };
+
+  ws.onmessage = (e) => {
+    try {
+      const msg = JSON.parse(e.data);
+      if (msg.event !== 'postgres_changes') return;
+      const row = msg.payload?.data?.record;
+      if (!row) return;
+      console.log('Realtime:', row.title, 'score:', row.score);
+      const p = rowToPinned(row);
+      pinned[p.key] = p;
+      // Stream
+      anomCnt++;
+      if (row.type==='res') resCnt++;
+      else if (row.type==='mul') mulCnt++;
+      else sngCnt++;
+      streamCnt++;
+      document.getElementById('streamCnt').textContent = streamCnt;
+      // Stream list
+      const icon = row.type==='res'?'★':row.type==='mul'?'👥':'⚡';
+      const col = row.type==='res'?'#f72585':row.type==='mul'?'#ffc800':'#ff4757';
+      const el = document.createElement('div');
+      el.className = 'al highlight';
+      el.addEventListener('click', () => window.open(p.url, '_blank'));
+      el.innerHTML = '<div class="al-label" style="color:'+col+'">'+icon+' '+(row.lang||'en')+'</div>'
+        +'<div class="al-title">'+row.title+'</div>'
+        +'<div class="al-meta">'+new Date().toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'})+'</div>';
+      const sl = document.getElementById('streamList');
+      if (sl) { sl.insertBefore(el, sl.firstChild); while(sl.children.length>40) sl.removeChild(sl.lastChild); }
+      updHdr();
+      renderPinned();
+    } catch(err) {}
+  };
+
+  ws.onclose = () => {
+    clearInterval(hb);
+    console.log('Realtime disconnected — reconnecting in 5s');
+    setTimeout(subscribeRealtime, 5000);
+  };
+  ws.onerror = () => ws.close();
+}
+
 
 // ── CONNECT ──
 function connect(){
@@ -978,6 +1016,7 @@ setInterval(()=>{
 connect();
 loadTrend();
 loadFromSupabase();
+subscribeRealtime();
 </script>
 </body>
 </html>
