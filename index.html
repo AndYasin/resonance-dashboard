@@ -732,8 +732,9 @@ async function loadHof(){
   try{
     const today=new Date();today.setHours(0,0,0,0);
     const since=today.toISOString();
-    const r=await fetch(SB_URL+'/rest/v1/anomalies?created_at=gte.'+since+'&order=created_at.desc&limit=200',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+    const r=await fetch(SB_URL+'/rest/v1/anomalies?created_at=gte.'+since+'&order=score.desc&limit=200',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
     const rows=await r.json();if(!Array.isArray(rows))return;
+    // score.desc — тому перший запис по title = найвищий пік
     const seen={};const uniq=rows.filter(r=>{if(seen[r.title])return false;seen[r.title]=true;return true;});
     const d=document.getElementById('hofSub');if(d)d.textContent='сьогодні · '+uniq.length+' подій';
     document.getElementById('hofCnt').textContent=uniq.length;
@@ -742,13 +743,14 @@ async function loadHof(){
       const sc=Math.round(row.score||0);const col=sc>=50?'#ff4757':sc>=25?'#ffc800':'#64ffda';
       const rankCls=i===0?'gold':i===1?'silver':i===2?'bronze':'';
       const rankIco=i===0?'①':i===1?'②':i===2?'③':i===3?'④':i===4?'⑤':i===5?'⑥':i===6?'⑦':i===7?'⑧':i===8?'⑨':i===9?'⑩':(i+1)+'.';
-      const time=new Date(row.created_at).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
+      // updated_at = час останньої активності (пік), created_at = час першого виявлення
+      const peakTime=new Date(row.updated_at||row.created_at).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
       const typeCol={СМЕРТЬ:'#ff4757',ПОЛІТИК:'#f72585',ГЕОПОЛІТИКА:'#f72585',БІЗНЕС:'#ffc800'}[row.article_type]||'rgba(255,255,255,0.25)';
       const div=document.createElement('div');div.className='hr';
       div.addEventListener('click',()=>window.open(row.url||'#','_blank'));
       div.innerHTML='<div class="hr-rank '+rankCls+'">'+rankIco+'</div>'
         +'<div class="hr-body"><div class="hr-title">'+row.title+'</div>'
-        +'<div class="hr-meta">'+(row.article_type?'<span style="color:'+typeCol+'">'+row.article_type+'</span> · ':'')+time+'</div></div>'
+        +'<div class="hr-meta">'+(row.article_type?'<span style="color:'+typeCol+'">'+row.article_type+'</span> · ':'')+peakTime+'</div></div>'
         +'<div class="hr-score" style="color:'+col+'">'+sc+'</div>'
         +'<button class="hr-ai" data-t="'+row.title.replace(/"/g,'')+'">✦</button>';
       div.querySelector('.hr-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
