@@ -730,12 +730,11 @@ function updSustPanel(){
 // ── HOF ──
 async function loadHof(){
   try{
-    const since=new Date(Date.now()-20*3600000).toISOString();
-    const r=await fetch(SB_URL+'/rest/v1/anomalies?created_at=gte.'+since+'&order=score.desc&limit=50',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
-    const rows=await r.json();if(!Array.isArray(rows))return;
     const today=new Date();today.setHours(0,0,0,0);
-    const todayRows=rows.filter(r=>new Date(r.created_at)>=today);
-    const seen={};const uniq=todayRows.filter(r=>{if(seen[r.title])return false;seen[r.title]=true;return true;});
+    const since=today.toISOString();
+    const r=await fetch(SB_URL+'/rest/v1/anomalies?created_at=gte.'+since+'&order=score.desc&limit=100',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+    const rows=await r.json();if(!Array.isArray(rows))return;
+    const seen={};const uniq=rows.filter(r=>{if(seen[r.title])return false;seen[r.title]=true;return true;});
     const d=document.getElementById('hofSub');if(d)d.textContent='сьогодні · '+uniq.length+' подій';
     document.getElementById('hofCnt').textContent=uniq.length;
     const el=document.getElementById('feedHof');el.innerHTML='';
@@ -1127,6 +1126,7 @@ setInterval(loadFng,600000);
 setInterval(loadBinance,180000);
 setInterval(loadCrossSignals,120000);
 setInterval(syncCounts,30000);
+setInterval(loadHof,120000);
 setInterval(checkPageviewSpikes,900000);
 setInterval(()=>{Object.values(pinned).forEach(p=>{p.score=calcScore(p);});renderRank();},30000);
 
