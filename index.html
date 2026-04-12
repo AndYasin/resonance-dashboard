@@ -844,6 +844,7 @@ function openAiModal(article){
     +'<div style="padding:0.4rem;border:1px solid rgba(255,200,0,0.1);border-radius:2px;font-size:0.54rem;color:rgba(255,200,0,0.5)">🦆 DuckDuckGo...</div>'
     +'<div style="padding:0.4rem;border:1px solid rgba(247,37,133,0.1);border-radius:2px;font-size:0.54rem;color:rgba(247,37,133,0.5)">📰 GNews...</div>'
     +'<div style="padding:0.4rem;border:1px solid rgba(72,202,228,0.1);border-radius:2px;font-size:0.54rem;color:rgba(72,202,228,0.5)">🌍 GDELT...</div>'
+    +'<div style="padding:0.4rem;border:1px solid rgba(6,214,160,0.1);border-radius:2px;font-size:0.54rem;color:rgba(6,214,160,0.5)">📊 Polymarket...</div>'
     +'</div>';
   fetchAiCtx(article);
 }
@@ -863,6 +864,45 @@ async function fetchAiCtx(article){
   if(ddgI.length){html+='<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#ffc800">🦆 DuckDuckGo</div>';ddgI.forEach(it=>{html+='<div class="aim-item"><a href="'+it.url+'" target="_blank">'+it.title+'</a>'+(it.source?'<div class="aim-item-meta">'+it.source+'</div>':'')+'</div>';});html+='</div>';}
   const gn=(gnews.status==='fulfilled'?gnews.value.items||[]:[] ).slice(0,3);
   if(gn.length){html+='<div><div class="aim-src" style="color:#f72585">📰 GNews</div>';gn.forEach(it=>{html+='<div class="aim-item"><a href="'+it.url+'" target="_blank">'+it.title+'</a><div class="aim-item-meta">'+it.source+' · '+it.date+'</div></div>';});html+='</div>';}
+  // Polymarket — прямо з браузера (Railway IP заблокований CF)
+  let polyItems=[];
+  try{
+    const pr=await fetch('https://gamma-api.polymarket.com/markets?closed=false&limit=200&order=volumeNum&ascending=false');
+    const pd=await pr.json();
+    const words=article.toLowerCase().split(/\s+/).filter(w=>w.length>3);
+    polyItems=pd.filter(m=>{
+      const q=(m.question||'').toLowerCase();
+      return words.some(w=>q.includes(w));
+    }).slice(0,3).map(m=>{
+      const prices=JSON.parse(m.outcomePrices||'[]');
+      const outcomes=JSON.parse(m.outcomes||'[]');
+      return{
+        question:m.question,
+        yesPrice:Math.round(parseFloat(prices[0]||0)*100),
+        outcomes,prices,
+        volume:Math.round((m.volumeNum||0)/1000),
+        url:'https://polymarket.com/event/'+(m.slug||'')
+      };
+    });
+  }catch(e){}
+
+  // Polymarket section
+  if(polyItems.length){
+    html+='<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#06d6a0">📊 Polymarket · активні ринки</div>';
+    polyItems.forEach(pm=>{
+      const col=pm.yesPrice>60?'#64ffda':pm.yesPrice>40?'#ffc800':'#ff4757';
+      html+='<div class="aim-item" style="border-color:rgba(6,214,160,0.1)">'
+        +'<a href="'+pm.url+'" target="_blank" style="color:#e0e0f0">'+pm.question+'</a>'
+        +'<div style="display:flex;gap:0.8rem;margin-top:0.25rem;align-items:center">'
+        +'<span style="font-family:monospace;font-size:1rem;font-weight:bold;color:'+col+'">'+pm.yesPrice+'%</span>'
+        +'<span class="aim-item-meta">YES · $'+pm.volume+'K обсяг</span>'
+        +'<div style="flex:1;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden">'
+        +'<div style="width:'+pm.yesPrice+'%;height:100%;background:'+col+';border-radius:2px"></div>'
+        +'</div></div></div>';
+    });
+    html+='</div>';
+  }
+
   // GDELT — світові ЗМІ
   const gdeltItems=(gdelt.status==='fulfilled'?gdelt.value.items||[]:[] ).slice(0,5);
   if(gdeltItems.length){
