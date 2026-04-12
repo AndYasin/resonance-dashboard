@@ -47,9 +47,16 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 .pb::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08)}
 
 /* ── PINNED CARDS (живі) ── */
-.pinned-section{flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.06)}
+.pinned-section{flex:1;overflow-y:auto;overflow-x:hidden;min-height:0;border-bottom:1px solid rgba(255,255,255,0.06)}.pinned-section::-webkit-scrollbar{width:2px}.pinned-section::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08)}
 .pc{margin:0.45rem 0.5rem;padding:0.65rem 0.75rem;border-radius:2px;position:relative;transition:border-color 0.3s,background 0.3s}
 .pc.res{border:1.5px solid #f72585;background:rgba(247,37,133,0.07)}
+.pc-xl{padding:0.65rem 0.75rem}
+.pc-lg{padding:0.5rem 0.7rem}
+.pc-sm{padding:0.38rem 0.7rem}
+.pc-xs{padding:0.28rem 0.8rem;border-radius:0;border-left-width:2px;border-right:none;border-top:none;border-bottom:1px solid rgba(255,255,255,0.04)!important}
+.pc-top-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.18rem}
+.pc-score-badge{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;line-height:1;text-align:right;flex-shrink:0}
+.pc-score-badge span{display:block;font-family:'IBM Plex Mono',monospace;font-size:0.46rem;opacity:0.5;text-align:center}
 .pc.mul{border:1px solid rgba(255,200,0,0.35);background:rgba(255,200,0,0.03)}
 .pc.sng{border:1px solid rgba(255,71,87,0.2);background:rgba(255,71,87,0.02)}
 .pc-pin{position:absolute;top:0.5rem;right:0.5rem;font-size:0.48rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.44);padding:1px 5px;border:1px solid rgba(255,255,255,0.1);border-radius:2px}
@@ -90,7 +97,7 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 .pc-timer{font-size:0.52rem;color:rgba(255,255,255,0.42);margin-left:auto}
 
 /* ── STREAM LIST (нові) ── */
-.stream-section{flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.stream-section{flex-shrink:0;max-height:180px;display:flex;flex-direction:column;overflow:hidden}
 .sec-header{padding:0.22rem 0.8rem;font-size:0.5rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.40);border-bottom:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.015);flex-shrink:0}
 .al{display:flex;align-items:center;gap:0.45rem;padding:0.3rem 0.8rem;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:background 0.15s}
 .al:hover{background:rgba(255,255,255,0.02)}
@@ -401,14 +408,21 @@ function updHdr(){
 function isRes(title){return trendData.some(t=>t.article.toLowerCase()===title.toLowerCase()&&t.delta>=50);}
 
 // ── RENDER PINNED CARDS ──
+function getCardSize(score, type) {
+  if(type==='res') return 'xl';
+  if(score>=60) return 'xl';
+  if(score>=25) return 'lg';
+  if(score>=10) return 'sm';
+  return 'xs';
+}
+
 function renderPinned(){
   const sec=document.getElementById('pinnedSection');
   const sorted=Object.values(pinned).sort((a,b)=>{
-    // sort: resonance first, then by score
     if(a.type==='res'&&b.type!=='res')return -1;
     if(b.type==='res'&&a.type!=='res')return 1;
     return b.score-a.score;
-  }).slice(0,MAX_PINNED);
+  });
 
   if(!sorted.length){sec.innerHTML='<div class="hint">Очікуємо аномалії...</div>';return;}
 
@@ -416,46 +430,89 @@ function renderPinned(){
   sorted.forEach(p=>{
     const cls=p.type==='res'?'res':p.type==='mul'?'mul':'sng';
     const lc=p.type==='res'?'pk':p.type==='mul'?'gd':'rd';
-    const icon=p.type==='res'?'★ РЕЗОНАНС':p.type==='mul'?'👥 МУЛЬТІ-РЕДАКТОР':'⚡ SPIKE';
+    const icon=p.type==='res'?'★ РЕЗОНАНС':p.type==='mul'?'👥 МУЛЬТІ':'⚡ SPIKE';
     const gUrl='https://www.google.com/search?q='+encodeURIComponent(p.title+' news '+new Date().getFullYear());
-
-    // Progress bar: edits/20 capped
+    const size=getCardSize(Math.round(p.score),p.type);
     const prog=Math.min(p.edits/20*100,100);
     const progCol=p.score>=40?'#ff4757':p.score>=20?'#ffc800':'#64ffda';
+    const sc=Math.round(p.score);
+    const ageMin=Math.round((Date.now()-p.firstSeen)/60000);
 
-    // Signals
     let sigs='';
     if(p.isWar)sigs+='<span class="sig sig-war">⚔ edit war</span>';
-    if(p.isRet>0)sigs+='<span class="sig sig-ret">↩ '+p.isRet+' повернень</span>';
-    if(p.isProt)sigs+='<span class="sig sig-prot">🔒 захищена</span>';
-    if(p.trendPct)sigs+='<span class="sig sig-trend">📈 +'+p.trendPct+'% trending</span>';
+    if(p.isRet>0)sigs+='<span class="sig sig-ret">↩ '+p.isRet+'</span>';
+    if(p.isProt)sigs+='<span class="sig sig-prot">🔒</span>';
+    if(p.trendPct)sigs+='<span class="sig sig-trend">📈+'+p.trendPct+'%</span>';
 
     const div=document.createElement('div');
-    div.className='pc '+cls;
+    div.className='pc '+cls+' pc-'+size;
     div.id='pc_'+p.key.replace(/[^a-z0-9]/gi,'_');
-    div.innerHTML=
-      '<div class="pc-pin">📌 LIVE · '+ago(p.lastSeen)+'</div>'
-      +'<div class="pc-label '+lc+'">'+icon+'</div>'
-      +'<div class="pc-title"><a href="'+p.url+'" target="_blank">'+p.title+'</a></div>'
-      +'<div class="pc-meta">'+p.lang+'.wikipedia · перша: '+new Date(p.firstSeen).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'})+'</div>'
-      +'<div class="pc-progress"><div class="pc-prog-fill" style="width:'+prog+'%;background:'+progCol+'"></div></div>'
-      +'<div class="pc-stats">'
-        +'<div class="pc-stat"><div class="pc-stat-v" style="color:'+progCol+'">'+p.edits+'</div><div class="pc-stat-l">правок</div></div>'
-        +'<div class="pc-stat"><div class="pc-stat-v" style="color:#64ffda">'+p.editors+'</div><div class="pc-stat-l">редакторів</div></div>'
-        +'<div class="pc-stat"><div class="pc-stat-v" style="color:#ffc800">'+Math.round(p.score)+'</div><div class="pc-stat-l">score</div></div>'
-        +'<div class="pc-stat"><div class="pc-stat-v" style="color:rgba(255,255,255,0.4)">'+Math.round((Date.now()-p.firstSeen)/60000)+'хв</div><div class="pc-stat-l">активна</div></div>'
-      +'</div>'
-      +(p.badges?'<div class="pc-badges">'+p.badges+'</div>':'')
-      +(sigs?'<div class="pc-signals">'+sigs+'</div>':'')
-      +(p.desc?'<div class="pc-desc">'+p.desc+'</div>':'')
-      +(p.pvText?'<div class="pc-pv">'+p.pvText+'</div>':'')
-      +'<div class="pc-actions">'
-        +'<a class="btn-g" href="'+gUrl+'" target="_blank">🔍 Google</a>'
-        +'<button class="btn-ai" data-title="'+p.title.replace(/"/g,'&quot;')+'">✦ AI пояснення</button>'
-        +'<span class="pc-timer">оновлено '+ago(p.lastSeen)+'</span>'
-      +'</div>';
 
-    div.querySelector('.btn-ai').addEventListener('click',function(){openAiModal(this.dataset.title);});
+    if(size==='xl'){
+      // ВЕЛИКА — всі деталі
+      div.innerHTML=
+        '<div class="pc-top-row">'
+          +'<div><div class="pc-label '+lc+'">'+icon+'</div>'
+          +'<div class="pc-title"><a href="'+p.url+'" target="_blank">'+p.title+'</a></div>'
+          +'<div class="pc-meta">'+p.lang+'.wikipedia · '+new Date(p.firstSeen).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'})+'</div></div>'
+          +'<div class="pc-score-badge" style="color:'+progCol+'">'+sc+'<span>score</span></div>'
+        +'</div>'
+        +'<div class="pc-progress"><div class="pc-prog-fill" style="width:'+prog+'%;background:'+progCol+'"></div></div>'
+        +'<div class="pc-stats">'
+          +'<div class="pc-stat"><div class="pc-stat-v" style="color:'+progCol+'">'+p.edits+'</div><div class="pc-stat-l">правок</div></div>'
+          +'<div class="pc-stat"><div class="pc-stat-v" style="color:#64ffda">'+p.editors+'</div><div class="pc-stat-l">редакторів</div></div>'
+          +'<div class="pc-stat"><div class="pc-stat-v" style="color:rgba(255,255,255,0.5)">'+ageMin+'хв</div><div class="pc-stat-l">активна</div></div>'
+        +'</div>'
+        +(p.badges?'<div class="pc-badges">'+p.badges+'</div>':'')
+        +(sigs?'<div class="pc-signals">'+sigs+'</div>':'')
+        +(p.desc?'<div class="pc-desc">'+p.desc+'</div>':'')
+        +(p.pvText?'<div class="pc-pv">'+p.pvText+'</div>':'')
+        +'<div class="pc-actions">'
+          +'<a class="btn-g" href="'+gUrl+'" target="_blank">🔍 Google</a>'
+          +'<button class="btn-ai" data-title="'+p.title.replace(/"/g,'&quot;')+'">✦ AI пояснення</button>'
+          +'<span class="pc-timer">'+ago(p.lastSeen)+'</span>'
+        +'</div>';
+    } else if(size==='lg'){
+      // СЕРЕДНЯ — основне + сигнали
+      div.innerHTML=
+        '<div class="pc-top-row">'
+          +'<div><div class="pc-label '+lc+'">'+icon+'</div>'
+          +'<div class="pc-title" style="font-size:0.95rem"><a href="'+p.url+'" target="_blank">'+p.title+'</a></div></div>'
+          +'<div class="pc-score-badge" style="color:'+progCol+';font-size:1rem">'+sc+'<span>scr</span></div>'
+        +'</div>'
+        +'<div class="pc-progress"><div class="pc-prog-fill" style="width:'+prog+'%;background:'+progCol+'"></div></div>'
+        +'<div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.25rem">'
+          +'<div style="font-size:0.58rem;color:rgba(255,255,255,0.45)">'+p.edits+' правок · '+p.editors+' ред · '+ageMin+'хв'+(sigs?' · '+sigs:'')+'</div>'
+          +'<div style="display:flex;gap:0.25rem">'
+            +'<a class="btn-g" href="'+gUrl+'" target="_blank" style="font-size:0.5rem;padding:1px 6px">🔍</a>'
+            +'<button class="btn-ai" data-title="'+p.title.replace(/"/g,'&quot;')+'" style="font-size:0.5rem;padding:1px 6px">✦ AI</button>'
+          +'</div>'
+        +'</div>';
+    } else if(size==='sm'){
+      // МАЛА — заголовок + мінімум
+      div.innerHTML=
+        '<div style="display:flex;align-items:center;gap:0.4rem">'
+          +'<div class="pc-label '+lc+'" style="font-size:0.5rem;margin:0">'+icon+'</div>'
+          +'<div class="pc-title" style="font-size:0.85rem;flex:1"><a href="'+p.url+'" target="_blank">'+p.title+'</a></div>'
+          +'<div style="font-family:'Bebas Neue',sans-serif;font-size:0.9rem;color:'+progCol+'">'+sc+'</div>'
+        +'</div>'
+        +'<div style="font-size:0.56rem;color:rgba(255,255,255,0.38);display:flex;justify-content:space-between;margin-top:0.15rem">'
+          +'<span>'+p.edits+' пр · '+p.editors+' ред · '+ageMin+'хв</span>'
+          +'<button class="btn-ai" data-title="'+p.title.replace(/"/g,'&quot;')+'" style="font-size:0.48rem;padding:1px 5px">✦ AI</button>'
+        +'</div>';
+    } else {
+      // РЯДОК xs
+      div.innerHTML=
+        '<div style="display:flex;align-items:center;gap:0.35rem">'
+          +'<span style="font-size:0.6rem;color:'+progCol+'">'+icon.slice(0,1)+'</span>'
+          +'<a href="'+p.url+'" target="_blank" style="font-size:0.78rem;color:rgba(255,255,255,0.7);text-decoration:none;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+p.title+'</a>'
+          +'<span style="font-size:0.52rem;color:rgba(255,255,255,0.28)">'+p.edits+'пр · '+ageMin+'хв</span>'
+          +'<span style="font-family:'Bebas Neue',sans-serif;font-size:0.8rem;color:'+progCol+'">'+sc+'</span>'
+        +'</div>';
+    }
+
+    const aiBtn=div.querySelector('.btn-ai');
+    if(aiBtn)aiBtn.addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.title);});
     sec.appendChild(div);
   });
 }
@@ -757,6 +814,88 @@ async function fetchAiCtx(article){
   el.innerHTML=html;
 }
 
+// ── SUPABASE READ — завантаження при старті ──
+const SB_URL = 'https://ovedzfpptsnxzxioyzkr.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92ZWR6ZnBwdHNueHp4aW95emtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5NDIzNTIsImV4cCI6MjA5MTUxODM1Mn0.Z4XFvR7I4HcaoOckDSpsZ4_DDZRAlWENr2VQphTdTx0';
+
+async function loadFromSupabase() {
+  try {
+    // Завантажуємо останні 50 аномалій за останні 6 годин
+    const since = new Date(Date.now() - 6*3600000).toISOString();
+    const r = await fetch(
+      SB_URL + '/rest/v1/anomalies?created_at=gte.' + since + '&order=created_at.desc&limit=50',
+      { headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY } }
+    );
+    const rows = await r.json();
+    if (!Array.isArray(rows) || !rows.length) return;
+
+    console.log('Loaded', rows.length, 'anomalies from Supabase');
+
+    rows.forEach(row => {
+      // Відновлюємо pinned картки
+      const key = row.wiki + ':' + row.title;
+      const created = new Date(row.created_at).getTime();
+      const ageMs = Date.now() - created;
+
+      // Тільки якщо молодші 2 годин
+      if (ageMs > 7200000) return;
+
+      if (!pinned[key]) {
+        pinned[key] = {
+          key,
+          title: row.title,
+          wiki: row.wiki || row.lang + 'wiki',
+          type: row.type || 'sng',
+          edits: row.edits || 0,
+          editors: row.editors || 0,
+          firstSeen: created,
+          lastSeen: created,
+          url: row.url || getUrl(row.title, row.wiki || row.lang + 'wiki'),
+          lang: row.lang || 'en',
+          score: row.score || 0,
+          isWar: false,
+          isRet: 0,
+          isProt: false,
+          desc: '',
+          pvText: '',
+          badges: row.article_type
+            ? '<span class="pb2" style="background:rgba(100,255,218,0.1);color:#64ffda;border:1px solid rgba(100,255,218,0.2)">' + row.article_type + '</span>'
+            : '',
+          trendPct: row.trend_pct
+        };
+      }
+
+      // Рахуємо лічильники
+      anomCnt++;
+      if (row.type === 'res') resCnt++;
+      else if (row.type === 'mul') mulCnt++;
+      else sngCnt++;
+
+      // Додаємо в stream list
+      const url = row.url || getUrl(row.title, row.lang || 'en');
+      const icon = row.type === 'res' ? '★' : row.type === 'mul' ? '👥' : '⚡';
+      const col = row.type === 'res' ? '#f72585' : row.type === 'mul' ? '#ffc800' : '#ff4757';
+      const timeStr = new Date(row.created_at).toLocaleTimeString('uk-UA', {hour:'2-digit',minute:'2-digit'});
+      const row2 = document.createElement('div');
+      row2.className = 'al';
+      row2.addEventListener('click', () => window.open(url, '_blank'));
+      row2.innerHTML = '<div class="al-label" style="color:' + col + '">' + icon + ' ' + (row.lang||'en') + '</div>'
+        + '<div class="al-title">' + row.title + '</div>'
+        + '<div class="al-meta">' + timeStr + '</div>';
+      const sl = document.getElementById('streamList');
+      if (sl) sl.appendChild(row2);
+      streamCnt++;
+    });
+
+    document.getElementById('streamCnt').textContent = streamCnt;
+    updHdr();
+    renderPinned();
+    console.log('Restored', Object.keys(pinned).length, 'pinned cards from history');
+  } catch(e) {
+    console.log('Supabase load error:', e.message);
+  }
+}
+
 // ── CONNECT ──
 function connect(){
   document.getElementById('dot').className='ldot wait';document.getElementById('stxt').textContent='connecting';
@@ -776,6 +915,7 @@ setInterval(updLangs,10000);
 setInterval(loadTrend,300000);
 connect();
 loadTrend();
+loadFromSupabase();
 </script>
 </body>
 </html>
