@@ -204,22 +204,22 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 
 /* AI MODAL */
 #aiModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9999;align-items:center;justify-content:center}
-.aim-box{background:#0d0d1a;border:1px solid rgba(100,255,218,0.2);border-radius:4px;width:min(680px,96vw);max-height:88vh;display:flex;flex-direction:column;overflow:hidden}
-.aim-hdr{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.2rem;border-bottom:1px solid rgba(255,255,255,0.08);flex-shrink:0}
+.aim-box{background:#0d0d1a;border:1px solid rgba(100,255,218,0.2);border-radius:3px;width:min(680px,96vw);max-height:88vh;display:flex;flex-direction:column;overflow:hidden}
+.aim-hdr{display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0.9rem;border-bottom:1px solid rgba(255,255,255,0.07);flex-shrink:0}
 .aim-title{font-size:1.15rem;color:#fff;font-weight:600}
 .aim-close{background:transparent;border:none;color:rgba(255,255,255,0.3);font-size:1.3rem;cursor:pointer;line-height:1;padding:0}
-.aim-body{padding:1rem 1.2rem;overflow-y:auto;flex:1;font-size:0.9rem;line-height:1.7;color:#d0d0e8}
-.aim-src{font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.4rem}
+.aim-body{padding:1rem 1.2rem;overflow-y:auto;flex:1;font-size:0.9rem;line-height:1.75;color:#d0d0e8}
+.aim-src{font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.22rem}
 .aim-item{margin-bottom:0.35rem;padding-bottom:0.35rem;border-bottom:1px solid rgba(255,255,255,0.05)}
-.aim-item a{color:rgba(255,255,255,0.9);text-decoration:none;font-size:0.88rem;line-height:1.5;display:block}
+.aim-item a{color:rgba(255,255,255,0.9);text-decoration:none;font-size:0.88rem;line-height:1.4;display:block}
 .aim-item a:hover{color:#64ffda}
-.aim-item-meta{font-size:0.7rem;color:rgba(255,255,255,0.3);margin-top:3px}
+.aim-item-meta{font-size:0.52rem;color:rgba(255,255,255,0.22);margin-top:1px}
 .aim-links{padding-top:0.4rem;border-top:1px solid rgba(255,255,255,0.06);display:flex;gap:1rem}
 .aim-links a{font-size:0.54rem;color:rgba(100,255,218,0.6);text-decoration:none}
-.aim-src-row{display:flex;align-items:center;gap:0.6rem;padding:0.4rem 0.7rem;border:1px solid rgba(255,255,255,0.07);border-radius:3px;margin-bottom:0.3rem}
-.aim-src-label{font-size:0.75rem;width:120px;flex-shrink:0;font-weight:600}
-.aim-src-status{font-size:0.72rem;color:rgba(255,255,255,0.4);flex:1}
-.aim-src-time{font-size:0.65rem;color:rgba(255,255,255,0.25);flex-shrink:0;min-width:36px;text-align:right}
+.aim-src-row{display:flex;align-items:center;gap:0.5rem;padding:0.28rem 0.5rem;border:1px solid rgba(255,255,255,0.06);border-radius:2px;margin-bottom:0.25rem}
+.aim-src-label{font-size:0.75rem;width:120px;font-weight:600;flex-shrink:0}
+.aim-src-status{font-size:0.72rem;color:rgba(255,255,255,0.3);flex:1}
+.aim-src-time{font-size:0.65rem;color:rgba(255,255,255,0.18);flex-shrink:0;min-width:30px;text-align:right}
 </style>
 </head>
 <body>
@@ -268,15 +268,15 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
       <span>✏️ edit рейтинг</span>
       <span><span class="pk" id="cR">0</span><span style="opacity:0.2">★ </span><span class="gd" id="cM">0</span><span style="opacity:0.2">m</span></span>
     </div>
-    <div class="pb" id="feedRank" style="max-height:42%"><div class="hint">Очікуємо аномалії...</div></div>
+    <div class="pb" id="feedRank"><div class="hint">Очікуємо аномалії...</div></div>
     <div class="sec">
       <div class="ph"><span>⏱ sustained</span><span class="gd" id="sCnt">0</span></div>
       <div id="feedSust"></div>
     </div>
-    <div class="sec" style="flex:1;display:flex;flex-direction:column;min-height:0">
+    <div class="sec">
       <div class="ph"><span>🏆 зала слави</span><span class="gd" id="hofCnt">—</span></div>
       <div class="hof-sub" id="hofSub">сьогодні · завантаження...</div>
-      <div class="pb" id="feedHof" style="flex:1"><div class="hint">...</div></div>
+      <div class="pb" id="feedHof" style="max-height:160px"><div class="hint">...</div></div>
     </div>
   </div>
 
@@ -317,36 +317,27 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
     </div>
   </div>
 
-  <!-- COL 4: АКТИВНІСТЬ -->
+  <!-- COL 4: ПОТІК -->
   <div class="col">
-    <!-- Секція 1: Останні аномалії з бази -->
-    <div class="ph"><span>🕐 нещодавні</span><span class="ac" id="recentCnt">0</span></div>
-    <div class="pb" id="feedRecentAnom" style="flex:0.9;max-height:35%"><div class="hint">Завантаження...</div></div>
-
-    <!-- Секція 2: Статистика -->
-    <div class="sec">
-      <div class="ph"><span>📊 статистика</span><span class="ac" id="langT"></span></div>
-      <div class="spd" style="padding:0.3rem 0.7rem;height:auto">
-        <canvas id="speedo" width="44" height="28" style="flex-shrink:0"></canvas>
-        <div>
-          <div class="spd-v" id="sVal">0</div>
-          <div class="spd-l">прав/хв</div>
-          <div class="spd-t" id="sTrend" style="color:rgba(255,255,255,0.2)">—</div>
-        </div>
-        <div class="spl" id="sparkline"></div>
+    <div class="ph"><span>📡 потік</span><span class="ac" id="lt">—</span></div>
+    <div class="spd">
+      <canvas id="speedo" width="52" height="32" style="flex-shrink:0"></canvas>
+      <div>
+        <div class="spd-v" id="sVal">0</div>
+        <div class="spd-l">прав/хв</div>
+        <div class="spd-t" id="sTrend" style="color:rgba(255,255,255,0.2)">—</div>
       </div>
-      <div class="hmap"><div class="hmap-g" id="hmGrid"></div></div>
+      <div class="spl" id="sparkline"></div>
+    </div>
+    <div class="hmap"><div class="hmap-g" id="hmGrid"></div></div>
+    <div class="pb" id="feedRecent" style="flex:1"></div>
+    <div class="langs-sec">
+      <div class="ph"><span>🌍 мови</span><span class="ac" id="langT"></span></div>
       <div id="feedLang"></div>
       <div class="asl">
         <div class="asl-l">аномалії / хв</div>
         <div class="asl-g" id="anomSpark"></div>
       </div>
-    </div>
-
-    <!-- Секція 3: Тільки mul/res події -->
-    <div class="sec" style="flex:1;display:flex;flex-direction:column;min-height:0">
-      <div class="ph"><span>⚡ події</span><span class="ac" id="lt">—</span></div>
-      <div class="pb" id="feedAnomalOnly" style="flex:1"></div>
     </div>
   </div>
 </div>
@@ -794,35 +785,19 @@ async function loadTrend(){
 // ── GOOGLE TRENDS ──
 async function loadGoogleTrends(){
   try{
-    const r=await fetch(SB_URL+'/rest/v1/trends_signals?order=geo_count.desc&limit=30',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
-    const rows=await r.json();
+    const r=await fetch(PROXY+'/trends');const d=await r.json();
+    if(!d.items||!d.items.length)return;
+    document.getElementById('trTime').textContent=new Date(d.fetchedAt||Date.now()).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
     const el=document.getElementById('feedTrends');el.innerHTML='';
-    if(!Array.isArray(rows)||!rows.length){
-      // fallback to proxy
-      const r2=await fetch(PROXY+'/trends');const d=await r2.json();
-      if(!d.items||!d.items.length)return;
-      document.getElementById('trTime').textContent=new Date(d.fetchedAt||Date.now()).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
-      const byGeo={};
-      d.items.forEach(it=>{if(!byGeo[it.geo])byGeo[it.geo]=[];byGeo[it.geo].push(it.title);});
-      Object.entries(byGeo).slice(0,6).forEach(([geo,titles])=>{
-        const row=document.createElement('div');
-        row.style.cssText='padding:0.28rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03);font-size:0.68rem';
-        row.innerHTML='<span style="color:#4285f4;margin-right:0.4rem;font-size:0.58rem">'+geo+'</span><span style="color:rgba(255,255,255,0.65)">'+titles.slice(0,3).join(' · ')+'</span>';
-        el.appendChild(row);
-      });
-      return;
-    }
-    document.getElementById('trTime').textContent=new Date(rows[0]?.updated_at||Date.now()).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
-    rows.forEach(row=>{
-      const geos=(row.geos||[]).join(' ');
-      const col=row.geo_count>=5?'#ff4757':row.geo_count>=3?'#ffc800':'#4285f4';
-      const div=document.createElement('div');
-      div.style.cssText='display:flex;align-items:center;gap:0.4rem;padding:0.28rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer';
-      div.addEventListener('click',()=>window.open('https://www.google.com/search?q='+encodeURIComponent(row.title),'_blank'));
-      div.innerHTML='<div style="flex:1;font-size:0.78rem;color:rgba(255,255,255,0.85);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+row.title+'</div>'
-        +'<div style="font-size:0.58rem;color:'+col+';flex-shrink:0">'+geos+'</div>'
-        +'<div style="font-family:Bebas Neue,sans-serif;font-size:0.9rem;color:'+col+';flex-shrink:0;width:16px;text-align:center">'+row.geo_count+'</div>';
-      el.appendChild(div);
+    // Group by geo
+    const byGeo={};
+    d.items.forEach(it=>{if(!byGeo[it.geo])byGeo[it.geo]=[];byGeo[it.geo].push(it.title);});
+    Object.entries(byGeo).slice(0,6).forEach(([geo,titles])=>{
+      const row=document.createElement('div');
+      row.style.cssText='padding:0.22rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03);font-size:0.54rem';
+      row.innerHTML='<span style="color:#4285f4;margin-right:0.4rem">'+geo+'</span>'
+        +'<span style="color:rgba(255,255,255,0.55)">'+titles.slice(0,3).join(' · ')+'</span>';
+      el.appendChild(row);
     });
   }catch(e){}
 }
@@ -982,48 +957,14 @@ function processEdit(data){
     articles[title].editors.size>=2?'<span class="tg tg-m">👥'+articles[title].editors.size+'</span>':'',
   ].join('');
   const cls=count>=8?'spike':count>=4?'high':'';
-  // Тільки mul/res/sng аномалії в live feed
-  const isAnom=pinned[wiki+':'+title]||Object.values(pinned).find(p=>p.title===title);
-  if(isAnom){
-    const ltEl=document.getElementById('lt');if(ltEl)ltEl.textContent=ts();
-    const feed=document.getElementById('feedAnomalOnly');
-    if(feed){
-      const typeIco=({'СМЕРТЬ':'💀','ПОЛІТИК':'🏛','ГЕОПОЛІТИКА':'🌏','БІЗНЕС':'💼','СПОРТ':'⚽','КУЛЬТУРА':'🎭','ВІЙСЬКОВІ':'🎖','ПЕРСОНА':'👤'})[isAnom.articleType]||'◆';
-      const sc=isAnom.score||0;const col=sc>=50?'#ff4757':sc>=25?'#ffc800':'#64ffda';
-      const row='<div class="fi spike" onclick="window.open(\''+url+'\',\'_blank\')" style="border-left:2px solid '+col+'">'
-        +'<a class="fi-t" href="'+url+'" target="_blank" onclick="event.stopPropagation()">'+typeIco+' '+title+'</a>'
-        +'<div class="fi-m"><span class="fi-lang">'+lang+'</span><span style="color:'+col+';font-size:0.5rem;margin-left:auto">'+sc+'</span></div></div>';
-      feed.innerHTML=row+feed.innerHTML;
-      const ch=Array.from(feed.children);if(ch.length>30)ch.slice(30).forEach(el=>feed.removeChild(el));
-    }
-  }
+  const html='<div class="fi '+cls+'" onclick="window.open(\''+url+'\',\'_blank\')">'
+    +'<a class="fi-t" href="'+url+'" target="_blank" onclick="event.stopPropagation()">'+title+'</a>'
+    +'<div class="fi-m">'+tags+'<span class="fi-lang">'+lang+'</span></div></div>';
+  const feed=document.getElementById('feedRecent');
+  if(feed){feed.innerHTML=html+feed.innerHTML;const ch=Array.from(feed.children);if(ch.length>80)ch.slice(80).forEach(el=>feed.removeChild(el));}
+  document.getElementById('lt').textContent=ts();
   if(totalEdits%8===0)updLangs();
   updHdr();updSpark();updHeatmap();updAnomSpark();
-}
-
-// ── RECENT ANOMALIES від Supabase ──
-async function loadRecentAnom(){
-  try{
-    const since=new Date(Date.now()-3*3600000).toISOString();
-    const r=await fetch(SB_URL+'/rest/v1/anomalies?created_at=gte.'+since+'&order=created_at.desc&limit=20',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
-    const rows=await r.json();if(!Array.isArray(rows)||!rows.length)return;
-    const el=document.getElementById('feedRecentAnom');if(!el)return;
-    document.getElementById('recentCnt').textContent=rows.length;
-    el.innerHTML='';
-    const seen={};
-    rows.filter(r=>{if(seen[r.title])return false;seen[r.title]=true;return true;}).forEach(row=>{
-      const sc=Math.round(row.score||0);const col=sc>=50?'#ff4757':sc>=25?'#ffc800':'#64ffda';
-      const time=new Date(row.created_at).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
-      const typeCol={СМЕРТЬ:'#ff4757',ПОЛІТИК:'#f72585',ГЕОПОЛІТИКА:'#f72585',БІЗНЕС:'#ffc800'}[row.article_type]||'rgba(255,255,255,0.2)';
-      const div=document.createElement('div');div.className='hr';
-      div.style.cssText='padding:0.22rem 0.7rem';
-      div.addEventListener('click',()=>window.open(row.url||'#','_blank'));
-      div.innerHTML='<div class="hr-body"><div class="hr-title" style="font-size:0.8rem">'+row.title+'</div>'
-        +'<div class="hr-meta">'+(row.article_type?'<span style="color:'+typeCol+';font-size:0.58rem">'+row.article_type+'</span> · ':'')+time+'</div></div>'
-        +'<div class="hr-score" style="color:'+col+';font-size:1rem">'+sc+'</div>';
-      el.appendChild(div);
-    });
-  }catch(e){}
 }
 
 // ── AI MODAL ──
@@ -1174,7 +1115,6 @@ setInterval(loadBinance,180000);
 setInterval(loadCrossSignals,120000);
 setInterval(syncCounts,30000);
 setInterval(loadHof,45000);
-setInterval(loadRecentAnom,60000);
 setInterval(checkPageviewSpikes,900000);
 const _pushedScores={};
 async function pushPeakScore(p){
@@ -1196,7 +1136,6 @@ loadTrend().then(()=>{checkPageviewSpikes();});
 loadFromSupabase();
 subscribeRealtime();
 loadHof();
-loadRecentAnom();
 loadFng();
 loadBinance();
 loadGoogleTrends();
