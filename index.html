@@ -836,7 +836,10 @@ function subscribeRealtime(){
 }
 
 // ── AI MODAL ──
+let _aimAbort=null;
 function openAiModal(article){
+  if(_aimAbort){try{_aimAbort.abort();}catch(e){}}
+  _aimAbort=new AbortController();
   const modal=document.getElementById('aiModal');modal.style.display='flex';
   document.getElementById('aimTitle').textContent=article;
   document.getElementById('aimGoogle').href='https://www.google.com/search?q='+encodeURIComponent(article+' news '+new Date().getFullYear());
@@ -855,6 +858,7 @@ document.getElementById('aiModal').addEventListener('click',function(e){if(e.tar
 async function fetchAiCtx(article){
   const el=document.getElementById('aimContent');
   const load=document.getElementById('aimLoad');
+  const signal=_aimAbort?_aimAbort.signal:null;
 
   // Рендеримо по мірі надходження — не чекаємо всіх
   function appendSection(html, srcId, status){
@@ -883,7 +887,7 @@ async function fetchAiCtx(article){
   }
 
   // Wikipedia
-  fetch('https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&exsentences=3&explaintext=1&titles='+encodeURIComponent(article)+'&format=json&origin=*')
+  fetch('https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&exsentences=3&explaintext=1&titles='+encodeURIComponent(article)+'&format=json&origin=*',{signal})
     .then(r=>r.json()).then(d=>{
       const pg=Object.values(d.query?.pages||{})[0];
       if(pg&&pg.extract){
@@ -891,10 +895,10 @@ async function fetchAiCtx(article){
         appendSection('<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#64ffda">📖 Wikipedia</div>'
           +'<div style="font-size:0.72rem;color:rgba(255,255,255,0.4);line-height:1.6;font-style:italic">'+ex+'…</div></div>','src-wiki','✓ '+ex.split(' ').slice(0,3).join(' ')+'...');
       } else { setStatus('src-wiki','⚠ немає статті'); }
-    }).catch(()=>setStatus('src-wiki','⚠ помилка'));
+    }).catch(e=>{if(e.name!=='AbortError')setStatus('src-wiki','⚠ помилка');});
 
   // DDG
-  fetch(PROXY+'/ddg?q='+encodeURIComponent(article+' news'))
+  fetch(PROXY+'/ddg?q='+encodeURIComponent(article+' news'),{signal})
     .then(r=>r.json()).then(d=>{
       const items=(d.items||[]).slice(0,4);
       if(!items.length){setStatus('src-ddg','— немає результатів');return;}
@@ -902,10 +906,10 @@ async function fetchAiCtx(article){
       items.forEach(it=>{h+='<div class="aim-item"><a href="'+it.url+'" target="_blank">'+it.title+'</a>'+(it.source?'<div class="aim-item-meta">'+it.source+'</div>':'')+'</div>';});
       h+='</div>';
       appendSection(h,'src-ddg','✓ '+items.length+' результатів');
-    }).catch(()=>setStatus('src-ddg','⚠ помилка'));
+    }).catch(e=>{if(e.name!=='AbortError')setStatus('src-ddg','⚠ помилка');});
 
   // RSS
-  fetch(PROXY+'/rss?q='+encodeURIComponent(article))
+  fetch(PROXY+'/rss?q='+encodeURIComponent(article),{signal})
     .then(r=>r.json()).then(d=>{
       const items=(d.items||[]).slice(0,4);
       if(!items.length){setStatus('src-rss','— не знайдено');return;}
@@ -913,10 +917,10 @@ async function fetchAiCtx(article){
       items.forEach(it=>{h+='<div class="aim-item"><a href="'+it.url+'" target="_blank">'+it.title+'</a><div class="aim-item-meta">'+it.source+'</div></div>';});
       h+='</div>';
       appendSection(h,'src-rss','✓ '+items.length+' новин');
-    }).catch(()=>setStatus('src-rss','⚠ помилка'));
+    }).catch(e=>{if(e.name!=='AbortError')setStatus('src-rss','⚠ помилка');});
 
   // GDELT
-  fetch(PROXY+'/gdelt?q='+encodeURIComponent(article))
+  fetch(PROXY+'/gdelt?q='+encodeURIComponent(article),{signal})
     .then(r=>r.json()).then(d=>{
       const items=(d.items||[]).slice(0,5);
       if(!items.length){setStatus('src-gdelt',d.rateLimited?'⚠ rate limit':'— не знайдено');return;}
@@ -926,7 +930,7 @@ async function fetchAiCtx(article){
         +'<div class="aim-item-meta">'+(it.source||'')+(it.country?' · '+it.country:'')+'</div></div>';});
       h+='</div>';
       appendSection(h,'src-gdelt','✓ '+items.length+' з '+countries.length+' країн');
-    }).catch(()=>setStatus('src-gdelt','⚠ помилка'));
+    }).catch(e=>{if(e.name!=='AbortError')setStatus('src-gdelt','⚠ помилка');});
 
   // RSS — BBC/Al Jazeera/Reuters
   const rssItems=(rss.status==='fulfilled'?rss.value.items||[]:[] ).slice(0,5);
