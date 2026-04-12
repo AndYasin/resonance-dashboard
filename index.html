@@ -839,6 +839,8 @@ function openAiModal(article){
   document.getElementById('aimGoogle').href='https://www.google.com/search?q='+encodeURIComponent(article+' news '+new Date().getFullYear());
   document.getElementById('aimContent').style.display='none';
   document.getElementById('aimLoad').style.display='block';
+  // Store article for signal analysis
+  document.getElementById('aimContent').dataset.article=article;
   document.getElementById('aimLoad').innerHTML='<div style="display:flex;flex-direction:column;gap:0.35rem">'
     +'<div style="padding:0.4rem;border:1px solid rgba(100,255,218,0.1);border-radius:2px;font-size:0.54rem;color:rgba(100,255,218,0.5)">📖 Wikipedia...</div>'
     +'<div style="padding:0.4rem;border:1px solid rgba(72,202,228,0.1);border-radius:2px;font-size:0.54rem;color:rgba(72,202,228,0.5)">🌍 GDELT · світові ЗМІ...</div>'
@@ -848,12 +850,12 @@ function openAiModal(article){
 }
 document.getElementById('aiModal').addEventListener('click',function(e){if(e.target===this)this.style.display='none';});
 async function fetchAiCtx(article){
-  const[wiki,gdelt,rss]=await Promise.allSettled([
+  const[wiki,gdelt,rss,ddg]=await Promise.allSettled([
     fetch('https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&exsentences=3&explaintext=1&titles='+encodeURIComponent(article)+'&format=json&origin=*').then(r=>r.json()).catch(()=>null),
     fetch(PROXY+'/gdelt?q='+encodeURIComponent(article)).then(r=>r.json()).catch(()=>({items:[]})),
-    fetch(PROXY+'/rss?q='+encodeURIComponent(article)).then(r=>r.json()).catch(()=>({items:[]}))
+    fetch(PROXY+'/rss?q='+encodeURIComponent(article)).then(r=>r.json()).catch(()=>({items:[]})),
+    fetch(PROXY+'/ddg?q='+encodeURIComponent(article+' news')).then(r=>r.json()).catch(()=>({items:[]}))
   ]);
-  const ddg={status:'fulfilled',value:{items:[]}};
   const gnews={status:'fulfilled',value:{items:[]}};
   document.getElementById('aimLoad').style.display='none';
   const el=document.getElementById('aimContent');el.style.display='block';
@@ -865,6 +867,17 @@ async function fetchAiCtx(article){
   if(gn.length){html+='<div><div class="aim-src" style="color:#f72585">📰 GNews</div>';gn.forEach(it=>{html+='<div class="aim-item"><a href="'+it.url+'" target="_blank">'+it.title+'</a><div class="aim-item-meta">'+it.source+' · '+it.date+'</div></div>';});html+='</div>';}
   // Polymarket — тимчасово вимкнено (CF блокує Railway IP)
   let polyItems=[];
+
+  // DDG news
+  const ddgItems=(ddg.status==='fulfilled'?ddg.value.items||[]:[] ).slice(0,4);
+  if(ddgItems.length){
+    html+='<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#ffc800">🦆 DuckDuckGo News</div>';
+    ddgItems.forEach(it=>{
+      html+='<div class="aim-item"><a href="'+it.url+'" target="_blank">'+it.title+'</a>'
+        +(it.source?'<div class="aim-item-meta">'+it.source+'</div>':'')+'</div>';
+    });
+    html+='</div>';
+  }
 
   // RSS — BBC/Al Jazeera/Reuters
   const rssItems=(rss.status==='fulfilled'?rss.value.items||[]:[] ).slice(0,5);
@@ -911,7 +924,14 @@ async function fetchAiCtx(article){
     html+='</div>';
   }
 
-  if(!html)html='<div style="color:rgba(255,255,255,0.22)">Нічого не знайдено.</div>';
+  if(!html){
+    html='<div style="padding:0.6rem;border:1px solid rgba(100,255,218,0.15);border-radius:2px;background:rgba(100,255,218,0.03)">'
+      +'<div style="font-size:0.56rem;color:#64ffda;margin-bottom:0.3rem;letter-spacing:0.06em">⚡ PRE-SIGNAL</div>'
+      +'<div style="font-size:0.72rem;color:rgba(255,255,255,0.7);line-height:1.6">'
+      +'Wikipedia активна — але ЗМІ ще мовчать.<br>'
+      +'<span style="color:rgba(255,255,255,0.4)">Це може означати що подія тільки розгортається.</span>'
+      +'</div></div>';
+  }
   html+='<div class="aim-links"><a href="https://en.wikipedia.org/wiki/'+encodeURIComponent(article.replace(/ /g,'_'))+'" target="_blank">→ Wikipedia</a><a href="https://www.google.com/search?q='+encodeURIComponent(article+' '+new Date().getFullYear())+'" target="_blank">→ Google</a></div>';
   el.innerHTML=html;
 }
