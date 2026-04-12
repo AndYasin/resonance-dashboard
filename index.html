@@ -394,10 +394,15 @@ function calcScore(p){
   if(tr)p.trendPct=tr.delta;
   const trs=p.trendPct?Math.min(p.trendPct/20,20):0;
   const sus=Math.min(span/10,15)+(p.isRet||0)*5;
-  const act=p.edits*0.8+p.editors*2.5;
+  // Експоненційний burst score — 5+ редакторів це подія
+  const e=p.editors||0;
+  const editorScore=e<=2?e*2.5:e<=4?5+(e-2)*8:e<=9?21+(e-4)*20:121+(e-10)*40;
+  const act=p.edits*0.8+editorScore;
   const pvs=Math.min(((p.pvRatio||0)-1)*3,15);
   let sc=ts+ls+trs+sus+act+pvs;
   if(tr&&p.editors>=2)sc+=25;
+  // Бонус за швидкий burst — 5+ редакторів за перші 10 хв
+  if(e>=5&&span<=10)sc+=30;
   return Math.round(sc);
 }
 
@@ -994,7 +999,7 @@ function openAiModal(article){
   document.getElementById('aimContent').innerHTML='';
   document.getElementById('aimLoad').innerHTML='<div style="display:flex;flex-direction:column;gap:0.25rem;margin-bottom:0.5rem">'
     +[{id:'src-wiki',icon:'📖',label:'Wikipedia',col:'#64ffda'},
-      {id:'src-ddg',icon:'🦆',label:'DuckDuckGo',col:'#ffc800'},
+      {id:'src-ddg',icon:'📰',label:'GNews',col:'#ffc800'},
       {id:'src-rss',icon:'📡',label:'RSS',col:'#ff9f1c'},
       {id:'src-hn',icon:'🔶',label:'Hacker News',col:'#ff6600'},
       {id:'src-tr',icon:'📊',label:'Google Trends',col:'#4285f4'},
@@ -1053,13 +1058,13 @@ async function fetchAiCtx(article){
       } else done('src-wiki','— немає',false);
     }).catch(()=>done('src-wiki','⚠ помилка',false));
 
-  // DDG
-  fetch(PROXY+'/ddg?q='+encodeURIComponent(article+' news'))
+  // GNews
+  fetch(PROXY+'/gnews?q='+encodeURIComponent(article))
     .then(r=>r.json()).then(d=>{
-      const items=(d.items||[]).slice(0,4);
+      const items=(d.items||[]).slice(0,5);
       if(!items.length){done('src-ddg','— немає',false);return;}
-      let h='<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#ffc800">🦆 DuckDuckGo</div>';
-      items.forEach(it=>{h+='<div class="aim-item"><a href="'+it.url+'" target="_blank">'+it.title+'</a>'+(it.source?'<div class="aim-item-meta">'+it.source+'</div>':'')+'</div>';});
+      let h='<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#ffc800">📰 GNews</div>';
+      items.forEach(it=>{h+='<div class="aim-item"><a href="'+it.url+'" target="_blank">'+it.title+'</a>'+(it.source?'<div class="aim-item-meta">'+it.source+(it.date?' · '+it.date:'')+'</div>':'')+'</div>';});
       append(h+'</div>');done('src-ddg','✓ '+items.length,true);
     }).catch(()=>done('src-ddg','⚠ помилка',false));
 
