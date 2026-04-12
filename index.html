@@ -848,9 +848,10 @@ function openAiModal(article){
 }
 document.getElementById('aiModal').addEventListener('click',function(e){if(e.target===this)this.style.display='none';});
 async function fetchAiCtx(article){
-  const[wiki,gdelt]=await Promise.allSettled([
+  const[wiki,gdelt,rss]=await Promise.allSettled([
     fetch('https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&exsentences=3&explaintext=1&titles='+encodeURIComponent(article)+'&format=json&origin=*').then(r=>r.json()).catch(()=>null),
-    fetch(PROXY+'/gdelt?q='+encodeURIComponent(article)).then(r=>r.json()).catch(()=>({items:[]}))
+    fetch(PROXY+'/gdelt?q='+encodeURIComponent(article)).then(r=>r.json()).catch(()=>({items:[]})),
+    fetch(PROXY+'/rss?q='+encodeURIComponent(article)).then(r=>r.json()).catch(()=>({items:[]}))
   ]);
   const ddg={status:'fulfilled',value:{items:[]}};
   const gnews={status:'fulfilled',value:{items:[]}};
@@ -864,6 +865,17 @@ async function fetchAiCtx(article){
   if(gn.length){html+='<div><div class="aim-src" style="color:#f72585">📰 GNews</div>';gn.forEach(it=>{html+='<div class="aim-item"><a href="'+it.url+'" target="_blank">'+it.title+'</a><div class="aim-item-meta">'+it.source+' · '+it.date+'</div></div>';});html+='</div>';}
   // Polymarket — тимчасово вимкнено (CF блокує Railway IP)
   let polyItems=[];
+
+  // RSS — BBC/Al Jazeera/Reuters
+  const rssItems=(rss.status==='fulfilled'?rss.value.items||[]:[] ).slice(0,5);
+  if(rssItems.length){
+    html+='<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#ff9f1c">📡 RSS · BBC / Al Jazeera / Reuters</div>';
+    rssItems.forEach(it=>{
+      html+='<div class="aim-item"><a href="'+it.url+'" target="_blank">'+it.title+'</a>'
+        +'<div class="aim-item-meta">'+it.source+(it.date?' · '+new Date(it.date).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'}):'')+'</div></div>';
+    });
+    html+='</div>';
+  }
 
   // Polymarket section
   if(polyItems.length){
