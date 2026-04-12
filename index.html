@@ -831,10 +831,11 @@ function openAiModal(article){
 }
 document.getElementById('aiModal').addEventListener('click',function(e){if(e.target===this)this.style.display='none';});
 async function fetchAiCtx(article){
-  const[ddg,wiki,gnews]=await Promise.allSettled([
+  const[ddg,wiki,gnews,gdelt]=await Promise.allSettled([
     fetch(PROXY+'/ddg?q='+encodeURIComponent(article+' news')).then(r=>r.json()).catch(()=>({items:[]})),
     fetch('https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&exsentences=3&explaintext=1&titles='+encodeURIComponent(article)+'&format=json&origin=*').then(r=>r.json()).catch(()=>null),
-    fetch(PROXY+'/gnews?q='+encodeURIComponent(article)).then(r=>r.json()).catch(()=>({items:[]}))
+    fetch(PROXY+'/gnews?q='+encodeURIComponent(article)).then(r=>r.json()).catch(()=>({items:[]})),
+    fetch(PROXY+'/gdelt?q='+encodeURIComponent(article)).then(r=>r.json()).catch(()=>({items:[]}))
   ]);
   document.getElementById('aimLoad').style.display='none';
   const el=document.getElementById('aimContent');el.style.display='block';
@@ -844,6 +845,23 @@ async function fetchAiCtx(article){
   if(ddgI.length){html+='<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#ffc800">🦆 DuckDuckGo</div>';ddgI.forEach(it=>{html+='<div class="aim-item"><a href="'+it.url+'" target="_blank">'+it.title+'</a>'+(it.source?'<div class="aim-item-meta">'+it.source+'</div>':'')+'</div>';});html+='</div>';}
   const gn=(gnews.status==='fulfilled'?gnews.value.items||[]:[] ).slice(0,3);
   if(gn.length){html+='<div><div class="aim-src" style="color:#f72585">📰 GNews</div>';gn.forEach(it=>{html+='<div class="aim-item"><a href="'+it.url+'" target="_blank">'+it.title+'</a><div class="aim-item-meta">'+it.source+' · '+it.date+'</div></div>';});html+='</div>';}
+  // GDELT — світові ЗМІ
+  const gdeltItems=(gdelt.status==='fulfilled'?gdelt.value.items||[]:[] ).slice(0,5);
+  if(gdeltItems.length){
+    // Group by country
+    const byCountry={};
+    gdeltItems.forEach(it=>{const c=it.country||'?';if(!byCountry[c])byCountry[c]=[];byCountry[c].push(it);});
+    const countries=Object.keys(byCountry);
+    html+='<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#48cae4">🌍 GDELT · світові ЗМІ · '+countries.length+' країн</div>';
+    // Show country flags summary
+    html+='<div style="font-size:0.52rem;color:rgba(255,255,255,0.3);margin-bottom:0.3rem">'+countries.join(' · ')+'</div>';
+    gdeltItems.forEach(it=>{
+      html+='<div class="aim-item"><a href="'+it.url+'" target="_blank">'+it.title+'</a>'
+        +'<div class="aim-item-meta">'+(it.source||'')+(it.country?' · '+it.country:'')+(it.lang?' · '+it.lang:'')+'</div></div>';
+    });
+    html+='</div>';
+  }
+
   if(!html)html='<div style="color:rgba(255,255,255,0.22)">Нічого не знайдено.</div>';
   html+='<div class="aim-links"><a href="https://en.wikipedia.org/wiki/'+encodeURIComponent(article.replace(/ /g,'_'))+'" target="_blank">→ Wikipedia</a><a href="https://www.google.com/search?q='+encodeURIComponent(article+' '+new Date().getFullYear())+'" target="_blank">→ Google</a></div>';
   el.innerHTML=html;
