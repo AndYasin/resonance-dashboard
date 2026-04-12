@@ -749,7 +749,7 @@ async function loadHof(){
       div.addEventListener('click',()=>window.open(row.url||'#','_blank'));
       div.innerHTML='<div class="hr-rank '+rankCls+'">'+rankIco+'</div>'
         +'<div class="hr-body"><div class="hr-title">'+row.title+'</div>'
-        +'<div class="hr-meta">'+(row.article_type?'<span style="color:'+typeCol+'">'+row.article_type+'</span> · ':'')+time+'</div></div>'
+        +'<div class="hr-meta">'+(row.article_type?'<span style="color:'+typeCol+'">'+row.article_type+'</span> · ':'')+peakTime+'</div></div>'
         +'<div class="hr-score" style="color:'+col+'">'+sc+'</div>'
         +'<button class="hr-ai" data-t="'+row.title.replace(/"/g,'')+'">✦</button>';
       div.querySelector('.hr-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
@@ -1023,7 +1023,7 @@ async function loadRecentAnom(){
       div.style.cssText='padding:0.22rem 0.7rem';
       div.addEventListener('click',()=>window.open(row.url||'#','_blank'));
       div.innerHTML='<div class="hr-body"><div class="hr-title" style="font-size:0.8rem">'+row.title+'</div>'
-        +'<div class="hr-meta">'+(row.article_type?'<span style="color:'+typeCol+';font-size:0.58rem">'+row.article_type+'</span> · ':'')+time+'</div></div>'
+        +'<div class="hr-meta">'+(row.article_type?'<span style="color:'+typeCol+';font-size:0.58rem">'+row.article_type+'</span> · ':'')+peakTime+'</div></div>'
         +'<div class="hr-score" style="color:'+col+';font-size:1rem">'+sc+'</div>';
       el.appendChild(div);
     });
