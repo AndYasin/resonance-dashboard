@@ -33,8 +33,8 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 .fb.on{border-color:#64ffda;color:#64ffda;background:rgba(100,255,218,0.06)}
 .fsep{width:1px;height:12px;background:rgba(255,255,255,0.06);margin:0 0.1rem}
 
-/* GRID — 3 cols */
-.body{display:grid;grid-template-columns:1.1fr 1.1fr 0.8fr;gap:1px;background:rgba(255,255,255,0.05);flex:1;overflow:hidden;min-height:0}
+/* GRID — 4 cols */
+.body{display:grid;grid-template-columns:1fr 1fr 0.75fr 0.75fr;gap:1px;background:rgba(255,255,255,0.05);flex:1;overflow:hidden;min-height:0}
 .col{background:#07070f;display:flex;flex-direction:column;overflow:hidden;min-height:0}
 .ph{display:flex;justify-content:space-between;align-items:center;padding:0 0.7rem;height:24px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;font-size:0.54rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.3);background:#09091a}
 .ph .ac{color:#64ffda}.ph .rd{color:#ff4757}.ph .gd{color:#ffc800}.ph .pk{color:#f72585}
@@ -43,16 +43,6 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 .pb::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08)}
 .hint{padding:0.6rem 0.7rem;font-size:0.56rem;color:rgba(255,255,255,0.16);line-height:1.6}
 .sec{border-top:1px solid rgba(255,255,255,0.05);flex-shrink:0}
-
-/* TICKER */
-.ticker{height:22px;background:#07070f;border-top:1px solid rgba(255,255,255,0.07);flex-shrink:0;overflow:hidden;display:flex;align-items:center}
-.ticker-inner{display:flex;gap:0;white-space:nowrap;animation:ticker-scroll 60s linear infinite}
-.ticker-inner:hover{animation-play-state:paused}
-@keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-.tick-item{display:inline-flex;align-items:center;gap:0.3rem;padding:0 1rem;font-size:0.58rem;color:rgba(255,255,255,0.35);border-right:1px solid rgba(255,255,255,0.06)}
-.tick-item .tl{color:rgba(255,255,255,0.18);font-size:0.5rem}
-.tick-item.spike{color:#64ffda}
-.tick-item.high{color:#ffc800}
 
 /* EDIT CARDS */
 .pc{margin:0.35rem 0.4rem;padding:0.45rem 0.6rem;border-radius:2px;animation:cin 0.3s ease}
@@ -128,9 +118,9 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 .ti-top-vw{font-size:0.56rem;color:rgba(255,255,255,0.3)}
 .ti{display:flex;align-items:center;gap:0.35rem;padding:0.26rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:background 0.15s}
 .ti:hover{background:rgba(255,255,255,0.02)}
-.ti-nm{font-size:0.88rem;color:rgba(255,255,255,0.82);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ti-vw{font-size:0.65rem;color:rgba(255,255,255,0.2);flex-shrink:0;width:32px;text-align:right}
-.ti-dl{font-family:'Bebas Neue',sans-serif;font-size:1rem;flex-shrink:0;width:52px;text-align:right}
+.ti-nm{font-size:0.76rem;color:rgba(255,255,255,0.82);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ti-vw{font-size:0.52rem;color:rgba(255,255,255,0.2);flex-shrink:0;width:28px;text-align:right}
+.ti-dl{font-family:'Bebas Neue',sans-serif;font-size:0.85rem;flex-shrink:0;width:46px;text-align:right}
 .ti-ai{padding:1px 4px;border-radius:2px;font-size:0.5rem;cursor:pointer;border:1px solid rgba(100,255,218,0.3);background:rgba(100,255,218,0.06);color:#64ffda;font-family:'IBM Plex Mono',monospace;flex-shrink:0;font-weight:600}
 
 /* SUSTAINED + HOF */
@@ -163,20 +153,20 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 /* CROSS SIGNALS */
 .xs-item{display:flex;align-items:flex-start;gap:0.35rem;padding:0.28rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background 0.15s}
 .xs-item:hover{background:rgba(255,255,255,0.02)}
-.xs-type{font-size:0.58rem;padding:2px 5px;border-radius:2px;flex-shrink:0;margin-top:2px}
+.xs-type{font-size:0.46rem;padding:1px 4px;border-radius:2px;flex-shrink:0;margin-top:2px}
 .xs-wiki{background:rgba(100,255,218,0.1);color:#64ffda;border:1px solid rgba(100,255,218,0.2)}
 .xs-trends{background:rgba(66,133,244,0.1);color:#4285f4;border:1px solid rgba(66,133,244,0.2)}
 .xs-poly{background:rgba(6,214,160,0.1);color:#06d6a0;border:1px solid rgba(6,214,160,0.2)}
 .xs-body{flex:1;min-width:0}
-.xs-title{font-size:0.9rem;color:rgba(255,255,255,0.88);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.xs-detail{font-size:0.68rem;color:rgba(255,255,255,0.38);margin-top:2px}
-.xs-score{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;flex-shrink:0;color:#64ffda}
+.xs-title{font-size:0.78rem;color:rgba(255,255,255,0.82);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.xs-detail{font-size:0.5rem;color:rgba(255,255,255,0.28);margin-top:1px}
+.xs-score{font-family:'Bebas Neue',sans-serif;font-size:0.95rem;flex-shrink:0;color:#64ffda}
 
 /* BINANCE */
 .bn-item{display:flex;align-items:center;gap:0.35rem;padding:0.24rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03)}
-.bn-sym{font-size:0.85rem;color:rgba(255,255,255,0.7);flex-shrink:0;width:65px}
-.bn-pct{font-family:'Bebas Neue',sans-serif;font-size:1.05rem;flex-shrink:0;width:55px;text-align:right}
-.bn-vol{font-size:0.65rem;color:rgba(255,255,255,0.25);flex-shrink:0}
+.bn-sym{font-size:0.7rem;color:rgba(255,255,255,0.7);flex-shrink:0;width:60px}
+.bn-pct{font-family:'Bebas Neue',sans-serif;font-size:0.9rem;flex-shrink:0;width:50px;text-align:right}
+.bn-vol{font-size:0.5rem;color:rgba(255,255,255,0.2);flex-shrink:0}
 
 /* LIVE FEED */
 .spd{display:flex;align-items:center;gap:0.45rem;padding:0.32rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.04);flex-shrink:0}
@@ -217,16 +207,15 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 .aim-box{background:#0d0d1a;border:1px solid rgba(100,255,218,0.2);border-radius:4px;width:min(680px,96vw);max-height:88vh;display:flex;flex-direction:column;overflow:hidden}
 .aim-hdr{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.2rem;border-bottom:1px solid rgba(255,255,255,0.08);flex-shrink:0}
 .aim-title{font-size:1.15rem;color:#fff;font-weight:600}
-.aim-close{background:transparent;border:none;color:rgba(255,255,255,0.4);font-size:1.6rem;cursor:pointer;line-height:1;padding:0 0.2rem}
-.aim-close:hover{color:#fff}
+.aim-close{background:transparent;border:none;color:rgba(255,255,255,0.3);font-size:1.3rem;cursor:pointer;line-height:1;padding:0}
 .aim-body{padding:1rem 1.2rem;overflow-y:auto;flex:1;font-size:0.9rem;line-height:1.7;color:#d0d0e8}
-.aim-src{font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.4rem;margin-top:0.2rem}
-.aim-item{margin-bottom:0.6rem;padding-bottom:0.6rem;border-bottom:1px solid rgba(255,255,255,0.06)}
+.aim-src{font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.4rem}
+.aim-item{margin-bottom:0.35rem;padding-bottom:0.35rem;border-bottom:1px solid rgba(255,255,255,0.05)}
 .aim-item a{color:rgba(255,255,255,0.9);text-decoration:none;font-size:0.88rem;line-height:1.5;display:block}
 .aim-item a:hover{color:#64ffda}
 .aim-item-meta{font-size:0.7rem;color:rgba(255,255,255,0.3);margin-top:3px}
-.aim-links{padding-top:0.6rem;border-top:1px solid rgba(255,255,255,0.06);display:flex;gap:1rem}
-.aim-links a{font-size:0.7rem;color:rgba(100,255,218,0.7);text-decoration:none}
+.aim-links{padding-top:0.4rem;border-top:1px solid rgba(255,255,255,0.06);display:flex;gap:1rem}
+.aim-links a{font-size:0.54rem;color:rgba(100,255,218,0.6);text-decoration:none}
 .aim-src-row{display:flex;align-items:center;gap:0.6rem;padding:0.4rem 0.7rem;border:1px solid rgba(255,255,255,0.07);border-radius:3px;margin-bottom:0.3rem}
 .aim-src-label{font-size:0.75rem;width:120px;flex-shrink:0;font-weight:600}
 .aim-src-status{font-size:0.72rem;color:rgba(255,255,255,0.4);flex:1}
@@ -291,45 +280,74 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
     </div>
   </div>
 
-  <!-- COL 2: PAGEVIEW + TRENDING + GOOGLE TRENDS -->
+  <!-- COL 2: PAGEVIEW РЕЙТИНГ -->
   <div class="col">
     <div class="ph">
       <span>👁 pageview спайки</span>
       <span class="pk" id="pvCnt">0</span>
     </div>
-    <div class="pb" id="feedPv" style="flex:1"><div class="hint">Завантаження...</div></div>
+    <div class="pb" id="feedPv" style="flex:1"><div class="hint">Перевіряємо trending...</div></div>
     <div class="sec">
       <div class="ph"><span>📈 trending вікі</span><span class="ac" id="tTime">...</span></div>
-      <div class="pb" id="feedTrend" style="max-height:180px"><div class="hint">Завантаження...</div></div>
+      <div class="pb" id="feedTrend" style="max-height:200px"><div class="hint">Завантаження...</div></div>
     </div>
     <div class="sec">
       <div class="ph"><span>📊 google trends</span><span class="ac" id="trTime">...</span></div>
-      <div class="pb" id="feedTrends" style="max-height:150px"><div class="hint">...</div></div>
+      <div class="pb" id="feedTrends" style="max-height:130px"><div class="hint">...</div></div>
     </div>
   </div>
 
   <!-- COL 3: КОНТЕКСТ -->
   <div class="col">
     <div class="ph"><span>📊 контекст</span></div>
+    <!-- Fear & Greed -->
     <div class="ctx-block" id="fngBlock">
       <div class="ctx-title">😨 fear &amp; greed index</div>
       <div class="hint" style="padding:0.2rem 0">завантаження...</div>
     </div>
+    <!-- Binance -->
     <div class="ctx-block">
       <div class="ctx-title">💰 binance топ мувери</div>
       <div id="feedBinance"><div class="hint" style="padding:0.2rem 0">...</div></div>
     </div>
+    <!-- Cross signals -->
     <div class="sec" style="flex:1;display:flex;flex-direction:column;min-height:0">
       <div class="ph"><span>⚡ cross signals</span><span class="ac" id="xsCnt">0</span></div>
       <div class="pb" id="feedXs"><div class="hint">Очікуємо крос-сигнали...</div></div>
     </div>
   </div>
-</div>
 
-<!-- TICKER — бігуча стрічка -->
-<div class="ticker">
-  <div class="ticker-inner" id="tickerInner">
-    <span class="tick-item"><span class="tl">●</span> очікуємо події...</span>
+  <!-- COL 4: АКТИВНІСТЬ -->
+  <div class="col">
+    <!-- Секція 1: Останні аномалії з бази -->
+    <div class="ph"><span>🕐 нещодавні</span><span class="ac" id="recentCnt">0</span></div>
+    <div class="pb" id="feedRecentAnom" style="flex:0.9;max-height:35%"><div class="hint">Завантаження...</div></div>
+
+    <!-- Секція 2: Статистика -->
+    <div class="sec">
+      <div class="ph"><span>📊 статистика</span><span class="ac" id="langT"></span></div>
+      <div class="spd" style="padding:0.3rem 0.7rem;height:auto">
+        <canvas id="speedo" width="44" height="28" style="flex-shrink:0"></canvas>
+        <div>
+          <div class="spd-v" id="sVal">0</div>
+          <div class="spd-l">прав/хв</div>
+          <div class="spd-t" id="sTrend" style="color:rgba(255,255,255,0.2)">—</div>
+        </div>
+        <div class="spl" id="sparkline"></div>
+      </div>
+      <div class="hmap"><div class="hmap-g" id="hmGrid"></div></div>
+      <div id="feedLang"></div>
+      <div class="asl">
+        <div class="asl-l">аномалії / хв</div>
+        <div class="asl-g" id="anomSpark"></div>
+      </div>
+    </div>
+
+    <!-- Секція 3: Тільки mul/res події -->
+    <div class="sec" style="flex:1;display:flex;flex-direction:column;min-height:0">
+      <div class="ph"><span>⚡ події</span><span class="ac" id="lt">—</span></div>
+      <div class="pb" id="feedAnomalOnly" style="flex:1"></div>
+    </div>
   </div>
 </div>
 
@@ -384,15 +402,13 @@ function calcScore(p){
   if(tr)p.trendPct=tr.delta;
   const trs=p.trendPct?Math.min(p.trendPct/20,20):0;
   const sus=Math.min(span/10,15)+(p.isRet||0)*5;
-  // Експоненційний burst score — 5+ редакторів це подія
   const e=p.editors||0;
   const editorScore=e<=2?e*2.5:e<=4?5+(e-2)*8:e<=9?21+(e-4)*20:121+(e-10)*40;
   const act=p.edits*0.8+editorScore;
   const pvs=Math.min(((p.pvRatio||0)-1)*3,15);
   let sc=ts+ls+trs+sus+act+pvs;
   if(tr&&p.editors>=2)sc+=25;
-  // Бонус за швидкий burst — 5+ редакторів за перші 10 хв
-  if(e>=5&&span<=10)sc+=30;
+  if((p.editors||0)>=5&&span<=10)sc+=30;
   return Math.round(sc);
 }
 
@@ -423,13 +439,10 @@ function updSpark(){
     const h=Math.max(2,Math.round(v/mx*18));const op=0.25+(i/editAct.length)*0.75;
     return'<div class="sc" style="height:'+h+'px;background:'+(v>mx*0.7?'#64ffda':v>mx*0.4?'#0096c7':'#1a1a2e')+';opacity:'+op+'"></div>';
   }).join('');
-  drawSpeedo(epm,300);
-  const sValEl=document.getElementById('sVal');if(sValEl)sValEl.textContent=epm;
+  drawSpeedo(epm,300);document.getElementById('sVal').textContent=epm;
   const diff=epm-prevEpm;const tr=document.getElementById('sTrend');
-  if(tr){
-    tr.textContent=diff>5?'▲ зростає':diff<-5?'▼ спадає':'● стабільно';
-    tr.style.color=diff>5?'#64ffda':diff<-5?'#ff4757':'rgba(255,255,255,0.2)';
-  }
+  tr.textContent=diff>5?'▲ зростає':diff<-5?'▼ спадає':'● стабільно';
+  tr.style.color=diff>5?'#64ffda':diff<-5?'#ff4757':'rgba(255,255,255,0.2)';
   prevEpm=epm;
 }
 function updAnomSpark(){
@@ -452,9 +465,9 @@ function updHeatmap(){
     return'<div class="hm" style="background:'+col+';opacity:'+(0.3+p*0.7)+';'+cur+'"></div>';
   }).join('');
 }
-document.getElementById('hmGrid') && (document.getElementById('hmGrid').innerHTML=new Array(24).fill('<div class="hm" style="background:rgba(255,255,255,0.04)"></div>').join(''));
-document.getElementById('sparkline') && (document.getElementById('sparkline').innerHTML=new Array(30).fill('<div class="sc" style="height:2px;background:#1a1a2e"></div>').join(''));
-document.getElementById('anomSpark') && (document.getElementById('anomSpark').innerHTML=new Array(30).fill('<div class="abar" style="height:2px;background:#2a1020"></div>').join(''));
+document.getElementById('hmGrid').innerHTML=new Array(24).fill('<div class="hm" style="background:rgba(255,255,255,0.04)"></div>').join('');
+document.getElementById('sparkline').innerHTML=new Array(30).fill('<div class="sc" style="height:2px;background:#1a1a2e"></div>').join('');
+document.getElementById('anomSpark').innerHTML=new Array(30).fill('<div class="abar" style="height:2px;background:#2a1020"></div>').join('');
 
 function updHdr(){
   const now=Date.now();editsTs=editsTs.filter(t=>now-t<60000);
@@ -465,7 +478,7 @@ function updHdr(){
   document.getElementById('hRes').textContent=sbCounts.res||resCnt;
   document.getElementById('cR').textContent=sbCounts.res||resCnt;
   document.getElementById('cM').textContent=sbCounts.mul||mulCnt;
-  const langTEl=document.getElementById('langT');if(langTEl)langTEl.textContent=Object.keys(langs).length+' мов';
+  document.getElementById('langT').textContent=Object.keys(langs).length+' мов';
   const sec=Math.floor((now-sessStart)/1000);
   document.getElementById('stimer').textContent=Math.floor(sec/60)+':'+(sec%60<10?'0':'')+sec%60;
 }
@@ -602,7 +615,6 @@ function renderPvRank(){
 
 // ── PAGEVIEW SPIKE DETECTOR ──
 async function checkPageviewSpikes(){
-  // Тепер читаємо з Supabase — Railway поллить через Vercel edge
   try{
     const since=new Date(Date.now()-6*3600000).toISOString();
     const r=await fetch(SB_URL+'/rest/v1/pageview_spikes?created_at=gte.'+since+'&order=ratio.desc&limit=30',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
@@ -719,7 +731,6 @@ async function loadHof(){
     const since=today.toISOString();
     const r=await fetch(SB_URL+'/rest/v1/anomalies?created_at=gte.'+since+'&order=score.desc&limit=200',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
     const rows=await r.json();if(!Array.isArray(rows))return;
-    // score.desc — тому перший запис по title = найвищий пік
     const seen={};const uniq=rows.filter(r=>{if(seen[r.title])return false;seen[r.title]=true;return true;});
     const d=document.getElementById('hofSub');if(d)d.textContent='сьогодні · '+uniq.length+' подій';
     document.getElementById('hofCnt').textContent=uniq.length;
@@ -728,14 +739,13 @@ async function loadHof(){
       const sc=Math.round(row.score||0);const col=sc>=50?'#ff4757':sc>=25?'#ffc800':'#64ffda';
       const rankCls=i===0?'gold':i===1?'silver':i===2?'bronze':'';
       const rankIco=i===0?'①':i===1?'②':i===2?'③':i===3?'④':i===4?'⑤':i===5?'⑥':i===6?'⑦':i===7?'⑧':i===8?'⑨':i===9?'⑩':(i+1)+'.';
-      // updated_at = час останньої активності (пік), created_at = час першого виявлення
       const peakTime=new Date(row.updated_at||row.created_at).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
       const typeCol={СМЕРТЬ:'#ff4757',ПОЛІТИК:'#f72585',ГЕОПОЛІТИКА:'#f72585',БІЗНЕС:'#ffc800'}[row.article_type]||'rgba(255,255,255,0.25)';
       const div=document.createElement('div');div.className='hr';
       div.addEventListener('click',()=>window.open(row.url||'#','_blank'));
       div.innerHTML='<div class="hr-rank '+rankCls+'">'+rankIco+'</div>'
         +'<div class="hr-body"><div class="hr-title">'+row.title+'</div>'
-        +'<div class="hr-meta">'+(row.article_type?'<span style="color:'+typeCol+'">'+row.article_type+'</span> · ':'')+peakTime+'</div></div>'
+        +'<div class="hr-meta">'+(row.article_type?'<span style="color:'+typeCol+'">'+row.article_type+'</span> · ':'')+time+'</div></div>'
         +'<div class="hr-score" style="color:'+col+'">'+sc+'</div>'
         +'<button class="hr-ai" data-t="'+row.title.replace(/"/g,'')+'">✦</button>';
       div.querySelector('.hr-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
@@ -784,37 +794,34 @@ async function loadTrend(){
 // ── GOOGLE TRENDS ──
 async function loadGoogleTrends(){
   try{
-    // Читаємо з Supabase — Railway пише кожні 15 хв
     const r=await fetch(SB_URL+'/rest/v1/trends_signals?order=geo_count.desc&limit=30',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
     const rows=await r.json();
+    const el=document.getElementById('feedTrends');el.innerHTML='';
     if(!Array.isArray(rows)||!rows.length){
-      // Fallback — читаємо з proxy як раніше
+      // fallback to proxy
       const r2=await fetch(PROXY+'/trends');const d=await r2.json();
       if(!d.items||!d.items.length)return;
       document.getElementById('trTime').textContent=new Date(d.fetchedAt||Date.now()).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
-      const el=document.getElementById('feedTrends');el.innerHTML='';
       const byGeo={};
       d.items.forEach(it=>{if(!byGeo[it.geo])byGeo[it.geo]=[];byGeo[it.geo].push(it.title);});
       Object.entries(byGeo).slice(0,6).forEach(([geo,titles])=>{
         const row=document.createElement('div');
-        row.style.cssText='padding:0.3rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03);font-size:0.7rem';
-        row.innerHTML='<span style="color:#4285f4;margin-right:0.4rem;font-size:0.6rem">'+geo+'</span>'
-          +'<span style="color:rgba(255,255,255,0.65)">'+titles.slice(0,3).join(' · ')+'</span>';
+        row.style.cssText='padding:0.28rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03);font-size:0.68rem';
+        row.innerHTML='<span style="color:#4285f4;margin-right:0.4rem;font-size:0.58rem">'+geo+'</span><span style="color:rgba(255,255,255,0.65)">'+titles.slice(0,3).join(' · ')+'</span>';
         el.appendChild(row);
       });
       return;
     }
     document.getElementById('trTime').textContent=new Date(rows[0]?.updated_at||Date.now()).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
-    const el=document.getElementById('feedTrends');el.innerHTML='';
     rows.forEach(row=>{
       const geos=(row.geos||[]).join(' ');
       const col=row.geo_count>=5?'#ff4757':row.geo_count>=3?'#ffc800':'#4285f4';
       const div=document.createElement('div');
-      div.style.cssText='display:flex;align-items:center;gap:0.4rem;padding:0.3rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer';
+      div.style.cssText='display:flex;align-items:center;gap:0.4rem;padding:0.28rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer';
       div.addEventListener('click',()=>window.open('https://www.google.com/search?q='+encodeURIComponent(row.title),'_blank'));
       div.innerHTML='<div style="flex:1;font-size:0.78rem;color:rgba(255,255,255,0.85);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+row.title+'</div>'
-        +'<div style="font-size:0.6rem;color:'+col+';flex-shrink:0">'+geos+'</div>'
-        +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:0.9rem;color:'+col+';flex-shrink:0;width:16px;text-align:center">'+row.geo_count+'</div>';
+        +'<div style="font-size:0.58rem;color:'+col+';flex-shrink:0">'+geos+'</div>'
+        +'<div style="font-family:Bebas Neue,sans-serif;font-size:0.9rem;color:'+col+';flex-shrink:0;width:16px;text-align:center">'+row.geo_count+'</div>';
       el.appendChild(div);
     });
   }catch(e){}
@@ -975,28 +982,48 @@ function processEdit(data){
     articles[title].editors.size>=2?'<span class="tg tg-m">👥'+articles[title].editors.size+'</span>':'',
   ].join('');
   const cls=count>=8?'spike':count>=4?'high':'';
-  // Додаємо в тікер замість лога
-  updTicker(title, lang, cls, url);
+  // Тільки mul/res/sng аномалії в live feed
+  const isAnom=pinned[wiki+':'+title]||Object.values(pinned).find(p=>p.title===title);
+  if(isAnom){
+    const ltEl=document.getElementById('lt');if(ltEl)ltEl.textContent=ts();
+    const feed=document.getElementById('feedAnomalOnly');
+    if(feed){
+      const typeIco=({'СМЕРТЬ':'💀','ПОЛІТИК':'🏛','ГЕОПОЛІТИКА':'🌏','БІЗНЕС':'💼','СПОРТ':'⚽','КУЛЬТУРА':'🎭','ВІЙСЬКОВІ':'🎖','ПЕРСОНА':'👤'})[isAnom.articleType]||'◆';
+      const sc=isAnom.score||0;const col=sc>=50?'#ff4757':sc>=25?'#ffc800':'#64ffda';
+      const row='<div class="fi spike" onclick="window.open(\''+url+'\',\'_blank\')" style="border-left:2px solid '+col+'">'
+        +'<a class="fi-t" href="'+url+'" target="_blank" onclick="event.stopPropagation()">'+typeIco+' '+title+'</a>'
+        +'<div class="fi-m"><span class="fi-lang">'+lang+'</span><span style="color:'+col+';font-size:0.5rem;margin-left:auto">'+sc+'</span></div></div>';
+      feed.innerHTML=row+feed.innerHTML;
+      const ch=Array.from(feed.children);if(ch.length>30)ch.slice(30).forEach(el=>feed.removeChild(el));
+    }
+  }
   if(totalEdits%8===0)updLangs();
   updHdr();updSpark();updHeatmap();updAnomSpark();
 }
 
-// ── TICKER ──
-const tickerItems=[];
-function updTicker(title,lang,cls,url){
-  tickerItems.unshift({title,lang,cls,url});
-  if(tickerItems.length>60)tickerItems.pop();
-  const el=document.getElementById('tickerInner');
-  if(!el)return;
-  // Дублюємо для безперервної анімації
-  const html=tickerItems.map(i=>
-    '<span class="tick-item '+i.cls+'" onclick="window.open(\''+i.url+'\',\'_blank\')" style="cursor:pointer">'
-    +'<span class="tl">'+i.lang+'</span> '+i.title+'</span>'
-  ).join('');
-  el.innerHTML=html+html; // подвоюємо для seamless loop
-  // Динамічна швидкість — більше подій = швидше
-  const dur=Math.max(20,80-tickerItems.length);
-  el.style.animationDuration=dur+'s';
+// ── RECENT ANOMALIES від Supabase ──
+async function loadRecentAnom(){
+  try{
+    const since=new Date(Date.now()-3*3600000).toISOString();
+    const r=await fetch(SB_URL+'/rest/v1/anomalies?created_at=gte.'+since+'&order=created_at.desc&limit=20',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+    const rows=await r.json();if(!Array.isArray(rows)||!rows.length)return;
+    const el=document.getElementById('feedRecentAnom');if(!el)return;
+    document.getElementById('recentCnt').textContent=rows.length;
+    el.innerHTML='';
+    const seen={};
+    rows.filter(r=>{if(seen[r.title])return false;seen[r.title]=true;return true;}).forEach(row=>{
+      const sc=Math.round(row.score||0);const col=sc>=50?'#ff4757':sc>=25?'#ffc800':'#64ffda';
+      const time=new Date(row.created_at).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
+      const typeCol={СМЕРТЬ:'#ff4757',ПОЛІТИК:'#f72585',ГЕОПОЛІТИКА:'#f72585',БІЗНЕС:'#ffc800'}[row.article_type]||'rgba(255,255,255,0.2)';
+      const div=document.createElement('div');div.className='hr';
+      div.style.cssText='padding:0.22rem 0.7rem';
+      div.addEventListener('click',()=>window.open(row.url||'#','_blank'));
+      div.innerHTML='<div class="hr-body"><div class="hr-title" style="font-size:0.8rem">'+row.title+'</div>'
+        +'<div class="hr-meta">'+(row.article_type?'<span style="color:'+typeCol+';font-size:0.58rem">'+row.article_type+'</span> · ':'')+time+'</div></div>'
+        +'<div class="hr-score" style="color:'+col+';font-size:1rem">'+sc+'</div>';
+      el.appendChild(div);
+    });
+  }catch(e){}
 }
 
 // ── AI MODAL ──
@@ -1070,7 +1097,7 @@ async function fetchAiCtx(article){
       } else done('src-wiki','— немає',false);
     }).catch(()=>done('src-wiki','⚠ помилка',false));
 
-  // GNews
+  // DDG
   fetch(PROXY+'/gnews?q='+encodeURIComponent(article))
     .then(r=>r.json()).then(d=>{
       const items=(d.items||[]).slice(0,5);
@@ -1147,41 +1174,29 @@ setInterval(loadBinance,180000);
 setInterval(loadCrossSignals,120000);
 setInterval(syncCounts,30000);
 setInterval(loadHof,45000);
+setInterval(loadRecentAnom,60000);
 setInterval(checkPageviewSpikes,900000);
-// ── PUSH PEAK SCORE → SUPABASE ──
 const _pushedScores={};
 async function pushPeakScore(p){
   const prev=_pushedScores[p.key]||0;
-  if(p.score<=prev||p.score<10)return; // не гірший і не дрібниця
+  if(p.score<=prev||p.score<10)return;
   _pushedScores[p.key]=p.score;
   try{
     await fetch(SB_URL+'/rest/v1/anomalies?on_conflict=title,wiki',{
       method:'POST',
       headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal,resolution=merge-duplicates'},
-      body:JSON.stringify({
-        title:p.title,wiki:p.wiki,lang:p.lang||'en',
-        type:p.type||'mul',edits:p.edits||0,editors:p.editors||0,
-        lang_count:p.langCount||0,article_type:p.articleType||'',
-        url:p.url||'',score:p.score,
-        is_trending:!!(p.trendPct),trend_pct:p.trendPct||null
-      })
+      body:JSON.stringify({title:p.title,wiki:p.wiki,lang:p.lang||'en',type:p.type||'mul',edits:p.edits||0,editors:p.editors||0,lang_count:p.langCount||0,article_type:p.articleType||'',url:p.url||'',score:p.score,is_trending:!!(p.trendPct),trend_pct:p.trendPct||null})
     });
   }catch(e){}
 }
-
-setInterval(()=>{
-  Object.values(pinned).forEach(p=>{
-    p.score=calcScore(p);
-    pushPeakScore(p); // браузер пише пік в базу
-  });
-  renderRank();
-},30000);
+setInterval(()=>{Object.values(pinned).forEach(p=>{p.score=calcScore(p);pushPeakScore(p);});renderRank();},30000);
 
 connect();
 loadTrend().then(()=>{checkPageviewSpikes();});
 loadFromSupabase();
 subscribeRealtime();
 loadHof();
+loadRecentAnom();
 loadFng();
 loadBinance();
 loadGoogleTrends();
