@@ -38,7 +38,7 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 .ft.on{background:rgba(255,71,87,0.1);border-color:rgba(255,71,87,0.3);color:#ff6b6b}
 
 /* GRID */
-.body{display:grid;grid-template-columns:2fr 1.35fr 1fr;gap:1px;background:rgba(255,255,255,0.05);flex:1;overflow:hidden;position:relative;z-index:1}
+.body{display:grid;grid-template-columns:2.5fr 1.25fr 1fr;gap:1px;background:rgba(255,255,255,0.05);flex:1;overflow:hidden;position:relative;z-index:1}
 .col{background:#07070f;display:flex;flex-direction:column;overflow:hidden;min-height:0}
 .ph{display:flex;justify-content:space-between;align-items:center;padding:0 0.8rem;height:26px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;font-size:0.56rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.44)}
 .ph .ac{color:#64ffda}.ph .rd{color:#ff4757}.ph .gd{color:#ffc800}.ph .pk{color:#f72585}
@@ -318,7 +318,7 @@ let prevEpm=0,trendData=[],es,sessStart=Date.now(),lastMsg=Date.now();
 // ── PINNED CARDS store ──
 // key=wiki:title, value={type,edits,editors,firstSeen,lastSeen,url,lang,title,score,isWar,isRet,isProt,desc,pvText,badges,trendPct}
 const pinned={};
-const MAX_PINNED=4; // max live cards shown
+const MAX_PINNED=20; // all cards, size controls hierarchy
 
 function ts(){return new Date().toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
 function ago(t){const s=Math.round((Date.now()-t)/1000);if(s<60)return s+'с тому';if(s<3600)return Math.floor(s/60)+'хв тому';return Math.floor(s/3600)+'г тому';}
@@ -408,11 +408,13 @@ function updHdr(){
 function isRes(title){return trendData.some(t=>t.article.toLowerCase()===title.toLowerCase()&&t.delta>=50);}
 
 // ── RENDER PINNED CARDS ──
-function getCardSize(score, type) {
+function getCardSize(score, type, rank, total) {
+  // Резонанс завжди xl
   if(type==='res') return 'xl';
-  if(score>=60) return 'xl';
-  if(score>=25) return 'lg';
-  if(score>=10) return 'sm';
+  // Відносне масштабування — топ завжди великий
+  if(rank === 0) return 'xl';
+  if(rank === 1) return total > 2 ? 'lg' : 'xl';
+  if(rank === 2) return 'sm';
   return 'xs';
 }
 
@@ -427,12 +429,12 @@ function renderPinned(){
   if(!sorted.length){sec.innerHTML='<div class="hint">Очікуємо аномалії...</div>';return;}
 
   sec.innerHTML='';
-  sorted.forEach(p=>{
+  sorted.forEach((p,rank)=>{
     const cls=p.type==='res'?'res':p.type==='mul'?'mul':'sng';
     const lc=p.type==='res'?'pk':p.type==='mul'?'gd':'rd';
     const icon=p.type==='res'?'★ РЕЗОНАНС':p.type==='mul'?'👥 МУЛЬТІ':'⚡ SPIKE';
     const gUrl='https://www.google.com/search?q='+encodeURIComponent(p.title+' news '+new Date().getFullYear());
-    const size=getCardSize(Math.round(p.score),p.type);
+    const size=getCardSize(Math.round(p.score),p.type,rank,sorted.length);
     const prog=Math.min(p.edits/20*100,100);
     const progCol=p.score>=40?'#ff4757':p.score>=20?'#ffc800':'#64ffda';
     const sc=Math.round(p.score);
@@ -525,7 +527,7 @@ function upsertPinned(title,wiki,type,edits,editors,lang,url){
   const finalType=ir?'res':type;
 
   if(!pinned[key]){
-    pinned[key]={key,title,wiki,type:finalType,edits,editors,firstSeen:now,lastSeen:now,url,lang,score:0,isWar:false,isRet:0,isProt:false,desc:'',pvText:'',badges:'',trendPct:null};
+    pinned[key]={key,title,wiki,type:finalType,edits,editors,firstSeen:now,lastSeen:now,url,lang,score:0,isWar:false,isRet:0,isProt:false,desc:'',pvText:'',badges:'',trendPct:null,langCount:0,articleType:'',pvRatio:0};
   } else {
     pinned[key].edits=edits;
     pinned[key].editors=editors;
@@ -535,15 +537,36 @@ function upsertPinned(title,wiki,type,edits,editors,lang,url){
     if(type==='res')pinned[key].type='res';
   }
 
-  // Score
+  // ── ПОВНИЙ SCORE ──
   const s=pinned[key];
-  const span=(now-s.firstSeen)/60000;
-  s.score=s.edits*1+s.editors*3+Math.min(span/10,20);
-  if(s.isRet>0)s.score+=s.isRet*5;
+  const span=(now-s.firstSeen)/60000; // хвилини активності
 
-  // Check trending
+  // 1. Тип події (з Wikipedia категорій — заповнюється після enrich)
+  const typeWeights={'СМЕРТЬ':50,'РЕЗОНАНС':40,'ГЕОПОЛІТИКА':20,'ПОЛІТИК':18,
+    'ВІЙСЬКОВІ':15,'БІЗНЕС':12,'НАУКА':8,'КУЛЬТУРА':6,'СПОРТ':5,'ФУТБОЛ':4,'ПЕРСОНА':3};
+  const typeScore=typeWeights[s.articleType]||0;
+
+  // 2. Глобальність — кількість мов статті
+  const langScore=Math.min((s.langCount||0)*0.4,30); // макс 30 (75+ мов)
+
+  // 3. Trending бонус — стаття одночасно в топ переглядів
   const tr=trendData.find(t=>t.article.toLowerCase()===title.toLowerCase());
-  if(tr)s.trendPct=tr.delta;
+  if(tr){s.trendPct=tr.delta;}
+  const trendScore=s.trendPct ? Math.min(s.trendPct/20,20) : 0; // макс 20
+
+  // 4. Sustained активність — тривалість і повернення редакторів
+  const sustainScore=Math.min(span/10,15)+(s.isRet||0)*5;
+
+  // 5. Активність прямо зараз
+  const activityScore=s.edits*0.8+s.editors*2.5;
+
+  // 6. Pageviews аномалія (×ratio від норми)
+  const pvScore=s.pvRatio ? Math.min((s.pvRatio-1)*3,15) : 0;
+
+  s.score=typeScore+langScore+trendScore+sustainScore+activityScore+pvScore;
+
+  // Резонанс (wiki+trending) — завжди топ
+  if(tr && s.editors>=2) s.score+=25;
 
   // Cleanup old pinned (inactive > 2 hours)
   Object.keys(pinned).forEach(k=>{if(now-pinned[k].lastSeen>7200000)delete pinned[k];});
@@ -615,7 +638,22 @@ async function enrich(title,lang,url,type){
       target.desc=ex.slice(0,130)+(ex.length>130?'…':'');
       target.pvText=pvText;
       target.isProt=isProt;
-      if(atype==='ГЕОПОЛІТИКА'||atype==='ПОЛІТИК')target.type='res';
+      target.langCount=lc;
+      target.articleType=atype;
+      // Parse pvRatio from pvText
+      if(pvText){const m=pvText.match(/×([\d.]+)/);if(m)target.pvRatio=parseFloat(m[1]);}
+      if(atype==='СМЕРТЬ'){target.type='sng';} // не змінюємо тип, але score зросте
+      // Перераховуємо score з новими даними
+      const span2=(Date.now()-target.firstSeen)/60000;
+      const tw={'СМЕРТЬ':50,'ГЕОПОЛІТИКА':20,'ПОЛІТИК':18,'ВІЙСЬКОВІ':15,'БІЗНЕС':12,'НАУКА':8,'КУЛЬТУРА':6,'СПОРТ':5,'ПЕРСОНА':3};
+      const ts2=tw[atype]||0;
+      const ls2=Math.min(lc*0.4,30);
+      const tr2=trendData.find(t=>t.article.toLowerCase()===title.toLowerCase());
+      const trs2=tr2?Math.min((tr2.delta||0)/20,20):0;
+      const pvr=target.pvRatio||0;
+      const pvs=Math.min((pvr-1)*3,15);
+      target.score=ts2+ls2+trs2+Math.min(span2/10,15)+(target.isRet||0)*5+target.edits*0.8+target.editors*2.5+pvs;
+      if(tr2&&target.editors>=2)target.score+=25;
       renderPinned();
     }
   }catch(e){}
