@@ -559,7 +559,7 @@ async function enrich(title,lang,key){
   try{
     const [mr,pvr]=await Promise.all([
       fetch('https://'+lang+'.wikipedia.org/w/api.php?action=query&prop=categories|langlinks|extracts|info&titles='+encodeURIComponent(title)+'&cllimit=30&clshow=!hidden&lllimit=500&exintro=1&exsentences=2&explaintext=1&inprop=protection&format=json&origin=*'),
-      fetch('https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/'+lang+'.wikipedia/all-access/all-agents/'+encodeURIComponent(title.replace(/ /g,'_'))+'/daily/'+getDateStr(-8)+'/'+getDateStr(0),{headers:{'User-Agent':'ResonanceDash/1.0'}}).catch(()=>null)
+      fetch('https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/'+lang+'.wikipedia/all-access/all-agents/'+encodeURIComponent(title.replace(/ /g,'_'))+'/daily/'+getDateStr(-8)+'/'+getDateStr(-1),{headers:{'User-Agent':'ResonanceDash/1.0'}}).catch(()=>null)
     ]);
     const d=await mr.json();const pg=Object.values(d.query?.pages||{})[0];if(!pg)return;
     const cats=(pg.categories||[]).map(c=>c.title.toLowerCase()).join(' ');
@@ -839,23 +839,21 @@ function openAiModal(article){
   document.getElementById('aimGoogle').href='https://www.google.com/search?q='+encodeURIComponent(article+' news '+new Date().getFullYear());
   document.getElementById('aimContent').style.display='none';
   document.getElementById('aimLoad').style.display='block';
-  document.getElementById('aimLoad').innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.4rem;text-align:left">'
+  document.getElementById('aimLoad').innerHTML='<div style="display:flex;flex-direction:column;gap:0.35rem">'
     +'<div style="padding:0.4rem;border:1px solid rgba(100,255,218,0.1);border-radius:2px;font-size:0.54rem;color:rgba(100,255,218,0.5)">📖 Wikipedia...</div>'
-    +'<div style="padding:0.4rem;border:1px solid rgba(255,200,0,0.1);border-radius:2px;font-size:0.54rem;color:rgba(255,200,0,0.5)">🦆 DuckDuckGo...</div>'
-    +'<div style="padding:0.4rem;border:1px solid rgba(247,37,133,0.1);border-radius:2px;font-size:0.54rem;color:rgba(247,37,133,0.5)">📰 GNews...</div>'
-    +'<div style="padding:0.4rem;border:1px solid rgba(72,202,228,0.1);border-radius:2px;font-size:0.54rem;color:rgba(72,202,228,0.5)">🌍 GDELT...</div>'
-    +'<div style="padding:0.4rem;border:1px solid rgba(6,214,160,0.1);border-radius:2px;font-size:0.54rem;color:rgba(6,214,160,0.5)">📊 Polymarket...</div>'
+    +'<div style="padding:0.4rem;border:1px solid rgba(72,202,228,0.1);border-radius:2px;font-size:0.54rem;color:rgba(72,202,228,0.5)">🌍 GDELT · світові ЗМІ...</div>'
+
     +'</div>';
   fetchAiCtx(article);
 }
 document.getElementById('aiModal').addEventListener('click',function(e){if(e.target===this)this.style.display='none';});
 async function fetchAiCtx(article){
-  const[ddg,wiki,gnews,gdelt]=await Promise.allSettled([
-    fetch(PROXY+'/ddg?q='+encodeURIComponent(article+' news')).then(r=>r.json()).catch(()=>({items:[]})),
+  const[wiki,gdelt]=await Promise.allSettled([
     fetch('https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&exsentences=3&explaintext=1&titles='+encodeURIComponent(article)+'&format=json&origin=*').then(r=>r.json()).catch(()=>null),
-    fetch(PROXY+'/gnews?q='+encodeURIComponent(article)).then(r=>r.json()).catch(()=>({items:[]})),
     fetch(PROXY+'/gdelt?q='+encodeURIComponent(article)).then(r=>r.json()).catch(()=>({items:[]}))
   ]);
+  const ddg={status:'fulfilled',value:{items:[]}};
+  const gnews={status:'fulfilled',value:{items:[]}};
   document.getElementById('aimLoad').style.display='none';
   const el=document.getElementById('aimContent');el.style.display='block';
   let html='';
@@ -864,27 +862,8 @@ async function fetchAiCtx(article){
   if(ddgI.length){html+='<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#ffc800">🦆 DuckDuckGo</div>';ddgI.forEach(it=>{html+='<div class="aim-item"><a href="'+it.url+'" target="_blank">'+it.title+'</a>'+(it.source?'<div class="aim-item-meta">'+it.source+'</div>':'')+'</div>';});html+='</div>';}
   const gn=(gnews.status==='fulfilled'?gnews.value.items||[]:[] ).slice(0,3);
   if(gn.length){html+='<div><div class="aim-src" style="color:#f72585">📰 GNews</div>';gn.forEach(it=>{html+='<div class="aim-item"><a href="'+it.url+'" target="_blank">'+it.title+'</a><div class="aim-item-meta">'+it.source+' · '+it.date+'</div></div>';});html+='</div>';}
-  // Polymarket — прямо з браузера (Railway IP заблокований CF)
+  // Polymarket — тимчасово вимкнено (CF блокує Railway IP)
   let polyItems=[];
-  try{
-    const pr=await fetch('https://gamma-api.polymarket.com/markets?closed=false&limit=200&order=volumeNum&ascending=false');
-    const pd=await pr.json();
-    const words=article.toLowerCase().split(/\s+/).filter(w=>w.length>3);
-    polyItems=pd.filter(m=>{
-      const q=(m.question||'').toLowerCase();
-      return words.some(w=>q.includes(w));
-    }).slice(0,3).map(m=>{
-      const prices=JSON.parse(m.outcomePrices||'[]');
-      const outcomes=JSON.parse(m.outcomes||'[]');
-      return{
-        question:m.question,
-        yesPrice:Math.round(parseFloat(prices[0]||0)*100),
-        outcomes,prices,
-        volume:Math.round((m.volumeNum||0)/1000),
-        url:'https://polymarket.com/event/'+(m.slug||'')
-      };
-    });
-  }catch(e){}
 
   // Polymarket section
   if(polyItems.length){
