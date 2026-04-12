@@ -484,7 +484,32 @@ function renderRank(){
   const sec=document.getElementById('feedRank');if(!sec)return;
   const now=Date.now();
   Object.keys(pinned).forEach(k=>{if(now-pinned[k].lastSeen>7200000)delete pinned[k];});
-  const sorted=Object.values(pinned).map(p=>{p.score=calcScore(p);return p;}).sort((a,b)=>b.score-a.score);
+  // Мердж по title — сумуємо редакторів і мови з різних вікі
+  const byTitle={};
+  Object.values(pinned).forEach(p=>{
+    p.score=calcScore(p);
+    if(!byTitle[p.title]){
+      byTitle[p.title]={...p,wikis:new Set([p.wiki]),allEditors:p.editors,allEdits:p.edits};
+    } else {
+      const m=byTitle[p.title];
+      m.wikis.add(p.wiki);
+      m.allEditors+=p.editors;
+      m.allEdits+=p.edits;
+      m.langCount=m.wikis.size;
+      // Беремо найсвіжіший lastSeen і найвищий score
+      if(p.lastSeen>m.lastSeen)m.lastSeen=p.lastSeen;
+      if(p.score>m.score){m.score=p.score;m.badges=p.badges;m.desc=p.desc;}
+      // Якщо 2+ вікі — це резонанс
+      if(m.wikis.size>=2)m.type='res';
+    }
+  });
+  // Оновлюємо editors/edits з merged значень
+  Object.values(byTitle).forEach(m=>{
+    m.editors=m.allEditors;m.edits=m.allEdits;
+    m.langCount=m.wikis?m.wikis.size:m.langCount;
+    m.score=calcScore(m);
+  });
+  const sorted=Object.values(byTitle).sort((a,b)=>b.score-a.score);
   if(!sorted.length){sec.innerHTML='<div class="hint">Очікуємо аномалії...</div>';return;}
   sec.innerHTML='';
   sorted.forEach((p,rank)=>{
