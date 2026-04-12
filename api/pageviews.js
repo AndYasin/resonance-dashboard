@@ -72,9 +72,10 @@ async function fetchPageviews(title, lang, mode, days) {
 
   let path;
   if (mode === 'hourly') {
-    // Last 48 hours
+    // Last 48 hours, end = 1 год тому щоб не запитувати майбутні дані
     const start = new Date(now - 48 * 3600000);
-    path = `/api/rest_v1/metrics/pageviews/per-article/${lang}.wikipedia/all-access/all-agents/${encoded}/hourly/${fmtHour(start)}00/${fmtHour(now)}00`;
+    const end   = new Date(now - 1  * 3600000);
+    path = `/api/rest_v1/metrics/pageviews/per-article/${lang}.wikipedia/all-access/all-agents/${encoded}/hourly/${fmtHour(start)}00/${fmtHour(end)}00`;
   } else {
     // Daily, last N days
     const start = new Date(now - days * 86400000);
