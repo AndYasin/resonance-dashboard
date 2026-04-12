@@ -130,10 +130,10 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 .hof-sub{padding:0.22rem 0.7rem;font-size:0.5rem;color:rgba(255,255,255,0.22);border-bottom:1px solid rgba(255,255,255,0.04);flex-shrink:0}
 .hr{display:flex;align-items:center;gap:0.35rem;padding:0.32rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background 0.15s}
 .hr:hover{background:rgba(255,255,255,0.02)}
-.hr-rank{font-size:0.62rem;flex-shrink:0;width:16px;text-align:center}
+.hr-rank{font-size:0.62rem;flex-shrink:0;width:18px;text-align:center}
 .hr-rank.gold{color:#ffc800}.hr-rank.silver{color:rgba(255,255,255,0.5)}.hr-rank.bronze{color:#cd7f32}
-.hr-body{flex:1;min-width:0}
-.hr-title{font-size:0.82rem;color:rgba(255,255,255,0.85);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hr-body{flex:1;min-width:0;overflow:hidden}
+.hr-title{font-size:0.82rem;color:rgba(255,255,255,0.88);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .hr-meta{font-size:0.5rem;color:rgba(255,255,255,0.28);margin-top:1px}
 .hr-score{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;flex-shrink:0}
 .hr-ai{padding:1px 4px;border-radius:2px;font-size:0.46rem;cursor:pointer;border:1px solid rgba(100,255,218,0.18);background:rgba(100,255,218,0.04);color:rgba(100,255,218,0.7);font-family:'IBM Plex Mono',monospace;flex-shrink:0}
@@ -254,9 +254,9 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 
   <!-- COL 3: ВЧОРА -->
   <div class="col">
-    <div class="ph"><span>📅 вчора</span><span style="color:rgba(255,255,255,0.3)" id="yestCnt">—</span></div>
-    <div class="hof-sub" id="yestSub">завантаження...</div>
-    <div class="pb" id="feedYest"><div class="hint">Завантаження...</div></div>
+    <div class="ph"><span>📈 trending вікі</span><span class="ac" id="tTime">...</span></div>
+    <div class="hof-sub">вчора vs позавчора · переглядів</div>
+    <div class="pb" id="feedTrend"><div class="hint">Завантаження...</div></div>
   </div>
 
   <!-- COL 4: ПОТІК -->
@@ -648,17 +648,55 @@ async function loadHof(){
   }catch(e){console.log('HOF error:',e);}
 }
 
-async function loadYesterday(){
+async function loadTrend(){
   try{
-    const yd=new Date();yd.setDate(yd.getDate()-1);yd.setHours(0,0,0,0);
-    const ydEnd=new Date(yd);ydEnd.setHours(23,59,59,999);
-    const r=await fetch(SB_URL+'/rest/v1/anomalies?created_at=gte.'+yd.toISOString()+'&created_at=lte.'+ydEnd.toISOString()+'&order=score.desc&limit=50',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
-    const rows=await r.json();
-    if(!Array.isArray(rows))return;
-    const d=document.getElementById('yestSub');if(d)d.textContent=yd.toLocaleDateString('uk-UA',{month:'long',day:'numeric'})+' · '+rows.length+' подій';
-    document.getElementById('yestCnt').textContent=rows.length;
-    renderHofList(rows,'feedYest','yestSub','yestCnt');
-  }catch(e){console.log('Yesterday error:',e);}
+    const r=await fetch(PROXY+'/trending');
+    const d=await r.json();
+    if(!d.items||!d.items.length){document.getElementById('tTime').textContent='немає даних';return;}
+    trendData=d.items;
+    document.getElementById('tTime').textContent=new Date(d.fetchedAt).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
+    const el=document.getElementById('feedTrend');el.innerHTML='';
+
+    d.items.slice(0,30).forEach((item,i)=>{
+      const ir=trendData.some(t=>t.article===item.article)&&Object.values(pinned).some(p=>p.title.toLowerCase()===item.article.toLowerCase());
+      const col=item.delta>=200?'#64ffda':item.delta>=50?'#48cae4':item.delta<0?'#ff4757':'rgba(255,255,255,0.3)';
+      const ic=item.delta>=500?'🚀':item.delta>=100?'📈':item.delta<-50?'💥':'';
+      const url='https://en.wikipedia.org/wiki/'+encodeURIComponent(item.article.replace(/ /g,'_'));
+      const gUrl='https://www.google.com/search?q='+encodeURIComponent(item.article+' news '+new Date().getFullYear());
+      const art=item.article;
+
+      if(i===0){
+        // Top card
+        const div=document.createElement('div');
+        div.style.cssText='margin:0.35rem 0.4rem;padding:0.45rem 0.55rem;border-radius:2px;border:1px solid rgba(100,255,218,0.15);background:rgba(100,255,218,0.025);cursor:pointer';
+        div.innerHTML='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.12rem">'
+          +'<div style="font-size:0.9rem;color:#fff;font-weight:600;flex:1;padding-right:0.4rem">'+ic+(ic?' ':'')+item.article+'</div>'
+          +'<div style="font-family:monospace;font-size:1.35rem;color:'+col+';font-weight:bold;line-height:1">'+(item.delta>0?'+':'')+item.delta+'%</div>'
+          +'</div>'
+          +'<div style="display:flex;justify-content:space-between;align-items:center">'
+          +'<div style="font-size:0.56rem;color:rgba(255,255,255,0.35)">'+fmt(item.views)+' переглядів</div>'
+          +'<div style="display:flex;gap:0.2rem">'
+          +'<a href="'+gUrl+'" target="_blank" class="btn-g" style="font-size:0.46rem;padding:1px 5px">🔍</a>'
+          +'<button class="btn-ai" style="font-size:0.46rem;padding:1px 5px" data-t="'+art.replace(/"/g,'')+'">✦ AI</button>'
+          +'</div></div>';
+        div.addEventListener('click',e=>{if(e.target.tagName==='BUTTON'||e.target.tagName==='A')return;window.open(url,'_blank');});
+        div.querySelector('.btn-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
+        el.appendChild(div);
+      } else {
+        const row=document.createElement('div');
+        row.className='hr';
+        row.addEventListener('click',()=>window.open(url,'_blank'));
+        const sh=item.article.length>22?item.article.slice(0,22)+'…':item.article;
+        row.innerHTML='<div class="hr-rank" style="color:rgba(255,255,255,0.2);font-size:0.54rem">'+(i+1)+'</div>'
+          +'<div class="hr-body"><div class="hr-title">'+ic+(ic?' ':'')+sh+'</div>'
+          +'<div class="hr-meta">'+fmt(item.views)+' переглядів</div></div>'
+          +'<div style="font-family:monospace;font-size:0.95rem;font-weight:bold;color:'+col+';flex-shrink:0">'+(item.delta>0?'+':'')+item.delta+'%</div>'
+          +'<button class="hr-ai" data-t="'+art.replace(/"/g,'')+'">✦</button>';
+        row.querySelector('.hr-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
+        el.appendChild(row);
+      }
+    });
+  }catch(e){document.getElementById('tTime').textContent='помилка';}
 }
 
 // ── PROCESS EDIT ──
@@ -792,14 +830,7 @@ async function fetchAiCtx(article){
   el.innerHTML=html;
 }
 
-// ── TRENDING ──
-async function loadTrend(){
-  try{
-    const r=await fetch(PROXY+'/trending');const d=await r.json();
-    if(!d.items||!d.items.length)return;
-    trendData=d.items;
-  }catch(e){}
-}
+// trending loaded via full loadTrend()
 
 // ── CONNECT ──
 function connect(){
@@ -826,7 +857,6 @@ loadTrend();
 loadFromSupabase();
 subscribeRealtime();
 loadHof();
-loadYesterday();
 </script>
 </body>
 </html>
