@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/pageviews.js": {
+      "runtime": "edge"
+    }
+  }
+}
