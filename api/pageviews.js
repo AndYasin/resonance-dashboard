@@ -1,110 +1,89 @@
-// Vercel Edge Function — proxies Wikimedia Pageviews API
-// Deployed at: /api/pageviews
+// Vercel Serverless Function — proxies Wikimedia Pageviews API
+// api/pageviews.js
 
-export default async function handler(req) {
-  const url = new URL(req.url);
-  const lang   = url.searchParams.get('lang')   || 'en';
-  const mode   = url.searchParams.get('mode')   || 'hourly';
-  const days   = parseInt(url.searchParams.get('days') || '2');
-  const titlesParam = url.searchParams.get('titles'); // batch
-  const title  = url.searchParams.get('title');
+const https = require('https');
 
-  const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    'Content-Type': 'application/json',
-  };
+function pad(n) { return String(n).padStart(2, '0'); }
+function fmtHour(d) { return d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate()) + pad(d.getHours()); }
+function fmtDate(d) { return d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate()); }
 
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { status: 200, headers: corsHeaders });
-  }
-
-  // ── Batch mode: ?titles=A,B,C ──
-  if (titlesParam) {
-    const titles = titlesParam.split(',').slice(0, 30); // max 30
-    const results = await Promise.allSettled(
-      titles.map(t => fetchPageviews(t.trim(), lang, mode, days))
-    );
-    const data = {};
-    titles.forEach((t, i) => {
-      const r = results[i];
-      data[t] = r.status === 'fulfilled' ? r.value : null;
-    });
-    return new Response(JSON.stringify({ batch: data, fetchedAt: Date.now() }), {
-      headers: corsHeaders
-    });
-  }
-
-  // ── Single title ──
-  if (!title) {
-    return new Response(JSON.stringify({ error: 'title required' }), {
-      status: 400, headers: corsHeaders
-    });
-  }
-
-  try {
-    const data = await fetchPageviews(title, lang, mode, days);
-    return new Response(JSON.stringify(data), { headers: corsHeaders });
-  } catch (e) {
-    return new Response(JSON.stringify({ error: e.message }), {
-      status: 500, headers: corsHeaders
-    });
-  }
+function fetchWikimedia(path) {
+  return new Promise((resolve, reject) => {
+    https.get({
+      hostname: 'wikimedia.org',
+      path: path,
+      headers: { 'User-Agent': 'ResonanceDash/1.0 (vercel)' }
+    }, (r) => {
+      let data = '';
+      r.on('data', c => data += c);
+      r.on('end', () => {
+        try { resolve({ status: r.statusCode, body: JSON.parse(data) }); }
+        catch(e) { resolve({ status: r.statusCode, body: {} }); }
+      });
+    }).on('error', reject);
+  });
 }
 
 async function fetchPageviews(title, lang, mode, days) {
   const encoded = encodeURIComponent(title.replace(/ /g, '_'));
   const now = new Date();
-
-  function pad(n) { return String(n).padStart(2, '0'); }
-  function fmtDate(d) {
-    return d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate());
-  }
-  function fmtHour(d) {
-    return d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate()) + pad(d.getHours());
-  }
-
   let path;
+
   if (mode === 'hourly') {
-    // Last 48 hours, end = 1 год тому щоб не запитувати майбутні дані
     const start = new Date(now - 48 * 3600000);
-    const end   = new Date(now - 1  * 3600000);
-    path = `/api/rest_v1/metrics/pageviews/per-article/${lang}.wikipedia/all-access/all-agents/${encoded}/hourly/${fmtHour(start)}00/${fmtHour(end)}00`;
+    const end   = new Date(now -  1 * 3600000);
+    path = '/api/rest_v1/metrics/pageviews/per-article/' + lang + '.wikipedia/all-access/all-agents/' + encoded + '/hourly/' + fmtHour(start) + '00/' + fmtHour(end) + '00';
   } else {
-    // Daily, last N days
     const start = new Date(now - days * 86400000);
-    path = `/api/rest_v1/metrics/pageviews/per-article/${lang}.wikipedia/all-access/all-agents/${encoded}/daily/${fmtDate(start)}00/${fmtDate(now)}00`;
+    path = '/api/rest_v1/metrics/pageviews/per-article/' + lang + '.wikipedia/all-access/all-agents/' + encoded + '/daily/' + fmtDate(start) + '00/' + fmtDate(now) + '00';
   }
 
-  const r = await fetch(`https://wikimedia.org${path}`, {
-    headers: { 'User-Agent': 'ResonanceDash/1.0 (vercel-edge)' }
-  });
+  const { status, body } = await fetchWikimedia(path);
+  if (status !== 200) return { items: [], title, lang, error: status };
 
-  if (!r.ok) {
-    return { items: [], title, lang, error: r.status };
-  }
+  const items = (body.items || []).map(i => ({ t: i.timestamp, v: i.views }));
 
-  const json = await r.json();
-  const items = (json.items || []).map(i => ({
-    t: i.timestamp,
-    v: i.views
-  }));
-
-  // Calculate spike ratio: last period vs average of previous periods
-  let ratio = 0;
-  let trend = 0;
+  let ratio = 0, trend = 0;
   if (items.length >= 2) {
     const last = items[items.length - 1].v;
-    const prev = items.slice(0, -1);
-    const avg = prev.reduce((s, i) => s + i.v, 0) / prev.length;
-    ratio = avg > 0 ? +(last / avg).toFixed(2) : 0;
-    // Trend: last 3 vs previous 3
+    const avg = items.slice(0, -1).reduce((s, i) => s + i.v, 0) / (items.length - 1);
+    ratio = avg > 0 ? Math.round(last / avg * 10) / 10 : 0;
     if (items.length >= 6) {
-      const last3 = items.slice(-3).reduce((s,i)=>s+i.v,0)/3;
-      const prev3 = items.slice(-6,-3).reduce((s,i)=>s+i.v,0)/3;
-      trend = prev3 > 0 ? +((last3-prev3)/prev3*100).toFixed(0) : 0;
+      const last3 = items.slice(-3).reduce((s,i) => s+i.v, 0) / 3;
+      const prev3 = items.slice(-6,-3).reduce((s,i) => s+i.v, 0) / 3;
+      trend = prev3 > 0 ? Math.round((last3 - prev3) / prev3 * 100) : 0;
     }
   }
 
   return { items, title, lang, ratio, trend, fetchedAt: Date.now() };
 }
+
+module.exports = async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Content-Type', 'application/json');
+  if (req.method === 'OPTIONS') { res.status(200).end(); return; }
+
+  const title  = req.query.title  || '';
+  const titles = req.query.titles || '';
+  const lang   = req.query.lang   || 'en';
+  const mode   = req.query.mode   || 'hourly';
+  const days   = parseInt(req.query.days || '7');
+
+  if (titles) {
+    const arr = titles.split(',').slice(0, 30);
+    const results = await Promise.allSettled(arr.map(t => fetchPageviews(t.trim(), lang, mode, days)));
+    const batch = {};
+    arr.forEach((t, i) => { batch[t] = results[i].status === 'fulfilled' ? results[i].value : null; });
+    res.status(200).json({ batch, fetchedAt: Date.now() });
+    return;
+  }
+
+  if (!title) { res.status(400).json({ error: 'title required' }); return; }
+
+  try {
+    const data = await fetchPageviews(title, lang, mode, days);
+    res.status(200).json(data);
+  } catch(e) {
+    res.status(500).json({ error: e.message });
+  }
+};
