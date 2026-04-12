@@ -402,15 +402,35 @@ function updHdr(){
   const now=Date.now();editsTs=editsTs.filter(t=>now-t<60000);
   document.getElementById('hEpm').textContent=editsTs.length;
   document.getElementById('hTotal').textContent=totalEdits.toLocaleString();
-  document.getElementById('hAnom').textContent=anomCnt;
-  document.getElementById('hMul').textContent=mulCnt;
-  document.getElementById('hRes').textContent=resCnt;
-  document.getElementById('cR').textContent=resCnt;
-  document.getElementById('cM').textContent=mulCnt;
-  document.getElementById('cS').textContent=sngCnt;
+  // Лічильники аномалій — з Supabase (глобальні)
+  document.getElementById('hAnom').textContent=sbCounts.anom;
+  document.getElementById('hMul').textContent=sbCounts.mul;
+  document.getElementById('hRes').textContent=sbCounts.res;
+  document.getElementById('cR').textContent=sbCounts.res;
+  document.getElementById('cM').textContent=sbCounts.mul;
+  document.getElementById('cS').textContent=sbCounts.sng;
   document.getElementById('langT').textContent=Object.keys(langs).length+' мов';
   const sec=Math.floor((now-sessStart)/1000);
   document.getElementById('stimer').textContent=Math.floor(sec/60)+':'+(sec%60<10?'0':'')+sec%60;
+}
+
+// Глобальні лічильники з Supabase
+const sbCounts={anom:0,mul:0,res:0,sng:0};
+
+async function syncCounts(){
+  try{
+    const since=new Date();since.setHours(0,0,0,0);
+    const r=await fetch(
+      SB_URL+'/rest/v1/anomalies?created_at=gte.'+since.toISOString()+'&select=type',
+      {headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}}
+    );
+    const rows=await r.json();
+    if(!Array.isArray(rows))return;
+    sbCounts.anom=rows.length;
+    sbCounts.mul=rows.filter(r=>r.type==='mul').length;
+    sbCounts.res=rows.filter(r=>r.type==='res').length;
+    sbCounts.sng=rows.filter(r=>r.type==='sng').length;
+  }catch(e){}
 }
 function updLangs(){
   const sorted=Object.entries(langs).sort((a,b)=>b[1]-a[1]).slice(0,10);if(!sorted.length)return;
@@ -792,8 +812,7 @@ function subscribeRealtime(){
       const p=rowToPinned(row);
       pinned[p.key]=p;
       if(row.type==='res')resCnt++;else if(row.type==='mul')mulCnt++;else sngCnt++;
-      anomCnt++;updHdr();renderRank();
-      // Refresh HOF
+      syncCounts();renderRank();
       loadHof();
     }catch(err){}
   };
@@ -846,6 +865,7 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 setInterval(()=>{try{fetch(PROXY+'/ping').catch(()=>{});}catch(e){}},25000);
 
 setInterval(updHdr,1000);
+setInterval(syncCounts,30000);
 setInterval(updSustPanel,15000);
 setInterval(updLangs,10000);
 setInterval(loadTrend,300000);
@@ -857,6 +877,7 @@ loadTrend();
 loadFromSupabase();
 subscribeRealtime();
 loadHof();
+syncCounts();
 </script>
 </body>
 </html>
