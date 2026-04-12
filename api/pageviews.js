@@ -1,11 +1,5 @@
 // Vercel Edge Function — proxies Wikimedia Pageviews API
 // Deployed at: /api/pageviews
-// Usage:
-//   /api/pageviews?title=Cameron_Young&lang=en&mode=hourly
-//   /api/pageviews?title=Cameron_Young&lang=en&mode=daily&days=7
-//   /api/pageviews?titles=Cameron_Young,Jannik_Sinner&lang=en&mode=hourly  (batch)
-
-export const config = { runtime: 'edge' };
 
 export default async function handler(req) {
   const url = new URL(req.url);
