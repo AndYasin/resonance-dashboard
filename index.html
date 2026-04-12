@@ -853,34 +853,80 @@ function openAiModal(article){
 }
 document.getElementById('aiModal').addEventListener('click',function(e){if(e.target===this)this.style.display='none';});
 async function fetchAiCtx(article){
-  const[wiki,gdelt,rss,ddg]=await Promise.allSettled([
-    fetch('https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&exsentences=3&explaintext=1&titles='+encodeURIComponent(article)+'&format=json&origin=*').then(r=>r.json()).catch(()=>null),
-    fetch(PROXY+'/gdelt?q='+encodeURIComponent(article)).then(r=>r.json()).catch(()=>({items:[]})),
-    fetch(PROXY+'/rss?q='+encodeURIComponent(article)).then(r=>r.json()).catch(()=>({items:[]})),
-    fetch(PROXY+'/ddg?q='+encodeURIComponent(article+' news')).then(r=>r.json()).catch(()=>({items:[]}))
-  ]);
-  const gnews={status:'fulfilled',value:{items:[]}};
-  document.getElementById('aimLoad').style.display='none';
-  const el=document.getElementById('aimContent');el.style.display='block';
-  let html='';
-  if(wiki.status==='fulfilled'&&wiki.value){const pg=Object.values(wiki.value.query?.pages||{})[0];if(pg&&pg.extract){const ex=pg.extract.slice(0,280).trim();html+='<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#64ffda">📖 Wikipedia</div><div style="font-size:0.72rem;color:rgba(255,255,255,0.4);line-height:1.6;font-style:italic">'+ex+'…</div></div>';}}
-  const ddgI=(ddg.status==='fulfilled'?ddg.value.items||[]:[] ).slice(0,3);
-  if(ddgI.length){html+='<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#ffc800">🦆 DuckDuckGo</div>';ddgI.forEach(it=>{html+='<div class="aim-item"><a href="'+it.url+'" target="_blank">'+it.title+'</a>'+(it.source?'<div class="aim-item-meta">'+it.source+'</div>':'')+'</div>';});html+='</div>';}
-  const gn=(gnews.status==='fulfilled'?gnews.value.items||[]:[] ).slice(0,3);
-  if(gn.length){html+='<div><div class="aim-src" style="color:#f72585">📰 GNews</div>';gn.forEach(it=>{html+='<div class="aim-item"><a href="'+it.url+'" target="_blank">'+it.title+'</a><div class="aim-item-meta">'+it.source+' · '+it.date+'</div></div>';});html+='</div>';}
-  // Polymarket — тимчасово вимкнено (CF блокує Railway IP)
-  let polyItems=[];
+  const el=document.getElementById('aimContent');
+  const load=document.getElementById('aimLoad');
 
-  // DDG news
-  const ddgItems=(ddg.status==='fulfilled'?ddg.value.items||[]:[] ).slice(0,4);
-  if(ddgItems.length){
-    html+='<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#ffc800">🦆 DuckDuckGo News</div>';
-    ddgItems.forEach(it=>{
-      html+='<div class="aim-item"><a href="'+it.url+'" target="_blank">'+it.title+'</a>'
-        +(it.source?'<div class="aim-item-meta">'+it.source+'</div>':'')+'</div>';
-    });
-    html+='</div>';
+  // Рендеримо по мірі надходження — не чекаємо всіх
+  function appendSection(html, srcId, status){
+    load.style.display='none';
+    el.style.display='block';
+    el.innerHTML+=html;
+    if(srcId){
+      // Update source status in timer panel
+      const sel=document.getElementById(srcId+'-st');
+      const tel=document.getElementById(srcId+'-t');
+      if(sel)sel.textContent=status||'✓ завантажено';
+      if(tel&&window._aimTStart)tel.textContent=((Date.now()-window._aimTStart)/1000).toFixed(1)+'с';
+      if(window._aimTimers&&window._aimTimers[srcId])clearInterval(window._aimTimers[srcId]);
+      const row=document.getElementById(srcId);
+      if(row)row.style.borderColor=status&&status.includes('⚠')?'rgba(255,71,87,0.2)':'rgba(100,255,218,0.15)';
+    }
   }
+  function setStatus(srcId, status){
+    const sel=document.getElementById(srcId+'-st');
+    const tel=document.getElementById(srcId+'-t');
+    if(sel)sel.textContent=status;
+    if(tel&&window._aimTStart)tel.textContent=((Date.now()-window._aimTStart)/1000).toFixed(1)+'с';
+    if(window._aimTimers&&window._aimTimers[srcId])clearInterval(window._aimTimers[srcId]);
+    const row=document.getElementById(srcId);
+    if(row)row.style.borderColor='rgba(255,71,87,0.15)';
+  }
+
+  // Wikipedia
+  fetch('https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&exsentences=3&explaintext=1&titles='+encodeURIComponent(article)+'&format=json&origin=*')
+    .then(r=>r.json()).then(d=>{
+      const pg=Object.values(d.query?.pages||{})[0];
+      if(pg&&pg.extract){
+        const ex=pg.extract.slice(0,280).trim();
+        appendSection('<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#64ffda">📖 Wikipedia</div>'
+          +'<div style="font-size:0.72rem;color:rgba(255,255,255,0.4);line-height:1.6;font-style:italic">'+ex+'…</div></div>','src-wiki','✓ '+ex.split(' ').slice(0,3).join(' ')+'...');
+      } else { setStatus('src-wiki','⚠ немає статті'); }
+    }).catch(()=>setStatus('src-wiki','⚠ помилка'));
+
+  // DDG
+  fetch(PROXY+'/ddg?q='+encodeURIComponent(article+' news'))
+    .then(r=>r.json()).then(d=>{
+      const items=(d.items||[]).slice(0,4);
+      if(!items.length){setStatus('src-ddg','— немає результатів');return;}
+      let h='<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#ffc800">🦆 DuckDuckGo</div>';
+      items.forEach(it=>{h+='<div class="aim-item"><a href="'+it.url+'" target="_blank">'+it.title+'</a>'+(it.source?'<div class="aim-item-meta">'+it.source+'</div>':'')+'</div>';});
+      h+='</div>';
+      appendSection(h,'src-ddg','✓ '+items.length+' результатів');
+    }).catch(()=>setStatus('src-ddg','⚠ помилка'));
+
+  // RSS
+  fetch(PROXY+'/rss?q='+encodeURIComponent(article))
+    .then(r=>r.json()).then(d=>{
+      const items=(d.items||[]).slice(0,4);
+      if(!items.length){setStatus('src-rss','— не знайдено');return;}
+      let h='<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#ff9f1c">📡 RSS · BBC / Al Jazeera</div>';
+      items.forEach(it=>{h+='<div class="aim-item"><a href="'+it.url+'" target="_blank">'+it.title+'</a><div class="aim-item-meta">'+it.source+'</div></div>';});
+      h+='</div>';
+      appendSection(h,'src-rss','✓ '+items.length+' новин');
+    }).catch(()=>setStatus('src-rss','⚠ помилка'));
+
+  // GDELT
+  fetch(PROXY+'/gdelt?q='+encodeURIComponent(article))
+    .then(r=>r.json()).then(d=>{
+      const items=(d.items||[]).slice(0,5);
+      if(!items.length){setStatus('src-gdelt',d.rateLimited?'⚠ rate limit':'— не знайдено');return;}
+      const countries=[...new Set(items.map(i=>i.country).filter(Boolean))];
+      let h='<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#48cae4">🌍 GDELT · '+countries.slice(0,4).join(', ')+'</div>';
+      items.forEach(it=>{h+='<div class="aim-item"><a href="'+it.url+'" target="_blank">'+it.title+'</a>'
+        +'<div class="aim-item-meta">'+(it.source||'')+(it.country?' · '+it.country:'')+'</div></div>';});
+      h+='</div>';
+      appendSection(h,'src-gdelt','✓ '+items.length+' з '+countries.length+' країн');
+    }).catch(()=>setStatus('src-gdelt','⚠ помилка'));
 
   // RSS — BBC/Al Jazeera/Reuters
   const rssItems=(rss.status==='fulfilled'?rss.value.items||[]:[] ).slice(0,5);
