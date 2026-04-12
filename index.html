@@ -33,8 +33,8 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 .fb.on{border-color:#64ffda;color:#64ffda;background:rgba(100,255,218,0.06)}
 .fsep{width:1px;height:12px;background:rgba(255,255,255,0.06);margin:0 0.1rem}
 
-/* GRID — 4 cols */
-.body{display:grid;grid-template-columns:1fr 1fr 0.75fr 0.75fr;gap:1px;background:rgba(255,255,255,0.05);flex:1;overflow:hidden;min-height:0}
+/* GRID — 3 cols */
+.body{display:grid;grid-template-columns:1.1fr 1.1fr 0.8fr;gap:1px;background:rgba(255,255,255,0.05);flex:1;overflow:hidden;min-height:0}
 .col{background:#07070f;display:flex;flex-direction:column;overflow:hidden;min-height:0}
 .ph{display:flex;justify-content:space-between;align-items:center;padding:0 0.7rem;height:24px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;font-size:0.54rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.3);background:#09091a}
 .ph .ac{color:#64ffda}.ph .rd{color:#ff4757}.ph .gd{color:#ffc800}.ph .pk{color:#f72585}
@@ -43,6 +43,16 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 .pb::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08)}
 .hint{padding:0.6rem 0.7rem;font-size:0.56rem;color:rgba(255,255,255,0.16);line-height:1.6}
 .sec{border-top:1px solid rgba(255,255,255,0.05);flex-shrink:0}
+
+/* TICKER */
+.ticker{height:22px;background:#07070f;border-top:1px solid rgba(255,255,255,0.07);flex-shrink:0;overflow:hidden;display:flex;align-items:center}
+.ticker-inner{display:flex;gap:0;white-space:nowrap;animation:ticker-scroll 60s linear infinite}
+.ticker-inner:hover{animation-play-state:paused}
+@keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.tick-item{display:inline-flex;align-items:center;gap:0.3rem;padding:0 1rem;font-size:0.58rem;color:rgba(255,255,255,0.35);border-right:1px solid rgba(255,255,255,0.06)}
+.tick-item .tl{color:rgba(255,255,255,0.18);font-size:0.5rem}
+.tick-item.spike{color:#64ffda}
+.tick-item.high{color:#ffc800}
 
 /* EDIT CARDS */
 .pc{margin:0.35rem 0.4rem;padding:0.45rem 0.6rem;border-radius:2px;animation:cin 0.3s ease}
@@ -281,65 +291,45 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
     </div>
   </div>
 
-  <!-- COL 2: PAGEVIEW РЕЙТИНГ -->
+  <!-- COL 2: PAGEVIEW + TRENDING + GOOGLE TRENDS -->
   <div class="col">
     <div class="ph">
       <span>👁 pageview спайки</span>
       <span class="pk" id="pvCnt">0</span>
     </div>
-    <div class="pb" id="feedPv" style="flex:1"><div class="hint">Перевіряємо trending...</div></div>
+    <div class="pb" id="feedPv" style="flex:1"><div class="hint">Завантаження...</div></div>
     <div class="sec">
       <div class="ph"><span>📈 trending вікі</span><span class="ac" id="tTime">...</span></div>
-      <div class="pb" id="feedTrend" style="max-height:200px"><div class="hint">Завантаження...</div></div>
+      <div class="pb" id="feedTrend" style="max-height:180px"><div class="hint">Завантаження...</div></div>
     </div>
     <div class="sec">
       <div class="ph"><span>📊 google trends</span><span class="ac" id="trTime">...</span></div>
-      <div class="pb" id="feedTrends" style="max-height:130px"><div class="hint">...</div></div>
+      <div class="pb" id="feedTrends" style="max-height:150px"><div class="hint">...</div></div>
     </div>
   </div>
 
   <!-- COL 3: КОНТЕКСТ -->
   <div class="col">
     <div class="ph"><span>📊 контекст</span></div>
-    <!-- Fear & Greed -->
     <div class="ctx-block" id="fngBlock">
       <div class="ctx-title">😨 fear &amp; greed index</div>
       <div class="hint" style="padding:0.2rem 0">завантаження...</div>
     </div>
-    <!-- Binance -->
     <div class="ctx-block">
       <div class="ctx-title">💰 binance топ мувери</div>
       <div id="feedBinance"><div class="hint" style="padding:0.2rem 0">...</div></div>
     </div>
-    <!-- Cross signals -->
     <div class="sec" style="flex:1;display:flex;flex-direction:column;min-height:0">
       <div class="ph"><span>⚡ cross signals</span><span class="ac" id="xsCnt">0</span></div>
       <div class="pb" id="feedXs"><div class="hint">Очікуємо крос-сигнали...</div></div>
     </div>
   </div>
+</div>
 
-  <!-- COL 4: ПОТІК -->
-  <div class="col">
-    <div class="ph"><span>📡 потік</span><span class="ac" id="lt">—</span></div>
-    <div class="spd">
-      <canvas id="speedo" width="52" height="32" style="flex-shrink:0"></canvas>
-      <div>
-        <div class="spd-v" id="sVal">0</div>
-        <div class="spd-l">прав/хв</div>
-        <div class="spd-t" id="sTrend" style="color:rgba(255,255,255,0.2)">—</div>
-      </div>
-      <div class="spl" id="sparkline"></div>
-    </div>
-    <div class="hmap"><div class="hmap-g" id="hmGrid"></div></div>
-    <div class="pb" id="feedRecent" style="flex:1"></div>
-    <div class="langs-sec">
-      <div class="ph"><span>🌍 мови</span><span class="ac" id="langT"></span></div>
-      <div id="feedLang"></div>
-      <div class="asl">
-        <div class="asl-l">аномалії / хв</div>
-        <div class="asl-g" id="anomSpark"></div>
-      </div>
-    </div>
+<!-- TICKER — бігуча стрічка -->
+<div class="ticker">
+  <div class="ticker-inner" id="tickerInner">
+    <span class="tick-item"><span class="tl">●</span> очікуємо події...</span>
   </div>
 </div>
 
@@ -433,10 +423,13 @@ function updSpark(){
     const h=Math.max(2,Math.round(v/mx*18));const op=0.25+(i/editAct.length)*0.75;
     return'<div class="sc" style="height:'+h+'px;background:'+(v>mx*0.7?'#64ffda':v>mx*0.4?'#0096c7':'#1a1a2e')+';opacity:'+op+'"></div>';
   }).join('');
-  drawSpeedo(epm,300);document.getElementById('sVal').textContent=epm;
+  drawSpeedo(epm,300);
+  const sValEl=document.getElementById('sVal');if(sValEl)sValEl.textContent=epm;
   const diff=epm-prevEpm;const tr=document.getElementById('sTrend');
-  tr.textContent=diff>5?'▲ зростає':diff<-5?'▼ спадає':'● стабільно';
-  tr.style.color=diff>5?'#64ffda':diff<-5?'#ff4757':'rgba(255,255,255,0.2)';
+  if(tr){
+    tr.textContent=diff>5?'▲ зростає':diff<-5?'▼ спадає':'● стабільно';
+    tr.style.color=diff>5?'#64ffda':diff<-5?'#ff4757':'rgba(255,255,255,0.2)';
+  }
   prevEpm=epm;
 }
 function updAnomSpark(){
@@ -459,9 +452,9 @@ function updHeatmap(){
     return'<div class="hm" style="background:'+col+';opacity:'+(0.3+p*0.7)+';'+cur+'"></div>';
   }).join('');
 }
-document.getElementById('hmGrid').innerHTML=new Array(24).fill('<div class="hm" style="background:rgba(255,255,255,0.04)"></div>').join('');
-document.getElementById('sparkline').innerHTML=new Array(30).fill('<div class="sc" style="height:2px;background:#1a1a2e"></div>').join('');
-document.getElementById('anomSpark').innerHTML=new Array(30).fill('<div class="abar" style="height:2px;background:#2a1020"></div>').join('');
+document.getElementById('hmGrid') && (document.getElementById('hmGrid').innerHTML=new Array(24).fill('<div class="hm" style="background:rgba(255,255,255,0.04)"></div>').join(''));
+document.getElementById('sparkline') && (document.getElementById('sparkline').innerHTML=new Array(30).fill('<div class="sc" style="height:2px;background:#1a1a2e"></div>').join(''));
+document.getElementById('anomSpark') && (document.getElementById('anomSpark').innerHTML=new Array(30).fill('<div class="abar" style="height:2px;background:#2a1020"></div>').join(''));
 
 function updHdr(){
   const now=Date.now();editsTs=editsTs.filter(t=>now-t<60000);
@@ -472,7 +465,7 @@ function updHdr(){
   document.getElementById('hRes').textContent=sbCounts.res||resCnt;
   document.getElementById('cR').textContent=sbCounts.res||resCnt;
   document.getElementById('cM').textContent=sbCounts.mul||mulCnt;
-  document.getElementById('langT').textContent=Object.keys(langs).length+' мов';
+  const langTEl=document.getElementById('langT');if(langTEl)langTEl.textContent=Object.keys(langs).length+' мов';
   const sec=Math.floor((now-sessStart)/1000);
   document.getElementById('stimer').textContent=Math.floor(sec/60)+':'+(sec%60<10?'0':'')+sec%60;
 }
@@ -609,36 +602,22 @@ function renderPvRank(){
 
 // ── PAGEVIEW SPIKE DETECTOR ──
 async function checkPageviewSpikes(){
-  if(!trendData.length)return;
-  const now=new Date();
-  const pad=n=>String(n).padStart(2,'0');
-  const end=now.getFullYear()+pad(now.getMonth()+1)+pad(now.getDate())+pad(now.getHours());
-  const startD=new Date(Date.now()-86400000);
-  const start=startD.getFullYear()+pad(startD.getMonth()+1)+pad(startD.getDate())+pad(startD.getHours());
-  const top=trendData.slice(0,20);
-  for(const item of top){
-    try{
-      const r=await fetch('https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/all-agents/'+encodeURIComponent(item.article.replace(/ /g,'_'))+'/hourly/'+start+'/'+end);
-      if(!r.ok)continue;
-      const d=await r.json();
-      const hours=(d.items||[]);
-      if(hours.length<3)continue;
-      const last=hours[hours.length-1].views;
-      const avg=hours.slice(0,-1).reduce((s,h)=>s+h.views,0)/(hours.length-1);
-      const ratio=avg>0?last/avg:0;
-      if(ratio>=2){
-        const key='pv:'+item.article;
-        if(!pvPinned[key]){
-          pvPinned[key]={key,title:item.article,pvRatio:ratio,views:last,trendPct:item.delta,firstSeen:Date.now(),lastSeen:Date.now(),url:'https://en.wikipedia.org/wiki/'+encodeURIComponent(item.article.replace(/ /g,'_'))};
-          pvCnt++;
-        } else {
-          pvPinned[key].pvRatio=ratio;pvPinned[key].views=last;pvPinned[key].lastSeen=Date.now();
-        }
+  // Тепер читаємо з Supabase — Railway поллить через Vercel edge
+  try{
+    const since=new Date(Date.now()-6*3600000).toISOString();
+    const r=await fetch(SB_URL+'/rest/v1/pageview_spikes?created_at=gte.'+since+'&order=ratio.desc&limit=30',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+    const rows=await r.json();if(!Array.isArray(rows)||!rows.length)return;
+    rows.forEach(row=>{
+      const key='pv:'+row.title;
+      if(!pvPinned[key]){
+        pvPinned[key]={key,title:row.title,pvRatio:row.ratio,views:row.last_views,trendPct:row.trend_pct,firstSeen:Date.now(),lastSeen:Date.now(),url:row.url||'https://en.wikipedia.org/wiki/'+encodeURIComponent(row.title.replace(/ /g,'_'))};
+        pvCnt++;
+      } else {
+        pvPinned[key].pvRatio=row.ratio;pvPinned[key].views=row.last_views;pvPinned[key].lastSeen=Date.now();
       }
-    }catch(e){}
-    await new Promise(r=>setTimeout(r,400));
-  }
-  renderPvRank();
+    });
+    renderPvRank();
+  }catch(e){}
 }
 
 // ── UPSERT EDIT PINNED ──
@@ -805,19 +784,38 @@ async function loadTrend(){
 // ── GOOGLE TRENDS ──
 async function loadGoogleTrends(){
   try{
-    const r=await fetch(PROXY+'/trends');const d=await r.json();
-    if(!d.items||!d.items.length)return;
-    document.getElementById('trTime').textContent=new Date(d.fetchedAt||Date.now()).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
+    // Читаємо з Supabase — Railway пише кожні 15 хв
+    const r=await fetch(SB_URL+'/rest/v1/trends_signals?order=geo_count.desc&limit=30',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+    const rows=await r.json();
+    if(!Array.isArray(rows)||!rows.length){
+      // Fallback — читаємо з proxy як раніше
+      const r2=await fetch(PROXY+'/trends');const d=await r2.json();
+      if(!d.items||!d.items.length)return;
+      document.getElementById('trTime').textContent=new Date(d.fetchedAt||Date.now()).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
+      const el=document.getElementById('feedTrends');el.innerHTML='';
+      const byGeo={};
+      d.items.forEach(it=>{if(!byGeo[it.geo])byGeo[it.geo]=[];byGeo[it.geo].push(it.title);});
+      Object.entries(byGeo).slice(0,6).forEach(([geo,titles])=>{
+        const row=document.createElement('div');
+        row.style.cssText='padding:0.3rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03);font-size:0.7rem';
+        row.innerHTML='<span style="color:#4285f4;margin-right:0.4rem;font-size:0.6rem">'+geo+'</span>'
+          +'<span style="color:rgba(255,255,255,0.65)">'+titles.slice(0,3).join(' · ')+'</span>';
+        el.appendChild(row);
+      });
+      return;
+    }
+    document.getElementById('trTime').textContent=new Date(rows[0]?.updated_at||Date.now()).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
     const el=document.getElementById('feedTrends');el.innerHTML='';
-    // Group by geo
-    const byGeo={};
-    d.items.forEach(it=>{if(!byGeo[it.geo])byGeo[it.geo]=[];byGeo[it.geo].push(it.title);});
-    Object.entries(byGeo).slice(0,6).forEach(([geo,titles])=>{
-      const row=document.createElement('div');
-      row.style.cssText='padding:0.22rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03);font-size:0.54rem';
-      row.innerHTML='<span style="color:#4285f4;margin-right:0.4rem">'+geo+'</span>'
-        +'<span style="color:rgba(255,255,255,0.55)">'+titles.slice(0,3).join(' · ')+'</span>';
-      el.appendChild(row);
+    rows.forEach(row=>{
+      const geos=(row.geos||[]).join(' ');
+      const col=row.geo_count>=5?'#ff4757':row.geo_count>=3?'#ffc800':'#4285f4';
+      const div=document.createElement('div');
+      div.style.cssText='display:flex;align-items:center;gap:0.4rem;padding:0.3rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer';
+      div.addEventListener('click',()=>window.open('https://www.google.com/search?q='+encodeURIComponent(row.title),'_blank'));
+      div.innerHTML='<div style="flex:1;font-size:0.78rem;color:rgba(255,255,255,0.85);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+row.title+'</div>'
+        +'<div style="font-size:0.6rem;color:'+col+';flex-shrink:0">'+geos+'</div>'
+        +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:0.9rem;color:'+col+';flex-shrink:0;width:16px;text-align:center">'+row.geo_count+'</div>';
+      el.appendChild(div);
     });
   }catch(e){}
 }
@@ -977,14 +975,28 @@ function processEdit(data){
     articles[title].editors.size>=2?'<span class="tg tg-m">👥'+articles[title].editors.size+'</span>':'',
   ].join('');
   const cls=count>=8?'spike':count>=4?'high':'';
-  const html='<div class="fi '+cls+'" onclick="window.open(\''+url+'\',\'_blank\')">'
-    +'<a class="fi-t" href="'+url+'" target="_blank" onclick="event.stopPropagation()">'+title+'</a>'
-    +'<div class="fi-m">'+tags+'<span class="fi-lang">'+lang+'</span></div></div>';
-  const feed=document.getElementById('feedRecent');
-  if(feed){feed.innerHTML=html+feed.innerHTML;const ch=Array.from(feed.children);if(ch.length>80)ch.slice(80).forEach(el=>feed.removeChild(el));}
-  document.getElementById('lt').textContent=ts();
+  // Додаємо в тікер замість лога
+  updTicker(title, lang, cls, url);
   if(totalEdits%8===0)updLangs();
   updHdr();updSpark();updHeatmap();updAnomSpark();
+}
+
+// ── TICKER ──
+const tickerItems=[];
+function updTicker(title,lang,cls,url){
+  tickerItems.unshift({title,lang,cls,url});
+  if(tickerItems.length>60)tickerItems.pop();
+  const el=document.getElementById('tickerInner');
+  if(!el)return;
+  // Дублюємо для безперервної анімації
+  const html=tickerItems.map(i=>
+    '<span class="tick-item '+i.cls+'" onclick="window.open(\''+i.url+'\',\'_blank\')" style="cursor:pointer">'
+    +'<span class="tl">'+i.lang+'</span> '+i.title+'</span>'
+  ).join('');
+  el.innerHTML=html+html; // подвоюємо для seamless loop
+  // Динамічна швидкість — більше подій = швидше
+  const dur=Math.max(20,80-tickerItems.length);
+  el.style.animationDuration=dur+'s';
 }
 
 // ── AI MODAL ──
@@ -1134,7 +1146,7 @@ setInterval(loadFng,600000);
 setInterval(loadBinance,180000);
 setInterval(loadCrossSignals,120000);
 setInterval(syncCounts,30000);
-setInterval(loadHof,120000);
+setInterval(loadHof,45000);
 setInterval(checkPageviewSpikes,900000);
 setInterval(()=>{Object.values(pinned).forEach(p=>{p.score=calcScore(p);});renderRank();},30000);
 
