@@ -1148,7 +1148,34 @@ setInterval(loadCrossSignals,120000);
 setInterval(syncCounts,30000);
 setInterval(loadHof,45000);
 setInterval(checkPageviewSpikes,900000);
-setInterval(()=>{Object.values(pinned).forEach(p=>{p.score=calcScore(p);});renderRank();},30000);
+// ── PUSH PEAK SCORE → SUPABASE ──
+const _pushedScores={};
+async function pushPeakScore(p){
+  const prev=_pushedScores[p.key]||0;
+  if(p.score<=prev||p.score<10)return; // не гірший і не дрібниця
+  _pushedScores[p.key]=p.score;
+  try{
+    await fetch(SB_URL+'/rest/v1/anomalies?on_conflict=title,wiki',{
+      method:'POST',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal,resolution=merge-duplicates'},
+      body:JSON.stringify({
+        title:p.title,wiki:p.wiki,lang:p.lang||'en',
+        type:p.type||'mul',edits:p.edits||0,editors:p.editors||0,
+        lang_count:p.langCount||0,article_type:p.articleType||'',
+        url:p.url||'',score:p.score,
+        is_trending:!!(p.trendPct),trend_pct:p.trendPct||null
+      })
+    });
+  }catch(e){}
+}
+
+setInterval(()=>{
+  Object.values(pinned).forEach(p=>{
+    p.score=calcScore(p);
+    pushPeakScore(p); // браузер пише пік в базу
+  });
+  renderRank();
+},30000);
 
 connect();
 loadTrend().then(()=>{checkPageviewSpikes();});
