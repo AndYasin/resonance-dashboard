@@ -1,7 +1,11 @@
 {
-  "functions": {
-    "api/pageviews.js": {
-      "runtime": "edge"
+  "rewrites": [],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
     }
-  }
+  ]
 }
