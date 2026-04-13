@@ -42,7 +42,7 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;min-
 .pb::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08)}
 
 /* GRAPH PANEL */
-#graphCanvas{width:100%;height:calc(100vh - 200px);display:block}
+#graphCanvas{width:100%;flex:1;display:block}
 
 /* LAYERS PANEL */
 .layer{margin:0.3rem 0.5rem;border-radius:3px;overflow:hidden}
@@ -212,9 +212,9 @@ function investigate(titleOverride) {
   const title = raw.replace(/ /g,'_');
 
   // Clear canvas
-  graphNodes = []; graphEdges = [];
-  const cv = document.getElementById('graphCanvas');
-  if (cv) { const ctx = cv.getContext('2d'); ctx.clearRect(0,0,cv.width,cv.height); }
+  graphNodes=[]; graphEdges=[];
+  const cv=document.getElementById('graphCanvas');
+  if(cv){const ctx=cv.getContext('2d');ctx.clearRect(0,0,cv.width,cv.height);}
 
   // Show loading
   document.getElementById('layersPanel').innerHTML = '<div class="loading"><div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div><div style="font-size:0.65rem;color:rgba(255,255,255,0.3);margin-top:0.5rem">Будуємо граф...</div></div>';
@@ -222,7 +222,7 @@ function investigate(titleOverride) {
 
   // Fetch graph + signals in parallel
   Promise.all([
-    fetchWithTimeout('/api/wikidata?title='+encodeURIComponent(title), {}, 12000).then(r=>r.json()).catch(e=>({error:e.message})),
+    fetchWithTimeout('/api/wikidata?title='+encodeURIComponent(title),{},12000).then(r=>r.json()).catch(e=>({error:e.message})),
     fetchSignals(title),
     fetchWikiSignal(title),
     fetchKG(title.replace(/_/g,' '))
@@ -230,26 +230,6 @@ function investigate(titleOverride) {
     currentData = { graph, signals, wikiSig, kg, title };
     render(currentData);
   });
-}
-
-// Timeout wrapper для всіх fetch запитів
-async function fetchWithTimeout(url, options={}, ms=8000) {
-  const ctrl = new AbortController();
-  const tid = setTimeout(() => ctrl.abort(), ms);
-  try {
-    const r = await fetch(url, { ...options, signal: ctrl.signal });
-    return r;
-  } finally {
-    clearTimeout(tid);
-  }
-}
-
-async function fetchKG(title) {
-  try {
-    const r = await fetchWithTimeout('/api/kg?q='+encodeURIComponent(title.replace(/_/g,' '))+'&limit=3', {}, 5000);
-    const d = await r.json();
-    return d.items || [];
-  } catch(e) { return []; }
 }
 
 async function fetchSignals(title) {
@@ -279,11 +259,11 @@ async function fetchSignals(title) {
 
   // Pageview spikes
   try {
-    try {
-      const r = await fetchWithTimeout(SB_URL+'/rest/v1/pageview_spikes?title=eq.'+encodeURIComponent(title.replace(/_/g,' '))+'&limit=1',
-        {headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}}, 4000);
-      if (r.ok) { const rows = await r.json(); if (rows?.[0]) results.pageview = rows[0]; }
-    } catch(e) {}
+    try{
+      const pvr = await fetchWithTimeout(SB_URL+'/rest/v1/pageview_spikes?title=eq.'+encodeURIComponent(title.replace(/_/g,' '))+'&limit=1',
+        {headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}},4000);
+      if(pvr.ok){const rows=await pvr.json();if(rows?.[0])results.pageview=rows[0];}
+    }catch(e){}
   } catch(e){}
 
   return results;
@@ -291,7 +271,7 @@ async function fetchSignals(title) {
 
 async function fetchWikiSignal(title) {
   try {
-    const r = await fetchWithTimeout('https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&exsentences=2&explaintext=1&titles='+encodeURIComponent(title.replace(/_/g,' '))+'&format=json&origin=*', {}, 6000);
+    const r = await fetch('https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&exsentences=2&explaintext=1&titles='+encodeURIComponent(title.replace(/_/g,' '))+'&format=json&origin=*');
     const d = await r.json();
     const pg = Object.values(d.query?.pages||{})[0];
     return pg?.extract || '';
@@ -313,18 +293,15 @@ function render({graph, signals, wikiSig, kg, title}) {
   document.getElementById('wikiLink').href = 'https://en.wikipedia.org/wiki/'+encodeURIComponent(title);
   document.getElementById('googleLink').href = 'https://www.google.com/search?q='+encodeURIComponent(title.replace(/_/g,' ')+' news '+new Date().getFullYear());
 
-  // KG enrichment — показуємо типи і пов'язані сутності
+  // KG enrichment
   if (kg?.length) {
     const top = kg[0];
-    const kgTypes = top.types?.filter(t=>!['Thing'].includes(t)).join(' · ') || '';
+    const kgTypes = (top.types||[]).filter(t=>t!=='Thing').join(' · ');
     if (kgTypes) {
-      const metaEl = document.getElementById('entityMeta');
-      metaEl.textContent += ' · ' + kgTypes;
+      const m = document.getElementById('entityMeta');
+      if (m && !m.textContent.includes(kgTypes)) m.textContent += ' · ' + kgTypes;
     }
-    // Якщо опис з KG кращий — використовуємо його
-    if (top.detail && !wikiSig) {
-      document.getElementById('entityDesc').textContent = top.detail + '…';
-    }
+    if (top.detail && !wikiSig) document.getElementById('entityDesc').textContent = top.detail+'…';
   }
 
   // Pimino score
@@ -345,8 +322,8 @@ function render({graph, signals, wikiSig, kg, title}) {
   // Signals panel
   renderSignals(signals, graph);
 
-  // Graph canvas — defer to next frame so DOM is ready
-  requestAnimationFrame(() => buildGraph(graph));
+  // Graph canvas
+  buildGraph(graph);
 
   // Domino chain
   renderDomino(graph, signals, pimino);
@@ -468,14 +445,9 @@ function renderSignals(signals, graph) {
   // KG entities
   if (kg?.length > 1) {
     const div = document.createElement('div');
-    div.style.cssText = 'padding:0.5rem 0.8rem;border-top:1px solid rgba(255,255,255,0.05);margin-top:0.3rem';
-    div.innerHTML = '<div style="font-size:0.6rem;color:rgba(255,255,255,0.55);margin-bottom:0.3rem;letter-spacing:0.08em;text-transform:uppercase">🔍 Knowledge Graph</div>'
-      + kg.map(item =>
-          `<div style="display:flex;align-items:center;gap:0.4rem;padding:0.2rem 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer" onclick="window.open('${item.url||'https://www.google.com/search?q='+encodeURIComponent(item.name)}','_blank')">`
-          +`<span style="font-size:0.72rem;color:rgba(255,255,255,0.88)">${item.name}</span>`
-          +`<span style="font-size:0.6rem;color:rgba(255,255,255,0.45);margin-left:auto">${(item.types||[]).slice(0,2).join(' · ')}</span>`
-          +`</div>`
-        ).join('');
+    div.style.cssText='padding:0.5rem 0.8rem;border-top:1px solid rgba(255,255,255,0.05);margin-top:0.3rem';
+    div.innerHTML='<div style="font-size:0.6rem;color:rgba(255,255,255,0.55);margin-bottom:0.3rem;text-transform:uppercase;letter-spacing:0.08em">🔍 Knowledge Graph</div>'
+      +kg.map(item=>`<div style="display:flex;align-items:center;gap:0.4rem;padding:0.2rem 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer" onclick="window.open('${item.url||'https://www.google.com/search?q='+encodeURIComponent(item.name)}','_blank')"><span style="font-size:0.72rem;color:rgba(255,255,255,0.88)">${item.name}</span><span style="font-size:0.6rem;color:rgba(255,255,255,0.45);margin-left:auto">${(item.types||[]).slice(0,2).join(' · ')}</span></div>`).join('');
     el.appendChild(div);
   }
 
@@ -518,8 +490,9 @@ function renderDomino(graph, signals, pimino) {
 // ── CANVAS GRAPH ──
 function buildGraph(graph) {
   const canvas = document.getElementById('graphCanvas');
-  canvas.width  = canvas.offsetWidth  || Math.floor(window.innerWidth / 3);
-  canvas.height = canvas.offsetHeight || Math.floor(window.innerHeight - 200);
+  const panel = canvas.parentElement;
+  canvas.width = panel.clientWidth;
+  canvas.height = panel.clientHeight - 26;
 
   const rels = graph.relations || {};
   const allItems = Object.entries(rels).flatMap(([type, items]) =>
