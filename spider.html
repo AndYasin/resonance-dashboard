@@ -219,11 +219,20 @@ function investigate(titleOverride) {
   Promise.all([
     fetch('/api/wikidata?title='+encodeURIComponent(title)).then(r=>r.json()).catch(e=>({error:e.message})),
     fetchSignals(title),
-    fetchWikiSignal(title)
-  ]).then(([graph, signals, wikiSig]) => {
-    currentData = { graph, signals, wikiSig, title };
+    fetchWikiSignal(title),
+    fetchKG(title.replace(/_/g,' '))
+  ]).then(([graph, signals, wikiSig, kg]) => {
+    currentData = { graph, signals, wikiSig, kg, title };
     render(currentData);
   });
+}
+
+async function fetchKG(title) {
+  try {
+    const r = await fetch('/api/kg?q='+encodeURIComponent(title.replace(/_/g,' '))+'&limit=3');
+    const d = await r.json();
+    return d.items || [];
+  } catch(e) { return []; }
 }
 
 async function fetchSignals(title) {
@@ -285,6 +294,20 @@ function render({graph, signals, wikiSig, title}) {
   document.getElementById('entityDesc').textContent = wikiSig ? wikiSig.slice(0,180)+'…' : (graph.description||'');
   document.getElementById('wikiLink').href = 'https://en.wikipedia.org/wiki/'+encodeURIComponent(title);
   document.getElementById('googleLink').href = 'https://www.google.com/search?q='+encodeURIComponent(title.replace(/_/g,' ')+' news '+new Date().getFullYear());
+
+  // KG enrichment — показуємо типи і пов'язані сутності
+  if (kg?.length) {
+    const top = kg[0];
+    const kgTypes = top.types?.filter(t=>!['Thing'].includes(t)).join(' · ') || '';
+    if (kgTypes) {
+      const metaEl = document.getElementById('entityMeta');
+      metaEl.textContent += ' · ' + kgTypes;
+    }
+    // Якщо опис з KG кращий — використовуємо його
+    if (top.detail && !wikiSig) {
+      document.getElementById('entityDesc').textContent = top.detail + '…';
+    }
+  }
 
   // Pimino score
   const pimino = calcPimino(graph, signals);
@@ -423,6 +446,20 @@ function renderSignals(signals, graph) {
       +`<div class="sig-label">${row.label}</div>`;
     el.appendChild(div);
   });
+
+  // KG entities
+  if (kg?.length > 1) {
+    const div = document.createElement('div');
+    div.style.cssText = 'padding:0.5rem 0.8rem;border-top:1px solid rgba(255,255,255,0.05);margin-top:0.3rem';
+    div.innerHTML = '<div style="font-size:0.6rem;color:rgba(255,255,255,0.55);margin-bottom:0.3rem;letter-spacing:0.08em;text-transform:uppercase">🔍 Knowledge Graph</div>'
+      + kg.map(item =>
+          `<div style="display:flex;align-items:center;gap:0.4rem;padding:0.2rem 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer" onclick="window.open('${item.url||'https://www.google.com/search?q='+encodeURIComponent(item.name)}','_blank')">`
+          +`<span style="font-size:0.72rem;color:rgba(255,255,255,0.88)">${item.name}</span>`
+          +`<span style="font-size:0.6rem;color:rgba(255,255,255,0.45);margin-left:auto">${(item.types||[]).slice(0,2).join(' · ')}</span>`
+          +`</div>`
+        ).join('');
+    el.appendChild(div);
+  }
 
   // Tickers якщо є
   if (graph.tickers?.length) {
