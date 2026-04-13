@@ -419,27 +419,67 @@ function decayScore(score, firstSeen, keywords) {
   return Math.round(score * Math.max(d, 0.1));
 }
 
-// ── SCORE ──
+// ── SCORE (нелінійна мультиплікативна формула) ──
 function calcScore(p){
-  const tw={'СМЕРТЬ':50,'ГЕОПОЛІТИКА':20,'ПОЛІТИК':18,'ВІЙСЬКОВІ':15,'БІЗНЕС':12,'НАУКА':8,'КУЛЬТУРА':6,'СПОРТ':5,'ФУТБОЛ':4,'ПЕРСОНА':3};
-  const span=(Date.now()-p.firstSeen)/60000;
-  const ts_=tw[p.articleType]||0;
-  const ls=Math.min((p.langCount||0)*0.4,30);
   const tr=trendData.find(t=>t.article.toLowerCase()===p.title.toLowerCase());
-  if(tr)p.trendPct=tr.delta;
-  const trs=p.trendPct?Math.min(p.trendPct/20,20):0;
-  const sus=Math.min(span/10,15)+(p.isRet||0)*5;
-  const e=p.editors;
-  const es_=e<=2?e*2.5:e<=4?5+(e-2)*8:e<=9?21+(e-4)*20:121+(e-10)*40;
-  const act=es_+p.edits*0.8;
-  const pvs=Math.min(((p.pvRatio||0)-1)*3,15);
-  const resonanceBonus=(tr&&p.editors>=2)?25:0;
-  const commentBonus=p.commentKeywords?.includes('DEATH')?30:p.commentKeywords?.includes('DISASTER')?25:p.commentKeywords?.includes('SCANDAL')?20:p.commentKeywords?.includes('APPOINTED')?20:0;
-  const deltaBonus=(p.deltaBytes||0)>5000?20:(p.deltaBytes||0)<-2000?15:0;
-  const ageBonus=p.isNewArticle?40:0;
-  let sc=ts_+ls+trs+sus+act+pvs+resonanceBonus+commentBonus+deltaBonus+ageBonus;
-  if(tr&&p.editors>=2)sc+=25;
-  return Math.round(sc);
+  if(tr) p.trendPct=tr.delta;
+  const kw=p.commentKeywords||[];
+  const e=p.editors||1;
+  const lc=p.langCount||0;
+
+  // BASE — що сталось
+  const baseMap={'СМЕРТЬ':100,'ГЕОПОЛІТИКА':60,'ВІЙСЬКОВІ':55,
+    'ПОЛІТИК':50,'БІЗНЕС':40,'НАУКА':25,'КУЛЬТУРА':22,'СПОРТ':20,'ПЕРСОНА':15};
+  let base = baseMap[p.articleType] || 15;
+  // Якщо comment підтверджує тип — підсилюємо base
+  if(kw.includes('DEATH'))    base = Math.max(base, 100);
+  if(kw.includes('DISASTER')) base = Math.max(base, 80);
+  if(kw.includes('SCANDAL'))  base = Math.max(base, 60);
+  if(kw.includes('BANKRUPT')) base = Math.max(base, 55);
+  if(kw.includes('APPOINTED'))base = Math.max(base, 45);
+
+  // AMPLIFIERS — множники > 1
+  let amp = 1.0;
+  // Редактори (найважливіший сигнал)
+  if(e >= 15)     amp *= 4.0;
+  else if(e >= 10)amp *= 3.0;
+  else if(e >= 5) amp *= 2.0;
+  else if(e >= 3) amp *= 1.4;
+  else if(e >= 2) amp *= 1.1;
+  // Мови
+  if(lc >= 50)      amp *= 2.5;
+  else if(lc >= 30) amp *= 1.8;
+  else if(lc >= 10) amp *= 1.3;
+  // Trending
+  if(p.trendPct >= 500) amp *= 2.0;
+  else if(p.trendPct >= 100) amp *= 1.5;
+  else if(p.trendPct >= 50)  amp *= 1.2;
+  // Delta bytes
+  if((p.deltaBytes||0) > 8000)     amp *= 1.5;
+  else if((p.deltaBytes||0) > 3000)amp *= 1.2;
+  else if((p.deltaBytes||0) < -3000)amp *= 1.2; // видалення теж сигнал
+  // Нова стаття
+  if(p.isNewArticle) amp *= 1.8;
+  // Non-minor (якщо є ця інформація)
+  if(p.isMinor === false) amp *= 1.2;
+  // Резонанс — 2+ вікі
+  if(p.type === 'res') amp *= 1.6;
+  // Pageview spike
+  if((p.pvRatio||0) >= 10) amp *= 1.8;
+  else if((p.pvRatio||0) >= 3) amp *= 1.3;
+
+  // PENALTIES — множники < 1
+  let pen = 1.0;
+  if(p.isMinor)          pen *= 0.35;
+  if(e <= 1)             pen *= 0.6;
+  if(kw.includes('REVERT')) pen *= 0.7;
+
+  const raw = base * amp * pen;
+  // Sustained бонус — лінійний додаток
+  const spanMin = (Date.now()-p.firstSeen)/60000;
+  const sus = Math.min(spanMin/5, 20);
+
+  return Math.round(raw + sus);
 }
 
 // ── KEYWORD → CSS клас ──
@@ -613,9 +653,11 @@ function renderSignal(){
       d.className='sc';
       d.addEventListener('click',()=>window.open(p.url,'_blank'));
       const dotCol=kws.includes('DEATH')?'#ff4757':kws.includes('DISASTER')?'#ff6b6b':p.type==='res'?'#f72585':col;
-      d.innerHTML='<div class="sc-dot" style="background:'+dotCol+'"></div>'
+      d.innerHTML=''
         +'<div class="sc-title">'+p.title+'</div>'
-        +'<div class="sc-meta">👥'+p.editors+' '+new Date(p.lastSeen).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'})+'</div>'
+        +(p.isMinor?'<div class="sc-dot" style="background:rgba(255,255,255,0.15)"></div>':'<div class="sc-dot" style="background:'+dotCol+'"></div>')
+        +'<div class="sc-meta">'+( p.isMinor?'<span style="color:rgba(255,255,255,0.25)">minor</span> ':'')
+        +'👥'+p.editors+' '+new Date(p.lastSeen).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'})+'</div>'
         +'<div class="sc-score" style="color:'+col+'">'+p.score+'</div>'
         +'<button class="sc-ai" data-t="'+p.title.replace(/"/g,'')+'">✦</button>'
         +'<button class="sc-sp" data-t="'+p.title.replace(/"/g,'')+'">🕸</button>';
@@ -889,6 +931,8 @@ function upsertPinned(title,wiki,type,edits,editors,lang,url,meta={}){
     if(meta.deltaBytes)pinned[key].deltaBytes=meta.deltaBytes;
     if(meta.commentKeywords?.length)pinned[key].commentKeywords=meta.commentKeywords;
     if(meta.isNewArticle)pinned[key].isNewArticle=true;
+    if(meta.isMinor!==undefined)pinned[key].isMinor=meta.isMinor;
+    if(meta.section)pinned[key].section=meta.section;
   }
   renderSignal();renderRank();
   setTimeout(()=>enrich(title,lang,key),600);
