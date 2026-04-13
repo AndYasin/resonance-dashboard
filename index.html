@@ -750,6 +750,18 @@ async function loadHof(){
     const today=new Date();today.setHours(0,0,0,0);
     const todayRows=rows.filter(r=>new Date(r.created_at)>=today);
     const seen={};const uniq=todayRows.filter(r=>{if(seen[r.title])return false;seen[r.title]=true;return true;});
+    // Додаємо live pinned які не в Supabase
+    const sbTitles = new Set(uniq.map(r=>r.title));
+    Object.values(pinned).forEach(p=>{
+      if(sbTitles.has(p.title)) return;
+      if(p.score < 30) return;
+      uniq.push({
+        title: p.title, score: p.score, editors: p.editors,
+        article_type: p.articleType, created_at: new Date(p.firstSeen).toISOString(),
+        url: p.url, comment_keywords: (p.commentKeywords||[]).join(','),
+        is_new_article: p.isNewArticle, _live: true
+      });
+    });
     // Сортування після dedup
     if(sort==='type') uniq.sort((a,b)=>(a.article_type||'').localeCompare(b.article_type||''));
     else if(sort==='editors') uniq.sort((a,b)=>(b.editors||0)-(a.editors||0));
@@ -768,7 +780,7 @@ async function loadHof(){
       const time=new Date(row.created_at).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
       const kwHtml=kws.includes('DEATH')?'<span class="hof-kw kw-death">💀</span>':kws.includes('SCANDAL')?'<span class="hof-kw kw-scandal">⚠</span>':row.is_new_article?'<span class="hof-kw kw-new">🆕</span>':'';
       const ageHr=(Date.now()-new Date(row.created_at).getTime())/3600000;
-      const isActive=ageHr<2;
+      const isActive=ageHr<2||row._live;
       const d=document.createElement('div');d.className='hof-item';
       d.addEventListener('click',()=>window.open(row.url||'#','_blank'));
       const dotStyle='width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:6px;background:'+(isActive?'#64ffda':'rgba(255,255,255,0.12)')+(isActive?';animation:blink 2s infinite':'');
@@ -1301,6 +1313,7 @@ setInterval(loadFng,600000);
 setInterval(loadBinance,180000);
 setInterval(loadCrossSignals,120000);
 setInterval(loadPredictions,600000);
+setInterval(loadHof,20000);
 setInterval(syncCounts,30000);
 setInterval(()=>{Object.values(pinned).forEach(p=>{p.score=calcScore(p);});renderSignal();renderRank();},30000);
 
