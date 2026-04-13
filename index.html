@@ -749,7 +749,18 @@ async function loadHof(){
     const rows=await r.json();if(!Array.isArray(rows))return;
     const today=new Date();today.setHours(0,0,0,0);
     const todayRows=rows.filter(r=>new Date(r.created_at)>=today);
-    const seen={};const uniq=todayRows.filter(r=>{if(seen[r.title])return false;seen[r.title]=true;return true;});
+    const seen={};const uniq=todayRows.filter(r=>{
+      if(seen[r.title])return false;
+      seen[r.title]=true;
+      // Фільтр шуму — тільки значимі події
+      const lc = r.lang_count||0;
+      const ed = r.editors||0;
+      const hasType = !!r.article_type;
+      const isMultiLang = lc >= 5;
+      const isMultiEditor = ed >= 4;
+      const isKnownType = hasType && ed >= 3;
+      return isMultiLang || isMultiEditor || isKnownType;
+    });
     // Додаємо live pinned які не в Supabase
     const sbTitles = new Set(uniq.map(r=>r.title));
     Object.values(pinned).forEach(p=>{
