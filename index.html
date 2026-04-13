@@ -404,6 +404,21 @@ function parseCommentClient(comment){
   return kw;
 }
 
+// ── DECAY ──
+function decayScore(score, firstSeen, keywords) {
+  keywords = keywords || [];
+  const ageHr = (Date.now() - firstSeen) / 3600000;
+  const isDeath = keywords.includes('DEATH') || keywords.includes('DISASTER');
+  const f = isDeath ? 0.5 : 1.0;
+  let d;
+  if (ageHr < 1)       d = 1.0;
+  else if (ageHr < 3)  d = 0.9 - (ageHr-1)*0.05*f;
+  else if (ageHr < 6)  d = 0.7 - (ageHr-3)*0.05*f;
+  else if (ageHr < 12) d = 0.5 - (ageHr-6)*0.03*f;
+  else                 d = Math.max(0.1, 0.3 - (ageHr-12)*0.02*f);
+  return Math.round(score * Math.max(d, 0.1));
+}
+
 // ── SCORE ──
 function calcScore(p){
   const tw={'СМЕРТЬ':50,'ГЕОПОЛІТИКА':20,'ПОЛІТИК':18,'ВІЙСЬКОВІ':15,'БІЗНЕС':12,'НАУКА':8,'КУЛЬТУРА':6,'СПОРТ':5,'ФУТБОЛ':4,'ПЕРСОНА':3};
@@ -525,7 +540,7 @@ function renderSignal(){
   Object.values(byTitle).forEach(m=>{
     m.editors=m.allEditors;m.edits=m.allEdits;
     m.langCount=m.wikis?m.wikis.size:m.langCount;
-    m.score=calcScore(m);
+    m.score=decayScore(calcScore(m), m.firstSeen, m.commentKeywords||[]);
   });
 
   const sorted=Object.values(byTitle).sort((a,b)=>b.score-a.score);
@@ -556,9 +571,9 @@ function renderSignal(){
         +'<div class="hero-title"><a href="'+p.url+'" target="_blank">'+p.title+'</a></div>'
         +'<div class="hero-prog"><div class="hero-prog-f" style="width:'+Math.min(p.score,100)+'%;background:'+col+'"></div></div>'
         +'<div class="hero-stats">'
-          +'<div class="hstat"><div class="v" style="color:'+col+'">'+p.edits+'</div><div class="l">правок</div></div>'
-          +'<div class="hstat"><div class="v" style="color:#64ffda">'+p.editors+'</div><div class="l">ред</div></div>'
-          +'<div class="hstat"><div class="v" style="color:rgba(255,255,255,0.5)">'+(ageMin<1?'<1':ageMin)+'</div><div class="l">хв</div></div>'
+          +'<div class="hstat"><div class="v" style="color:'+col+'">'+p.edits+'</div><div class="l">✏️ правок</div></div>'
+          +'<div class="hstat"><div class="v" style="color:#64ffda">'+p.editors+'</div><div class="l">👥 ред</div></div>'
+          +'<div class="hstat"><div class="v" style="color:rgba(255,255,255,0.5)">'+new Date(p.lastSeen).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'})+'</div><div class="l">🕐</div></div>'
           +(p.langCount>1?'<div class="hstat"><div class="v" style="color:#4285f4">'+p.langCount+'</div><div class="l">мов</div></div>':'')
         +'</div>'
         +(p.deltaBytes?'<div class="hero-delta">'+deltaHtml+'</div>':'')
@@ -567,7 +582,7 @@ function renderSignal(){
           +'<a class="btn-g" href="'+gUrl+'" target="_blank">🔍</a>'
           +'<button class="btn-ai" data-t="'+p.title.replace(/"/g,'')+'">✦ AI</button>'
           +'<button class="btn-sp" data-t="'+p.title.replace(/"/g,'')+'">🕸</button>'
-          +'<span class="hero-timer">'+ago(p.lastSeen)+'</span>'
+          +(Date.now()-p.lastSeen<120000?'<span style="width:5px;height:5px;border-radius:50%;background:#64ffda;display:inline-block;animation:blink 1s infinite;margin-right:0.3rem"></span>':'')+'<span class="hero-timer">з '+new Date(p.firstSeen).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'})+'</span>'
         +'</div>';
       d.querySelector('.btn-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
       d.querySelector('.btn-sp').addEventListener('click',function(e){e.stopPropagation();openSpider(this.dataset.t);});
@@ -583,8 +598,8 @@ function renderSignal(){
           +'<div class="mc-score" style="color:'+col+'">'+p.score+'</div>'
         +'</div>'
         +'<div class="mc-meta">'
-          +'<span>'+p.edits+'пр</span><span>'+p.editors+'ред</span>'
-          +(ageMin<1?'<span><1хв</span>':'<span>'+ageMin+'хв</span>')
+          +'<span>✏️'+p.edits+'</span><span>👥'+p.editors+'</span>'
+          +'<span>🕐'+new Date(p.lastSeen).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'})+'</span>'
           +'<div class="mc-kws">'+isNew+kwsHtml+'</div>'
           +'<button class="sc-ai" data-t="'+p.title.replace(/"/g,'')+'" style="margin-left:auto">✦</button>'
           +'<button class="sc-sp" data-t="'+p.title.replace(/"/g,'')+'">🕸</button>'
@@ -600,7 +615,7 @@ function renderSignal(){
       const dotCol=kws.includes('DEATH')?'#ff4757':kws.includes('DISASTER')?'#ff6b6b':p.type==='res'?'#f72585':col;
       d.innerHTML='<div class="sc-dot" style="background:'+dotCol+'"></div>'
         +'<div class="sc-title">'+p.title+'</div>'
-        +'<div class="sc-meta">'+p.editors+'р·'+(ageMin<1?'<1':ageMin)+'хв</div>'
+        +'<div class="sc-meta">👥'+p.editors+' '+new Date(p.lastSeen).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'})+'</div>'
         +'<div class="sc-score" style="color:'+col+'">'+p.score+'</div>'
         +'<button class="sc-ai" data-t="'+p.title.replace(/"/g,'')+'">✦</button>'
         +'<button class="sc-sp" data-t="'+p.title.replace(/"/g,'')+'">🕸</button>';
@@ -681,16 +696,20 @@ async function loadHof(){
     document.getElementById('hofCnt').textContent=uniq.length;
     const el=document.getElementById('feedHof');el.innerHTML='';
     uniq.forEach((row,i)=>{
-      const sc=Math.round(row.score||0);
+      const rawSc=Math.round(row.score||0);
+      const kws=(row.comment_keywords||'').split(',').filter(Boolean);
+      const sc=decayScore(rawSc, new Date(row.created_at).getTime(), kws);
       const col=sc>=50?'#ff4757':sc>=25?'#ffc800':'#64ffda';
       const rankCls=i===0?'gold':i===1?'silver':i===2?'bronze':'';
       const rankIco=['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩'][i]||(i+1)+'.';
       const time=new Date(row.created_at).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
-      const kws=(row.comment_keywords||'').split(',').filter(Boolean);
       const kwHtml=kws.includes('DEATH')?'<span class="hof-kw kw-death">💀</span>':kws.includes('SCANDAL')?'<span class="hof-kw kw-scandal">⚠</span>':row.is_new_article?'<span class="hof-kw kw-new">🆕</span>':'';
+      const ageHr=(Date.now()-new Date(row.created_at).getTime())/3600000;
+      const isActive=ageHr<2;
       const d=document.createElement('div');d.className='hof-item';
       d.addEventListener('click',()=>window.open(row.url||'#','_blank'));
-      d.innerHTML='<div class="hof-rank '+rankCls+'">'+rankIco+'</div>'
+      const dotStyle='width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:6px;background:'+(isActive?'#64ffda':'rgba(255,255,255,0.12)')+(isActive?';animation:blink 2s infinite':'');
+      d.innerHTML='<div style="'+dotStyle+'"></div><div class="hof-rank '+rankCls+'">'+rankIco+'</div>'
         +'<div class="hof-body">'
           +'<div class="hof-title">'+row.title+'</div>'
           +'<div class="hof-meta">'+kwHtml+'<span style="color:rgba(255,255,255,0.4)">'+time+'</span>'+(row.article_type?'<span style="color:rgba(255,255,255,0.35)"> · '+row.article_type+'</span>':'')+'</div>'
