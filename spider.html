@@ -380,8 +380,8 @@ function render({graph, signals, wikiSig, kg, title}) {
   // Signals panel
   renderSignals(signals, graph);
 
-  // Graph canvas
-  buildGraph(graph);
+  // Graph canvas — delay so DOM renders first
+  setTimeout(() => buildGraph(graph), 50);
 
   // Domino chain
   renderDomino(graph, signals, pimino);
