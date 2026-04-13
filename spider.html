@@ -135,6 +135,7 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;min-
   </div>
 </div>
 
+<div id="breadcrumb" style="display:none;padding:0.3rem 1.2rem;background:#09091a;border-bottom:1px solid rgba(255,255,255,0.05);font-size:0.65rem;color:rgba(255,255,255,0.5);display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap"></div>
 <div class="entity-hdr" id="entityHdr">
   <div style="display:flex;justify-content:space-between;align-items:flex-start">
     <div>
@@ -206,6 +207,8 @@ let currentData = null;
 let graphNodes = [];
 let graphEdges = [];
 let animFrame = null;
+let graphStack = []; // стек для drill-down
+let graphDepth = 0;  // поточна глибина
 
 function setAndRun(title) {
   document.getElementById('searchInput').value = title.replace(/_/g,' ');
@@ -646,13 +649,77 @@ function drawGraph(canvas) {
   });
 
   document.getElementById('nodeCount').textContent = graphNodes.length + ' вузлів';
+
+  // Canvas click handler
+  canvas.onclick = function(e) {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    // Знаходимо вузол під курсором
+    for (let i = 1; i < graphNodes.length; i++) {
+      const n = graphNodes[i];
+      const dist = Math.sqrt((mx-n.x)**2 + (my-n.y)**2);
+      if (dist <= n.r + 8) {
+        canvas.style.cursor = 'pointer';
+        drillDown(n.id, n.name);
+        return;
+      }
+    }
+  };
+  canvas.onmousemove = function(e) {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    let hit = false;
+    for (let i = 1; i < graphNodes.length; i++) {
+      const n = graphNodes[i];
+      if (Math.sqrt((mx-n.x)**2 + (my-n.y)**2) <= n.r + 8) { hit = true; break; }
+    }
+    canvas.style.cursor = hit ? 'pointer' : 'default';
+  };
 }
 
 function drillDown(qid, name) {
-  if (name) {
-    document.getElementById('searchInput').value = name;
-    investigate(name.replace(/ /g,'_'));
+  if (!name) return;
+  // Зберігаємо поточний стан в стек
+  if (currentData) {
+    graphStack.push({ data: currentData, nodes: [...graphNodes], edges: [...graphEdges] });
+    graphDepth++;
   }
+  updateBreadcrumb(name);
+  document.getElementById('searchInput').value = name;
+  investigate(name.replace(/ /g,'_'));
+}
+
+function goBack() {
+  if (!graphStack.length) return;
+  const prev = graphStack.pop();
+  graphDepth--;
+  currentData = prev.data;
+  graphNodes = prev.nodes;
+  graphEdges = prev.edges;
+  // Відновлюємо UI
+  render(currentData);
+  updateBreadcrumb(currentData.graph?.label || currentData.title, true);
+}
+
+function updateBreadcrumb(name, isBack=false) {
+  const el = document.getElementById('breadcrumb');
+  if (!el) return;
+  if (graphDepth === 0 && !graphStack.length) { el.style.display='none'; return; }
+  el.style.display = 'flex';
+  const items = graphStack.map((s,i) =>
+    `<span style="cursor:pointer;color:rgba(255,255,255,0.5)" onclick="goBackTo(${i})">${s.data?.graph?.label||s.data?.title||'?'}</span>`
+  );
+  items.push(`<span style="color:#64ffda">${name}</span>`);
+  el.innerHTML = items.join('<span style="color:rgba(255,255,255,0.2)"> › </span>')
+    + (graphStack.length ? '<button onclick="goBack()" style="margin-left:auto;padding:1px 8px;border-radius:2px;font-size:0.6rem;cursor:pointer;border:1px solid rgba(255,255,255,0.2);background:transparent;color:rgba(255,255,255,0.5);font-family:IBM Plex Mono,monospace">← назад</button>' : '');
+}
+
+function goBackTo(idx) {
+  while (graphStack.length > idx + 1) graphStack.pop();
+  graphDepth = idx + 1;
+  goBack();
 }
 
 // Resize canvas on window resize
