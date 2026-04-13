@@ -549,8 +549,10 @@ function renderDomino(graph, signals, pimino) {
 function buildGraph(graph) {
   const canvas = document.getElementById('graphCanvas');
   const panel = canvas.parentElement;
-  canvas.width = panel.clientWidth;
-  canvas.height = panel.clientHeight - 26;
+  const w = panel.getBoundingClientRect().width || window.innerWidth * 0.33;
+  const h = Math.min(window.innerHeight - 260, 580);
+  canvas.width  = Math.floor(w);
+  canvas.height = Math.floor(h);
 
   const rels = graph.relations || {};
   const allItems = Object.entries(rels).flatMap(([type, items]) =>
