@@ -36,7 +36,7 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;min-
 /* GRID */
 .body{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:rgba(255,255,255,0.05);flex:1}
 .panel{background:#07070f;display:flex;flex-direction:column;overflow:hidden;min-height:0}
-.ph{display:flex;justify-content:space-between;align-items:center;padding:0 0.8rem;height:26px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;font-size:0.55rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.5);background:#09091a}
+.ph{display:flex;justify-content:space-between;align-items:center;padding:0 0.8rem;height:26px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.5);background:#09091a}
 .pb{flex:1;overflow-y:auto;overflow-x:hidden;padding:0.5rem 0}
 .pb::-webkit-scrollbar{width:2px}
 .pb::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08)}
@@ -53,7 +53,7 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;min-
 .layer-item:hover .li-name{color:#64ffda}
 .li-name{font-size:0.78rem;color:rgba(255,255,255,0.88);flex:1;line-height:1.3}
 .li-desc{font-size:0.6rem;color:rgba(255,255,255,0.4);margin-top:1px}
-.li-badge{font-size:0.52rem;padding:1px 5px;border-radius:2px;flex-shrink:0;margin-top:2px}
+.li-badge{font-size:0.7rem;padding:1px 5px;border-radius:2px;flex-shrink:0;margin-top:2px}
 
 /* SIGNALS PANEL */
 .sig-item{display:flex;align-items:center;gap:0.5rem;padding:0.3rem 0.8rem;border-bottom:1px solid rgba(255,255,255,0.04)}
@@ -65,7 +65,7 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;min-
 
 /* DOMINO */
 .domino-bar{padding:0.6rem 1.2rem;border-top:1px solid rgba(255,255,255,0.06);background:#09091a;flex-shrink:0;display:none}
-.domino-title{font-size:0.55rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:0.4rem}
+.domino-title{font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:0.4rem}
 .domino-chain{display:flex;align-items:center;gap:0.3rem;flex-wrap:wrap}
 .domino-node{padding:3px 10px;border-radius:2px;font-size:0.68rem;border:1px solid;white-space:nowrap}
 .domino-arrow{color:rgba(255,255,255,0.3);font-size:0.8rem}
@@ -84,8 +84,32 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;min-
 .pm-bar{flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;max-width:200px}
 .pm-fill{height:100%;border-radius:3px;transition:width 0.8s}
 .pm-dims{display:flex;gap:0.8rem;margin-top:0.25rem}
-.pm-dim{font-size:0.58rem}
+.pm-dim{font-size:0.7rem}
 .pm-dim span{color:rgba(255,255,255,0.4)}
+
+/* ── GLOBAL READABILITY RULES ── */
+/* Мінімальний розмір будь-якого тексту */
+* { min-font-size: 0; }
+.hint, .asl-l, .ctx-title, .ph, .lbl, .stimer,
+.pc-timer, .tg, .fi-lang, .fi-m, .si-me,
+.pc2-meta, .hof-sub, .aim-src, .aim-src-time,
+.xs-detail, .hr-meta, .bn-vol, .li-c, .li-n,
+.ti-vw, .pvc2-views, .spd-l {
+  font-size: 0.7rem !important;
+  color: rgba(255,255,255,0.65) !important;
+}
+/* Заголовки секцій — завжди видимі */
+.ph { color: rgba(255,255,255,0.75) !important; font-size: 0.6rem !important; }
+/* Назви в списках — яскраві */
+.pc2-title, .ti-nm, .xs-title, .hr-title,
+.si-nm, .pvc2-title, .bn-sym, .li-name {
+  color: rgba(255,255,255,0.92) !important;
+}
+/* Мета інфо — читабельне */
+.pc2-meta, .hr-meta, .xs-detail, .fi-m {
+  color: rgba(255,255,255,0.65) !important;
+  font-size: 0.68rem !important;
+}
 </style>
 </head>
 <body>
