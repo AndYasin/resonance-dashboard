@@ -211,6 +211,11 @@ function investigate(titleOverride) {
   if (!raw) return;
   const title = raw.replace(/ /g,'_');
 
+  // Clear canvas
+  graphNodes = []; graphEdges = [];
+  const cv = document.getElementById('graphCanvas');
+  if (cv) { const ctx = cv.getContext('2d'); ctx.clearRect(0,0,cv.width,cv.height); }
+
   // Show loading
   document.getElementById('layersPanel').innerHTML = '<div class="loading"><div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div><div style="font-size:0.65rem;color:rgba(255,255,255,0.3);margin-top:0.5rem">Будуємо граф...</div></div>';
   document.getElementById('signalsPanel').innerHTML = '<div class="loading"><div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div></div>';
