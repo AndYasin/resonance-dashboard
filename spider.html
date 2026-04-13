@@ -378,7 +378,7 @@ function render({graph, signals, wikiSig, kg, title}) {
   renderLayers(graph);
 
   // Signals panel
-  renderSignals(signals, graph);
+  renderSignals(signals, graph, kg);
 
   // Graph canvas — delay so DOM renders first
   setTimeout(() => buildGraph(graph), 50);
@@ -462,7 +462,7 @@ function renderLayers(graph) {
   });
 }
 
-function renderSignals(signals, graph) {
+function renderSignals(signals, graph, kg) {
   const el = document.getElementById('signalsPanel');
   el.innerHTML = '';
   document.getElementById('sigTime').textContent = new Date().toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
