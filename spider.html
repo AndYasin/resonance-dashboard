@@ -217,7 +217,7 @@ function investigate(titleOverride) {
 
   // Fetch graph + signals in parallel
   Promise.all([
-    fetch('/api/wikidata?title='+encodeURIComponent(title)).then(r=>r.json()).catch(e=>({error:e.message})),
+    fetchWithTimeout('/api/wikidata?title='+encodeURIComponent(title), {}, 12000).then(r=>r.json()).catch(e=>({error:e.message})),
     fetchSignals(title),
     fetchWikiSignal(title),
     fetchKG(title.replace(/_/g,' '))
@@ -227,9 +227,21 @@ function investigate(titleOverride) {
   });
 }
 
+// Timeout wrapper для всіх fetch запитів
+async function fetchWithTimeout(url, options={}, ms=8000) {
+  const ctrl = new AbortController();
+  const tid = setTimeout(() => ctrl.abort(), ms);
+  try {
+    const r = await fetch(url, { ...options, signal: ctrl.signal });
+    return r;
+  } finally {
+    clearTimeout(tid);
+  }
+}
+
 async function fetchKG(title) {
   try {
-    const r = await fetch('/api/kg?q='+encodeURIComponent(title.replace(/_/g,' '))+'&limit=3');
+    const r = await fetchWithTimeout('/api/kg?q='+encodeURIComponent(title.replace(/_/g,' '))+'&limit=3', {}, 5000);
     const d = await r.json();
     return d.items || [];
   } catch(e) { return []; }
@@ -273,7 +285,7 @@ async function fetchSignals(title) {
 
 async function fetchWikiSignal(title) {
   try {
-    const r = await fetch('https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&exsentences=2&explaintext=1&titles='+encodeURIComponent(title.replace(/_/g,' '))+'&format=json&origin=*');
+    const r = await fetchWithTimeout('https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&exsentences=2&explaintext=1&titles='+encodeURIComponent(title.replace(/_/g,' '))+'&format=json&origin=*', {}, 6000);
     const d = await r.json();
     const pg = Object.values(d.query?.pages||{})[0];
     return pg?.extract || '';
