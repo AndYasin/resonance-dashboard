@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<title>RESONANCE // RETRO</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;600&family=Bebas+Neue&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;min-height:100vh;padding:0}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;height:36px;border-bottom:1px solid rgba(255,255,255,0.07);background:#07070f}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:0.1em;color:#fff}
+.logo em{color:#f72585;font-style:normal}
+.logo span{font-size:0.5rem;opacity:0.3;margin-left:0.5rem;font-family:'IBM Plex Mono',monospace}
+.back{font-size:0.6rem;color:rgba(255,255,255,0.3);text-decoration:none;letter-spacing:0.08em}
+.back:hover{color:#64ffda}
+
+.main{max-width:1100px;margin:0 auto;padding:1.5rem}
+h1{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:0.1em;color:#fff;margin-bottom:0.3rem}
+.sub{font-size:0.65rem;color:rgba(255,255,255,0.3);margin-bottom:1.5rem}
+
+/* CASES */
+.cases{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1.5rem}
+.case-btn{padding:4px 12px;border-radius:3px;font-size:0.65rem;cursor:pointer;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.45);font-family:'IBM Plex Mono',monospace;transition:all 0.15s}
+.case-btn:hover{border-color:rgba(255,255,255,0.3);color:#fff}
+.case-btn.active{border-color:#f72585;color:#f72585;background:rgba(247,37,133,0.08)}
+
+/* FORM */
+.form{display:flex;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.form input{background:#0d0d1a;border:1px solid rgba(255,255,255,0.1);color:#fff;padding:6px 12px;border-radius:3px;font-family:'IBM Plex Mono',monospace;font-size:0.72rem;flex:1;min-width:200px}
+.form input:focus{outline:none;border-color:#f72585}
+.form input::placeholder{color:rgba(255,255,255,0.2)}
+.run-btn{padding:6px 20px;border-radius:3px;font-size:0.72rem;cursor:pointer;border:none;background:#f72585;color:#fff;font-family:'IBM Plex Mono',monospace;font-weight:600;transition:all 0.15s}
+.run-btn:hover{background:#d61a6f}
+.run-btn:disabled{opacity:0.4;cursor:wait}
+
+/* RESULTS GRID */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,0.05);margin-bottom:1.5rem}
+.panel{background:#07070f;padding:1rem}
+.panel-title{font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:0.7rem}
+
+/* SIGNAL BADGE */
+.signal-box{text-align:center;padding:1rem}
+.signal-val{font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1}
+.signal-label{font-size:0.65rem;color:rgba(255,255,255,0.4);margin-top:0.3rem}
+
+/* TIMELINE BARS */
+.tl{display:flex;align-items:flex-end;gap:2px;height:80px;margin-bottom:0.5rem}
+.tl-bar{flex:1;min-width:4px;border-radius:2px 2px 0 0;cursor:pointer;transition:opacity 0.1s;position:relative}
+.tl-bar:hover{opacity:0.7}
+.tl-labels{display:flex;justify-content:space-between;font-size:0.5rem;color:rgba(255,255,255,0.2)}
+.tl-event-line{position:relative}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:0.65rem}
+.tbl th{text-align:left;padding:4px 8px;border-bottom:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.3);font-weight:400;font-size:0.55rem;letter-spacing:0.06em;text-transform:uppercase}
+.tbl td{padding:4px 8px;border-bottom:1px solid rgba(255,255,255,0.04)}
+.tbl tr:hover td{background:rgba(255,255,255,0.02)}
+
+/* SUMMARY TABLE */
+.summary{margin-top:1.5rem}
+.sum-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:0.5rem;padding:0.5rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.05);font-size:0.68rem;align-items:center}
+.sum-row.header{font-size:0.55rem;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid rgba(255,255,255,0.1)}
+.sum-name{color:#fff;font-weight:600}
+.tag{display:inline-block;padding:1px 6px;border-radius:2px;font-size:0.55rem}
+
+/* LOADING */
+.loading{text-align:center;padding:2rem;color:rgba(255,255,255,0.3);font-size:0.7rem}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div style="display:flex;align-items:center;gap:1rem">
+    <div class="logo">RESO<em>NANCE</em><span>// retro analysis</span></div>
+  </div>
+  <a href="/" class="back">← DASHBOARD</a>
+</div>
+
+<div class="main">
+  <h1>РЕТРОСПЕКТИВНИЙ АНАЛІЗ</h1>
+  <div class="sub">Wikipedia burst signal vs реальна подія — скільки часу між сигналом і подією?</div>
+
+  <!-- Preset cases -->
+  <div class="cases" id="casesBtns"></div>
+
+  <!-- Form -->
+  <div class="form">
+    <input type="text" id="inTitle" placeholder="Wikipedia article title (en)" value="Silicon Valley Bank">
+    <input type="text" id="inEvent" placeholder="Event date YYYY-MM-DD" value="2023-03-10">
+    <input type="text" id="inLang"  placeholder="lang" value="en" style="max-width:60px">
+    <input type="text" id="inLabel" placeholder="Event name" value="SVB крах">
+    <button class="run-btn" id="runBtn" onclick="runAnalysis()">▶ АНАЛІЗ</button>
+    <button class="run-btn" style="background:#1a1a2e;border:1px solid rgba(255,255,255,0.1)" onclick="runAll()">▶▶ ВСІ</button>
+  </div>
+
+  <!-- Single result -->
+  <div id="result"></div>
+
+  <!-- Summary of all -->
+  <div id="summary"></div>
+</div>
+
+<script>
+const CASES = [
+  { label: 'SVB крах',              title: 'Silicon Valley Bank',                      event: '2023-03-10', lang: 'en' },
+  { label: 'FTX крах',              title: 'Sam Bankman-Fried',                        event: '2022-11-11', lang: 'en' },
+  { label: 'Microsoft+Activision',  title: 'Activision Blizzard',                      event: '2022-01-18', lang: 'en' },
+  { label: 'Swarmer IPO',           title: 'Erik Prince',                              event: '2026-03-17', lang: 'en' },
+  { label: 'Magyar перемога',       title: '2026 Hungarian parliamentary election',    event: '2026-04-12', lang: 'en' },
+  { label: 'Credit Suisse',         title: 'Credit Suisse',                            event: '2023-03-19', lang: 'en' },
+  { label: 'Nvidia ATH 2024',       title: 'Nvidia',                                   event: '2024-06-18', lang: 'en' },
+];
+
+// Render case buttons
+const casesEl = document.getElementById('casesBtns');
+CASES.forEach((c, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'case-btn';
+  btn.textContent = c.label;
+  btn.onclick = () => {
+    document.querySelectorAll('.case-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('inTitle').value = c.title;
+    document.getElementById('inEvent').value = c.event;
+    document.getElementById('inLang').value  = c.lang;
+    document.getElementById('inLabel').value = c.label;
+  };
+  casesEl.appendChild(btn);
+});
+
+async function fetchRetro(title, event, lang) {
+  const r = await fetch(`/api/retro?title=${encodeURIComponent(title)}&event=${event}&lang=${lang}&days=14`);
+  return r.json();
+}
+
+function signalColor(signal) {
+  return signal === 'STRONG' ? '#ff4757' : signal === 'MED' ? '#ffc800' : signal === 'LOW' ? '#64ffda' : 'rgba(255,255,255,0.2)';
+}
+
+function renderResult(data, label) {
+  if (!data.found) return `<div class="loading">❌ Стаття "${data.title}" не знайдена</div>`;
+
+  const maxEdits = Math.max(...data.timeline.map(d => d.edits), 1);
+  const eventIdx = data.timeline.findIndex(d => d.t === 0);
+
+  // Bars
+  const bars = data.timeline.map((d, i) => {
+    const h = Math.max(3, Math.round(d.edits / maxEdits * 76));
+    const col = d.t === 0 ? '#fff' : signalColor(d.signal);
+    const op = d.t === 0 ? 1 : 0.6 + (d.signal !== 'none' ? 0.4 : 0);
+    const tip = `${d.day} (T${d.t>0?'+':''}${d.t}): ${d.edits}пр ${d.editors}ред`;
+    return `<div class="tl-bar" style="height:${h}px;background:${col};opacity:${op}" title="${tip}" onclick="showDay(${JSON.stringify(d)})"></div>`;
+  }).join('');
+
+  const firstLabel = data.timeline[0]?.day?.slice(5) || '';
+  const lastLabel  = data.timeline[data.timeline.length-1]?.day?.slice(5) || '';
+
+  // Signal result
+  const fs = data.firstSignal;
+  const sigColor = fs ? signalColor(fs.signal) : 'rgba(255,255,255,0.2)';
+  const sigText  = fs ? `T${fs.t}д` : '—';
+  const sigSub   = fs ? `${fs.editors} ред · ${fs.signal}` : 'сигналу не було';
+
+  // Top hours
+  const hoursRows = data.topHours.map(h => {
+    const pre = h.t_hours < 0 ? `<span style="color:#64ffda">ДО ${Math.abs(h.t_hours)}г</span>` :
+                h.t_hours === 0 ? '<span style="color:#fff">В МОМЕНТ</span>' :
+                `<span style="color:rgba(255,255,255,0.4)">після ${h.t_hours}г</span>`;
+    return `<tr><td>${h.hour}:00 UTC</td><td>${pre}</td><td>${h.editors}ред</td><td>${h.edits}пр</td></tr>`;
+  }).join('');
+
+  // Timeline table
+  const tlRows = data.timeline.map(d => {
+    const tLabel = d.t === 0 ? '<span style="color:#fff">← ПОДІЯ</span>' : `T${d.t>0?'+':''}${d.t}д`;
+    const sc = signalColor(d.signal);
+    const sig = d.signal !== 'none' ? `<span style="color:${sc}">${d.signal}</span>` : '';
+    const comm = d.comments[0] ? `<span style="color:rgba(255,255,255,0.3);font-style:italic">${d.comments[0]}</span>` : '';
+    return `<tr>
+      <td>${d.day}</td>
+      <td>${tLabel}</td>
+      <td style="color:${sc}">${d.edits}</td>
+      <td style="color:${sc}">${d.editors}</td>
+      <td>${sig}</td>
+      <td>${comm}</td>
+    </tr>`;
+  }).join('');
+
+  return `
+    <div style="margin-bottom:0.5rem;font-size:0.8rem;color:rgba(255,255,255,0.5)">
+      📊 <b style="color:#fff">${label || data.title}</b> · ${data.total} правок за 14 днів
+    </div>
+    <div class="grid">
+      <div class="panel">
+        <div class="panel-title">Активність навколо події</div>
+        <div class="tl">${bars}</div>
+        <div class="tl-labels"><span>${firstLabel}</span><span style="color:#fff">← T+0</span><span>${lastLabel}</span></div>
+        <div style="margin-top:0.5rem;font-size:0.6rem;color:rgba(255,255,255,0.3)" id="dayInfo">Клікни на бар для деталей</div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Перший сигнал до події</div>
+        <div class="signal-box">
+          <div class="signal-val" style="color:${sigColor}">${sigText}</div>
+          <div class="signal-label">${sigSub}</div>
+        </div>
+        <div class="panel-title" style="margin-top:0.8rem">Топ години (UTC)</div>
+        <table class="tbl">
+          <tr><th>Час</th><th>Відносно події</th><th>Ред</th><th>Пр</th></tr>
+          ${hoursRows}
+        </table>
+      </div>
+    </div>
+    <table class="tbl">
+      <tr><th>Дата</th><th>T</th><th>Правок</th><th>Ред</th><th>Сигнал</th><th>Коментар</th></tr>
+      ${tlRows}
+    </table>
+  `;
+}
+
+window.showDay = function(d) {
+  const el = document.getElementById('dayInfo');
+  if (!el) return;
+  const col = signalColor(d.signal);
+  el.innerHTML = `<span style="color:${col}">${d.day}</span> · ${d.edits}пр · ${d.editors}ред`
+    + (d.comments[0] ? ` · <i style="color:rgba(255,255,255,0.4)">${d.comments[0]}</i>` : '');
+};
+
+async function runAnalysis() {
+  const title = document.getElementById('inTitle').value.trim();
+  const event = document.getElementById('inEvent').value.trim();
+  const lang  = document.getElementById('inLang').value.trim() || 'en';
+  const label = document.getElementById('inLabel').value.trim();
+  if (!title || !event) return;
+
+  const btn = document.getElementById('runBtn');
+  btn.disabled = true; btn.textContent = '⏳ ...';
+  document.getElementById('result').innerHTML = '<div class="loading">Завантажую дані з Wikipedia...</div>';
+
+  try {
+    const data = await fetchRetro(title, event, lang);
+    document.getElementById('result').innerHTML = renderResult(data, label);
+  } catch(e) {
+    document.getElementById('result').innerHTML = `<div class="loading" style="color:#ff4757">Помилка: ${e.message}</div>`;
+  }
+  btn.disabled = false; btn.textContent = '▶ АНАЛІЗ';
+}
+
+async function runAll() {
+  const sumEl = document.getElementById('summary');
+  sumEl.innerHTML = '<div class="loading">Аналізую всі кейси...</div>';
+  document.getElementById('result').innerHTML = '';
+
+  const results = [];
+  for (const c of CASES) {
+    try {
+      const data = await fetchRetro(c.title, c.event, c.lang);
+      results.push({ ...c, data });
+    } catch(e) {
+      results.push({ ...c, data: null });
+    }
+  }
+
+  // Summary table
+  const rows = results.map(r => {
+    if (!r.data?.found) return `
+      <div class="sum-row">
+        <div class="sum-name">${r.label}</div>
+        <div style="color:rgba(255,255,255,0.3)">не знайдено</div>
+        <div>—</div><div>—</div><div>—</div>
+      </div>`;
+
+    const fs = r.data.firstSignal;
+    const sigCol = fs ? signalColor(fs.signal) : 'rgba(255,255,255,0.2)';
+    const sigText = fs ? `T${fs.t}д` : '—';
+    const sigStr = fs ? `<span style="color:${sigCol}">${fs.signal}</span>` : '—';
+    const maxEd = Math.max(...r.data.timeline.map(d => d.editors));
+    const peakDay = r.data.timeline.find(d => d.editors === maxEd);
+    const peakT = peakDay ? `T${peakDay.t>0?'+':''}${peakDay.t}д` : '—';
+
+    return `<div class="sum-row" onclick="loadCase('${r.title}','${r.event}','${r.lang}','${r.label}')" style="cursor:pointer">
+      <div class="sum-name">${r.label}<br><span style="font-size:0.58rem;color:rgba(255,255,255,0.3)">${r.title}</span></div>
+      <div style="color:${sigCol};font-family:'Bebas Neue',sans-serif;font-size:1.1rem">${sigText}</div>
+      <div>${sigStr}</div>
+      <div style="color:rgba(255,255,255,0.6)">${peakT}</div>
+      <div style="color:rgba(255,255,255,0.4)">${r.data.total}пр</div>
+    </div>`;
+  }).join('');
+
+  sumEl.innerHTML = `
+    <div class="summary">
+      <div style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:0.5rem">Зведена таблиця</div>
+      <div class="sum-row header">
+        <div>Подія</div>
+        <div>Перший сигнал</div>
+        <div>Рівень</div>
+        <div>Пік активності</div>
+        <div>Всього правок</div>
+      </div>
+      ${rows}
+    </div>`;
+}
+
+window.loadCase = function(title, event, lang, label) {
+  document.getElementById('inTitle').value = title;
+  document.getElementById('inEvent').value = event;
+  document.getElementById('inLang').value  = lang;
+  document.getElementById('inLabel').value = label;
+  runAnalysis();
+  window.scrollTo(0, 0);
+};
+</script>
+</body>
+</html>
