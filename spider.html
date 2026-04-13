@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SPIDER — Resonance</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;600&family=Bebas+Neue&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;min-height:100vh;display:flex;flex-direction:column}
+
+/* HEADER */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:0 1.2rem;height:40px;border-bottom:1px solid rgba(255,255,255,0.08);background:#07070f;flex-shrink:0}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:#fff;letter-spacing:0.1em}
+.logo em{color:#64ffda;font-style:normal}
+.logo a{color:inherit;text-decoration:none;opacity:0.5;font-size:0.9rem;margin-left:0.5rem}
+.logo a:hover{opacity:1}
+
+/* SEARCH */
+.search-bar{display:flex;align-items:center;gap:0.5rem;padding:0.8rem 1.2rem;border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0;background:#09091a}
+.search-input{flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:3px;padding:0.4rem 0.7rem;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:0.85rem;outline:none;max-width:400px}
+.search-input:focus{border-color:#64ffda}
+.search-btn{padding:0.4rem 1rem;background:rgba(100,255,218,0.1);border:1px solid rgba(100,255,218,0.4);border-radius:3px;color:#64ffda;font-family:'IBM Plex Mono',monospace;font-size:0.8rem;cursor:pointer}
+.search-btn:hover{background:rgba(100,255,218,0.2)}
+.examples{display:flex;gap:0.4rem;flex-wrap:wrap}
+.ex{padding:2px 8px;border-radius:2px;font-size:0.62rem;cursor:pointer;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.5)}
+.ex:hover{border-color:#64ffda;color:#64ffda}
+
+/* ENTITY HEADER */
+.entity-hdr{padding:0.8rem 1.2rem;border-bottom:1px solid rgba(255,255,255,0.06);display:none;background:#0a0a1a}
+.entity-name{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:#fff;line-height:1}
+.entity-meta{font-size:0.72rem;color:rgba(255,255,255,0.55);margin-top:0.2rem}
+.entity-desc{font-size:0.75rem;color:rgba(255,255,255,0.4);margin-top:0.3rem;font-style:italic}
+.pimino-badge{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1;flex-shrink:0}
+.pimino-label{font-size:0.5rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.4);text-align:center}
+
+/* GRID */
+.body{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:rgba(255,255,255,0.05);flex:1}
+.panel{background:#07070f;display:flex;flex-direction:column;overflow:hidden;min-height:0}
+.ph{display:flex;justify-content:space-between;align-items:center;padding:0 0.8rem;height:26px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;font-size:0.55rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.5);background:#09091a}
+.pb{flex:1;overflow-y:auto;overflow-x:hidden;padding:0.5rem 0}
+.pb::-webkit-scrollbar{width:2px}
+.pb::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08)}
+
+/* GRAPH PANEL */
+#graphCanvas{width:100%;flex:1;display:block}
+
+/* LAYERS PANEL */
+.layer{margin:0.3rem 0.5rem;border-radius:3px;overflow:hidden}
+.layer-hdr{display:flex;align-items:center;gap:0.4rem;padding:0.3rem 0.6rem;font-size:0.62rem;font-weight:600;cursor:pointer;border-radius:3px}
+.layer-hdr:hover{opacity:0.8}
+.layer-items{padding:0 0.6rem 0.4rem}
+.layer-item{display:flex;align-items:flex-start;gap:0.4rem;padding:0.22rem 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer}
+.layer-item:hover .li-name{color:#64ffda}
+.li-name{font-size:0.78rem;color:rgba(255,255,255,0.88);flex:1;line-height:1.3}
+.li-desc{font-size:0.6rem;color:rgba(255,255,255,0.4);margin-top:1px}
+.li-badge{font-size:0.52rem;padding:1px 5px;border-radius:2px;flex-shrink:0;margin-top:2px}
+
+/* SIGNALS PANEL */
+.sig-item{display:flex;align-items:center;gap:0.5rem;padding:0.3rem 0.8rem;border-bottom:1px solid rgba(255,255,255,0.04)}
+.sig-src{font-size:0.6rem;width:80px;flex-shrink:0;color:rgba(255,255,255,0.5)}
+.sig-val{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;flex-shrink:0;width:60px;text-align:right}
+.sig-bar{flex:1;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden}
+.sig-fill{height:100%;border-radius:2px;transition:width 0.5s}
+.sig-label{font-size:0.6rem;color:rgba(255,255,255,0.4);width:70px;text-align:right;flex-shrink:0}
+
+/* DOMINO */
+.domino-bar{padding:0.6rem 1.2rem;border-top:1px solid rgba(255,255,255,0.06);background:#09091a;flex-shrink:0;display:none}
+.domino-title{font-size:0.55rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:0.4rem}
+.domino-chain{display:flex;align-items:center;gap:0.3rem;flex-wrap:wrap}
+.domino-node{padding:3px 10px;border-radius:2px;font-size:0.68rem;border:1px solid;white-space:nowrap}
+.domino-arrow{color:rgba(255,255,255,0.3);font-size:0.8rem}
+
+/* LOADING */
+.loading{display:flex;align-items:center;justify-content:center;flex:1;flex-direction:column;gap:0.5rem}
+.loading-dot{width:6px;height:6px;border-radius:50%;background:#64ffda;animation:pulse 1s infinite}
+.loading-dot:nth-child(2){animation-delay:0.2s}
+.loading-dot:nth-child(3){animation-delay:0.4s}
+@keyframes pulse{0%,100%{opacity:0.2}50%{opacity:1}}
+.loading-dots{display:flex;gap:4px}
+.hint-big{text-align:center;color:rgba(255,255,255,0.2);font-size:0.75rem;line-height:2}
+
+/* PIMINO METER */
+.pimino-meter{display:flex;align-items:center;gap:0.8rem;margin-top:0.4rem}
+.pm-bar{flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;max-width:200px}
+.pm-fill{height:100%;border-radius:3px;transition:width 0.8s}
+.pm-dims{display:flex;gap:0.8rem;margin-top:0.25rem}
+.pm-dim{font-size:0.58rem}
+.pm-dim span{color:rgba(255,255,255,0.4)}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="logo">RESO<em>NANCE</em> // <em>SPIDER</em> <a href="/">← dashboard</a></div>
+  <div style="font-size:0.6rem;color:rgba(255,255,255,0.3)">піміно · граф впливу · доміно</div>
+</div>
+
+<div class="search-bar">
+  <input class="search-input" id="searchInput" placeholder="Wikipedia title... (e.g. Péter Magyar, Microsoft, Asha Bhosle)" />
+  <button class="search-btn" onclick="investigate()">▶ ANALYZE</button>
+  <div class="examples">
+    <span class="ex" onclick="setAndRun('Péter_Magyar')">Péter Magyar</span>
+    <span class="ex" onclick="setAndRun('Asha_Bhosle')">Asha Bhosle</span>
+    <span class="ex" onclick="setAndRun('Microsoft')">Microsoft</span>
+    <span class="ex" onclick="setAndRun('Tyson_Fury')">Tyson Fury</span>
+    <span class="ex" onclick="setAndRun('2026_Hungarian_parliamentary_election')">Hungary Election</span>
+  </div>
+</div>
+
+<div class="entity-hdr" id="entityHdr">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start">
+    <div>
+      <div class="entity-name" id="entityName">—</div>
+      <div class="entity-meta" id="entityMeta">—</div>
+      <div class="entity-desc" id="entityDesc">—</div>
+      <div class="pimino-meter">
+        <div>
+          <div style="display:flex;align-items:baseline;gap:0.4rem">
+            <div class="pimino-badge" id="piminoScore">—</div>
+            <div class="pimino-label">ПІМІНО</div>
+          </div>
+          <div class="pm-dims" id="piminoDims"></div>
+        </div>
+        <div style="flex:1">
+          <div class="pm-bar"><div class="pm-fill" id="piminoBar" style="width:0%"></div></div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:0.5rem;flex-shrink:0">
+      <a id="wikiLink" href="#" target="_blank" class="ex" style="text-decoration:none">📖 Wiki</a>
+      <a id="googleLink" href="#" target="_blank" class="ex" style="text-decoration:none">🔍 Google</a>
+    </div>
+  </div>
+</div>
+
+<div class="body" id="mainBody">
+  <!-- PANEL 1: GRAPH -->
+  <div class="panel">
+    <div class="ph"><span>🕸 павутина</span><span id="nodeCount" style="color:#64ffda">0 вузлів</span></div>
+    <canvas id="graphCanvas"></canvas>
+  </div>
+
+  <!-- PANEL 2: LAYERS -->
+  <div class="panel">
+    <div class="ph"><span>🧅 шари впливу</span><span id="relCount" style="color:#64ffda">0</span></div>
+    <div class="pb" id="layersPanel">
+      <div class="loading">
+        <div class="hint-big">Введи назву і натисни ANALYZE<br>для побудови графу впливу</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 3: SIGNALS -->
+  <div class="panel">
+    <div class="ph"><span>📡 сигнали</span><span id="sigTime" style="color:#64ffda">—</span></div>
+    <div class="pb" id="signalsPanel">
+      <div class="loading">
+        <div class="hint-big">Сигнали з'являться після аналізу</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="domino-bar" id="dominoBar">
+  <div class="domino-title">⚡ доміно — можливий ланцюжок впливу</div>
+  <div class="domino-chain" id="dominoChain"></div>
+</div>
+
+<script>
+const VERCEL = '';  // same origin
+const PROXY  = 'https://resonance-proxy-production.up.railway.app';
+const SB_URL = 'https://ovedzfpptsnxzxioyzkr.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92ZWR6ZnBwdHNueHp4aW95emtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5NDIzNTIsImV4cCI6MjA5MTUxODM1Mn0.Z4XFvR7I4HcaoOckDSpsZ4_DDZRAlWENr2VQphTdTx0';
+
+let currentData = null;
+let graphNodes = [];
+let graphEdges = [];
+let animFrame = null;
+
+function setAndRun(title) {
+  document.getElementById('searchInput').value = title.replace(/_/g,' ');
+  investigate(title);
+}
+
+function investigate(titleOverride) {
+  const raw = titleOverride || document.getElementById('searchInput').value.trim();
+  if (!raw) return;
+  const title = raw.replace(/ /g,'_');
+
+  // Show loading
+  document.getElementById('layersPanel').innerHTML = '<div class="loading"><div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div><div style="font-size:0.65rem;color:rgba(255,255,255,0.3);margin-top:0.5rem">Будуємо граф...</div></div>';
+  document.getElementById('signalsPanel').innerHTML = '<div class="loading"><div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div></div>';
+
+  // Fetch graph + signals in parallel
+  Promise.all([
+    fetch('/api/wikidata?title='+encodeURIComponent(title)).then(r=>r.json()).catch(e=>({error:e.message})),
+    fetchSignals(title),
+    fetchWikiSignal(title)
+  ]).then(([graph, signals, wikiSig]) => {
+    currentData = { graph, signals, wikiSig, title };
+    render(currentData);
+  });
+}
+
+async function fetchSignals(title) {
+  const results = {};
+  // Wikipedia anomaly from Supabase
+  try {
+    const r = await fetch(SB_URL+'/rest/v1/anomalies?title=eq.'+encodeURIComponent(title.replace(/_/g,' '))+'&order=score.desc&limit=1',
+      {headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+    const rows = await r.json();
+    if (rows?.[0]) results.wikipedia = rows[0];
+  } catch(e){}
+
+  // Google Trends
+  try {
+    const r = await fetch(PROXY+'/trends?q='+encodeURIComponent(title.replace(/_/g,' ')));
+    const d = await r.json();
+    if (d.items?.length) results.trends = d.items;
+  } catch(e){}
+
+  // Cross signals
+  try {
+    const r = await fetch(SB_URL+'/rest/v1/cross_signals?title=eq.'+encodeURIComponent(title.replace(/_/g,' '))+'&order=score.desc&limit=5',
+      {headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+    const rows = await r.json();
+    if (rows?.length) results.cross = rows;
+  } catch(e){}
+
+  // Pageview spikes
+  try {
+    const r = await fetch(SB_URL+'/rest/v1/pageview_spikes?title=eq.'+encodeURIComponent(title.replace(/_/g,' '))+'&limit=1',
+      {headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+    const rows = await r.json();
+    if (rows?.[0]) results.pageview = rows[0];
+  } catch(e){}
+
+  return results;
+}
+
+async function fetchWikiSignal(title) {
+  try {
+    const r = await fetch('https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&exsentences=2&explaintext=1&titles='+encodeURIComponent(title.replace(/_/g,' '))+'&format=json&origin=*');
+    const d = await r.json();
+    const pg = Object.values(d.query?.pages||{})[0];
+    return pg?.extract || '';
+  } catch(e){ return ''; }
+}
+
+function render({graph, signals, wikiSig, title}) {
+  if (graph.error && !graph.qid) {
+    document.getElementById('layersPanel').innerHTML = '<div class="loading"><div class="hint-big" style="color:#ff4757">Не знайдено в Wikidata.<br>Спробуй точну назву Wikipedia статті.</div></div>';
+    return;
+  }
+
+  // Entity header
+  const hdr = document.getElementById('entityHdr');
+  hdr.style.display = 'block';
+  document.getElementById('entityName').textContent = graph.label || title;
+  document.getElementById('entityMeta').textContent = (graph.type||'unknown') + (graph.qid ? ' · ' + graph.qid : '');
+  document.getElementById('entityDesc').textContent = wikiSig ? wikiSig.slice(0,180)+'…' : (graph.description||'');
+  document.getElementById('wikiLink').href = 'https://en.wikipedia.org/wiki/'+encodeURIComponent(title);
+  document.getElementById('googleLink').href = 'https://www.google.com/search?q='+encodeURIComponent(title.replace(/_/g,' ')+' news '+new Date().getFullYear());
+
+  // Pimino score
+  const pimino = calcPimino(graph, signals);
+  const piminoEl = document.getElementById('piminoScore');
+  const col = pimino.total >= 500?'#ff4757':pimino.total>=200?'#ffc800':pimino.total>=50?'#64ffda':'rgba(255,255,255,0.4)';
+  piminoEl.textContent = pimino.total;
+  piminoEl.style.color = col;
+  document.getElementById('piminoBar').style.cssText = 'width:'+Math.min(pimino.total/10,100)+'%;background:'+col;
+  document.getElementById('piminoDims').innerHTML =
+    '<div class="pm-dim"><span>широта</span> '+pimino.width+'</div>'+
+    '<div class="pm-dim"><span>глибина</span> '+pimino.depth+'</div>'+
+    '<div class="pm-dim"><span>сигнал</span> '+pimino.signal+'</div>';
+
+  // Layers panel
+  renderLayers(graph);
+
+  // Signals panel
+  renderSignals(signals, graph);
+
+  // Graph canvas
+  buildGraph(graph);
+
+  // Domino chain
+  renderDomino(graph, signals, pimino);
+}
+
+function calcPimino(graph, signals) {
+  const rels = graph.relations || {};
+  const relCount = Object.values(rels).flat().length;
+
+  // Широта — скільки різних шарів зачіпає
+  const layers = Object.keys(rels).length;
+  const width = Math.min(layers * 15, 100);
+
+  // Глибина — важливість зв'язків
+  const highVal = Object.values(rels).flat().filter(r=>r.highValue).length;
+  const depth = Math.min(highVal * 20, 150);
+
+  // Сигнал — з наших джерел
+  let signal = 0;
+  if (signals.wikipedia) signal += Math.min(signals.wikipedia.editors * 15, 100);
+  if (signals.trends?.length) signal += signals.trends.length * 20;
+  if (signals.pageview) signal += Math.min(signals.pageview.ratio * 5, 100);
+  if (signals.cross?.length) signal += signals.cross.length * 15;
+
+  const total = Math.round(width + depth + signal);
+  return { total, width: Math.round(width), depth: Math.round(depth), signal: Math.round(signal) };
+}
+
+const LAYER_CONFIG = {
+  employer:       { icon:'🏢', label:'Роботодавці',    col:'#64ffda',  bg:'rgba(100,255,218,0.08)' },
+  party:          { icon:'🏛', label:'Партії',          col:'#f72585',  bg:'rgba(247,37,133,0.08)' },
+  country:        { icon:'🌍', label:'Країни',          col:'#4285f4',  bg:'rgba(66,133,244,0.08)' },
+  position:       { icon:'👤', label:'Посади',          col:'#ffc800',  bg:'rgba(255,200,0,0.08)' },
+  spouse:         { icon:'💍', label:'Родина',          col:'#ff6b9d',  bg:'rgba(255,107,157,0.08)' },
+  member_of:      { icon:'🔗', label:'Членство',        col:'#48cae4',  bg:'rgba(72,202,228,0.08)' },
+  educated_at:    { icon:'🎓', label:'Освіта',          col:'#a8dadc',  bg:'rgba(168,218,220,0.08)' },
+  participated_in:{ icon:'🗳', label:'Події',           col:'#e76f51',  bg:'rgba(231,111,81,0.08)' },
+  parent_org:     { icon:'🏗', label:'Материнська орг', col:'#ffc800',  bg:'rgba(255,200,0,0.08)' },
+  subsidiary:     { icon:'🔀', label:'Дочірні',         col:'#64ffda',  bg:'rgba(100,255,218,0.08)' },
+  location:       { icon:'📍', label:'Локація',         col:'#4285f4',  bg:'rgba(66,133,244,0.08)' },
+  related:        { icon:'◆',  label:'Пов\'язані',      col:'rgba(255,255,255,0.5)', bg:'rgba(255,255,255,0.04)' },
+};
+
+function renderLayers(graph) {
+  const el = document.getElementById('layersPanel');
+  const rels = graph.relations || {};
+  if (!Object.keys(rels).length) {
+    el.innerHTML = '<div class="loading"><div class="hint-big">Зв\'язків не знайдено</div></div>';
+    return;
+  }
+  document.getElementById('relCount').textContent = Object.values(rels).flat().length;
+  el.innerHTML = '';
+
+  // Сортуємо — спочатку highValue
+  const order = ['spouse','position','employer','party','country','participated_in','parent_org','subsidiary','member_of','educated_at','location','related'];
+  const sorted = [...order, ...Object.keys(rels).filter(k=>!order.includes(k))];
+
+  sorted.forEach(key => {
+    if (!rels[key]?.length) return;
+    const cfg = LAYER_CONFIG[key] || LAYER_CONFIG.related;
+    const items = rels[key];
+    const div = document.createElement('div');
+    div.className = 'layer';
+    div.innerHTML = `<div class="layer-hdr" style="background:${cfg.bg};color:${cfg.col}">`
+      +`<span>${cfg.icon}</span><span>${cfg.label}</span>`
+      +`<span style="margin-left:auto;font-size:0.55rem;opacity:0.6">${items.length}</span></div>`
+      +`<div class="layer-items">`
+      +items.map(item=>`
+        <div class="layer-item" onclick="drillDown('${(item.id||'').replace(/'/g,'')}','${(item.name||'').replace(/'/g,'')}')">
+          <div style="flex:1">
+            <div class="li-name">${item.name||'—'}</div>
+            ${item.desc?`<div class="li-desc">${item.desc.slice(0,80)}</div>`:''}
+          </div>
+          <span class="li-badge" style="background:${cfg.bg};color:${cfg.col};border:1px solid ${cfg.col}33">${cfg.icon}</span>
+        </div>`).join('')
+      +'</div>';
+    el.appendChild(div);
+  });
+}
+
+function renderSignals(signals, graph) {
+  const el = document.getElementById('signalsPanel');
+  el.innerHTML = '';
+  document.getElementById('sigTime').textContent = new Date().toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
+
+  const rows = [];
+
+  if (signals.wikipedia) {
+    const w = signals.wikipedia;
+    rows.push({ src:'📖 Wikipedia', val: w.editors+'ред', raw: Math.min(w.editors/10,1), col:'#64ffda', label: w.score+' score' });
+  }
+  if (signals.pageview) {
+    const p = signals.pageview;
+    rows.push({ src:'👁 Pageviews', val:'×'+p.ratio, raw: Math.min(p.ratio/50,1), col:'#f72585', label: (p.last_views||0).toLocaleString() });
+  }
+  if (signals.trends?.length) {
+    const geos = [...new Set(signals.trends.map(t=>t.geo))];
+    rows.push({ src:'📊 G.Trends', val: geos.length+'🌍', raw: Math.min(geos.length/8,1), col:'#4285f4', label: geos.join(' ') });
+  }
+  if (signals.cross?.length) {
+    rows.push({ src:'⚡ Cross', val: signals.cross.length+'сиг', raw: Math.min(signals.cross.length/5,1), col:'#ffc800', label: signals.cross[0]?.type||'' });
+  }
+
+  if (!rows.length) {
+    el.innerHTML = '<div style="padding:1rem;font-size:0.7rem;color:rgba(255,255,255,0.3);text-align:center">Активних сигналів не знайдено.<br><span style="opacity:0.5">Подія може бути неактивна зараз.</span></div>';
+    return;
+  }
+
+  rows.forEach(row => {
+    const div = document.createElement('div');
+    div.className = 'sig-item';
+    div.innerHTML = `<div class="sig-src">${row.src}</div>`
+      +`<div class="sig-val" style="color:${row.col}">${row.val}</div>`
+      +`<div class="sig-bar"><div class="sig-fill" style="width:${row.raw*100}%;background:${row.col}"></div></div>`
+      +`<div class="sig-label">${row.label}</div>`;
+    el.appendChild(div);
+  });
+
+  // Tickers якщо є
+  if (graph.tickers?.length) {
+    const div = document.createElement('div');
+    div.style.cssText = 'padding:0.5rem 0.8rem;border-top:1px solid rgba(255,255,255,0.05);margin-top:0.3rem';
+    div.innerHTML = '<div style="font-size:0.55rem;color:rgba(255,255,255,0.4);margin-bottom:0.3rem;letter-spacing:0.08em;text-transform:uppercase">📈 Біржові тікери</div>'
+      + graph.tickers.map(t=>`<a href="https://finance.yahoo.com/quote/${t}" target="_blank" style="display:inline-block;margin:2px;padding:2px 8px;border-radius:2px;font-size:0.65rem;background:rgba(100,255,218,0.1);color:#64ffda;border:1px solid rgba(100,255,218,0.3);text-decoration:none">${t}</a>`).join('');
+    el.appendChild(div);
+  }
+}
+
+function renderDomino(graph, signals, pimino) {
+  const bar = document.getElementById('dominoBar');
+  const chain = document.getElementById('dominoChain');
+  if (pimino.total < 20) { bar.style.display='none'; return; }
+  bar.style.display = 'block';
+
+  const rels = graph.relations || {};
+  const nodes = [];
+  const col = pimino.total>=500?'#ff4757':pimino.total>=200?'#ffc800':'#64ffda';
+
+  // Будуємо ланцюжок
+  nodes.push({ name: graph.label, col, type: graph.type });
+  if (rels.party?.[0])          nodes.push({ name: rels.party[0].name,    col:'#f72585', type:'party' });
+  if (rels.country?.[0])        nodes.push({ name: rels.country[0].name,  col:'#4285f4', type:'country' });
+  if (rels.employer?.[0])       nodes.push({ name: rels.employer[0].name, col:'#64ffda', type:'company' });
+  if (rels.participated_in?.[0])nodes.push({ name: rels.participated_in[0].name, col:'#e76f51', type:'event' });
+  if (signals.trends?.length)   nodes.push({ name: 'Google Trends '+(signals.trends.length)+'🌍', col:'#4285f4', type:'signal' });
+  if (signals.pageview)         nodes.push({ name: '×'+signals.pageview.ratio+' переглядів', col:'#f72585', type:'signal' });
+
+  chain.innerHTML = nodes.map((n,i) => {
+    const bg = n.col+'18';
+    return (i>0?'<span class="domino-arrow">→</span>':'')
+      +`<span class="domino-node" style="background:${bg};color:${n.col};border-color:${n.col}44">${n.name}</span>`;
+  }).join('');
+}
+
+// ── CANVAS GRAPH ──
+function buildGraph(graph) {
+  const canvas = document.getElementById('graphCanvas');
+  const panel = canvas.parentElement;
+  canvas.width = panel.clientWidth;
+  canvas.height = panel.clientHeight - 26;
+
+  const rels = graph.relations || {};
+  const allItems = Object.entries(rels).flatMap(([type, items]) =>
+    items.map(item => ({ ...item, relType: type }))
+  );
+
+  // Центральний вузол
+  graphNodes = [{ id: graph.qid||'center', name: graph.label, type:'center', x: canvas.width/2, y: canvas.height/2, r:22, col:'#64ffda' }];
+  graphEdges = [];
+
+  // Розміщуємо вузли по колах
+  const byType = {};
+  allItems.forEach(item => {
+    if (!byType[item.relType]) byType[item.relType] = [];
+    byType[item.relType].push(item);
+  });
+
+  const types = Object.keys(byType);
+  const rings = [
+    { r: 90, max: 8 },
+    { r: 160, max: 16 },
+  ];
+
+  let nodeIdx = 0;
+  types.forEach((type, ti) => {
+    const cfg = LAYER_CONFIG[type] || LAYER_CONFIG.related;
+    byType[type].slice(0, 6).forEach((item, i) => {
+      const ring = rings[Math.min(Math.floor(nodeIdx/8), rings.length-1)];
+      const total = Math.min(allItems.length, rings[0].max + rings[1].max);
+      const angle = (nodeIdx / total) * Math.PI * 2 - Math.PI/2;
+      const x = canvas.width/2 + Math.cos(angle) * ring.r;
+      const y = canvas.height/2 + Math.sin(angle) * ring.r;
+      const node = { id: item.id||item.name, name: item.name, type, x, y, r:item.highValue?12:8, col:cfg.col };
+      graphNodes.push(node);
+      graphEdges.push({ from: 0, to: graphNodes.length-1, col: cfg.col, weight: item.highValue?2:1 });
+      nodeIdx++;
+    });
+  });
+
+  if (animFrame) cancelAnimationFrame(animFrame);
+  drawGraph(canvas);
+}
+
+function drawGraph(canvas) {
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Edges
+  graphEdges.forEach(e => {
+    const from = graphNodes[e.from];
+    const to = graphNodes[e.to];
+    ctx.beginPath();
+    ctx.moveTo(from.x, from.y);
+    ctx.lineTo(to.x, to.y);
+    ctx.strokeStyle = to.col + '40';
+    ctx.lineWidth = e.weight;
+    ctx.stroke();
+  });
+
+  // Nodes
+  graphNodes.forEach((n, i) => {
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, n.r, 0, Math.PI*2);
+    ctx.fillStyle = n.col + (i===0?'33':'22');
+    ctx.fill();
+    ctx.strokeStyle = n.col;
+    ctx.lineWidth = i===0?2:1;
+    ctx.stroke();
+
+    // Label
+    const maxLen = i===0?20:12;
+    const label = n.name?.length>maxLen ? n.name.slice(0,maxLen)+'…' : n.name;
+    ctx.fillStyle = i===0?n.col:'rgba(255,255,255,0.75)';
+    ctx.font = (i===0?'600 ':'')+(i===0?11:9)+'px IBM Plex Mono';
+    ctx.textAlign = 'center';
+    ctx.fillText(label||'', n.x, n.y + n.r + 12);
+  });
+
+  document.getElementById('nodeCount').textContent = graphNodes.length + ' вузлів';
+}
+
+function drillDown(qid, name) {
+  if (name) {
+    document.getElementById('searchInput').value = name;
+    investigate(name.replace(/ /g,'_'));
+  }
+}
+
+// Resize canvas on window resize
+window.addEventListener('resize', () => {
+  if (currentData?.graph) buildGraph(currentData.graph);
+});
+
+// URL param support: /spider?title=...
+const urlTitle = new URLSearchParams(window.location.search).get('title');
+if (urlTitle) setAndRun(urlTitle);
+</script>
+</body>
+</html>
