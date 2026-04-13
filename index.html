@@ -263,6 +263,22 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 .sec-ma{background:rgba(72,202,228,0.1);color:#48cae4;border:1px solid rgba(72,202,228,0.2)}
 .sec-event{background:rgba(255,200,0,0.1);color:#ffc800;border:1px solid rgba(255,200,0,0.2)}
 .sec-other{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.1)}
+
+/* MINI RETRO */
+#retroModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9998;align-items:center;justify-content:center}
+.retro-box{background:#0d0d1a;border:1px solid rgba(247,37,133,0.2);border-radius:3px;width:min(680px,94vw);max-height:85vh;display:flex;flex-direction:column;overflow:hidden}
+.retro-hdr{display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0.9rem;border-bottom:1px solid rgba(255,255,255,0.07);flex-shrink:0}
+.retro-title{font-size:0.88rem;color:#fff;font-weight:600}
+.retro-close{background:transparent;border:none;color:rgba(255,255,255,0.3);font-size:1.3rem;cursor:pointer;line-height:1;padding:0}
+.retro-body{padding:0.75rem 0.9rem;overflow-y:auto;flex:1;font-size:0.72rem}
+.retro-bar-wrap{display:flex;align-items:flex-end;gap:2px;height:70px;margin:0.5rem 0 0.25rem}
+.retro-bar{flex:1;min-width:4px;border-radius:2px 2px 0 0;cursor:pointer;transition:opacity 0.1s}
+.retro-bar:hover{opacity:0.7}
+.retro-sig{text-align:center;padding:0.5rem;background:rgba(255,255,255,0.03);border-radius:3px;margin-bottom:0.5rem}
+.retro-sig-val{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1}
+.retro-sig-sub{font-size:0.6rem;color:rgba(255,255,255,0.4);margin-top:2px}
+.btn-retro{padding:1px 7px;border-radius:2px;font-size:0.5rem;cursor:pointer;border:1px solid rgba(247,37,133,0.4);background:rgba(247,37,133,0.08);color:#f72585;font-family:'IBM Plex Mono',monospace;transition:all 0.15s;font-weight:600}
+.btn-retro:hover{background:rgba(247,37,133,0.18)}
 </style>
 </head>
 <body>
@@ -377,6 +393,22 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
     <div class="sec" style="flex:1;display:flex;flex-direction:column;min-height:0">
       <div class="ph"><span>📡 потік</span></div>
       <div class="pb" id="feedRecent" style="flex:1"></div>
+    </div>
+  </div>
+</div>
+
+<!-- RETRO MODAL -->
+<div id="retroModal">
+  <div class="retro-box">
+    <div class="retro-hdr">
+      <div class="retro-title" id="retroTitle">📊 Ретроспектива</div>
+      <div style="display:flex;gap:0.4rem;align-items:center">
+        <a id="retroFullLink" href="/retro.html" target="_blank" class="btn-g" style="font-size:0.52rem">↗ повний аналіз</a>
+        <button class="retro-close" onclick="document.getElementById('retroModal').style.display='none'">×</button>
+      </div>
+    </div>
+    <div class="retro-body" id="retroBody">
+      <div class="hint">Завантаження...</div>
     </div>
   </div>
 </div>
@@ -620,7 +652,7 @@ function renderSignal(){
   sorted.forEach((p,rank)=>{
     const col=p.score>=50?'#ff4757':p.score>=25?'#ffc800':'#64ffda';
     const typeClass=cardTypeClass(p);
-    const gUrl='https://www.google.com/search?q='+encodeURIComponent(p.title+' news '+new Date().getFullYear());
+    const gUrl='https://www.google.com/search?q='+encodeURIComponent(p.title+' news '+new Date().getFullYear())+'&udm=50';
     const ageMin=Math.round((now-p.firstSeen)/60000);
     const kws=(p.commentKeywords||[]).filter(k=>k!=='REVERT');
     const kwsHtml=kws.map(k=>'<span class="kw '+kwClass(k)+'">'+kwLabel(k)+'</span>').join('');
@@ -1253,6 +1285,66 @@ function openSpider(title){
   window.open('/spider?title='+encodeURIComponent(title.replace(/ /g,'_')),'_blank');
 }
 
+// ── RETRO MODAL ──
+function openRetroModal(title, lang) {
+  const modal = document.getElementById('retroModal');
+  modal.style.display = 'flex';
+  document.getElementById('retroTitle').textContent = '📊 ' + title;
+  document.getElementById('retroFullLink').href = '/retro.html?title='+encodeURIComponent(title)+'&event='+new Date().toISOString().slice(0,10)+'&lang='+(lang||'en')+'&label='+encodeURIComponent(title);
+  const body = document.getElementById('retroBody');
+  body.innerHTML = '<div class="hint">Завантажую дані Wikipedia за 14 днів...</div>';
+
+  fetch('/api/retro?title='+encodeURIComponent(title)+'&event='+new Date().toISOString().slice(0,10)+'&lang='+(lang||'en')+'&days=14')
+    .then(r=>r.json())
+    .then(data => {
+      if (!data.found) { body.innerHTML = '<div class="hint">Стаття не знайдена на '+( lang||'en')+'.wikipedia</div>'; return; }
+      if (!data.total) { body.innerHTML = '<div class="hint">Правок за 14 днів не знайдено</div>'; return; }
+
+      const tl = data.timeline || [];
+      const maxE = Math.max(...tl.map(d=>d.edits),1);
+      const fs = data.firstSignal;
+      const sigCol = fs ? (fs.signal==='STRONG'?'#ff4757':fs.signal==='MED'?'#ffc800':'#64ffda') : 'rgba(255,255,255,0.2)';
+
+      // Bars
+      const bars = tl.map(d=>{
+        const h=Math.max(3,Math.round(d.edits/maxE*66));
+        const col=d.t===0?'#fff':d.signal==='STRONG'?'#ff4757':d.signal==='MED'?'#ffc800':d.signal==='LOW'?'#64ffda':'rgba(255,255,255,0.12)';
+        return '<div class="retro-bar" style="height:'+h+'px;background:'+col+'" title="'+d.day+' T'+(d.t>0?'+':'')+d.t+': '+d.edits+'пр '+d.editors+'ред"></div>';
+      }).join('');
+
+      // Top bursts
+      const burstRows = (data.topHours||[]).slice(0,3).map(h=>{
+        const pre = h.t_hours<0?'<span style="color:#64ffda">ДО '+Math.abs(h.t_hours)+'г</span>':h.t_hours===0?'<span style="color:#fff">В МОМЕНТ</span>':'<span style="color:rgba(255,255,255,0.3)">після '+h.t_hours+'г</span>';
+        return '<div style="display:flex;gap:0.5rem;padding:0.18rem 0;font-size:0.62rem;border-bottom:1px solid rgba(255,255,255,0.04)">'
+          +'<span style="color:rgba(255,255,255,0.4);width:120px;flex-shrink:0">'+h.hour+':00 UTC</span>'
+          +'<span>'+pre+'</span>'
+          +'<span style="color:#64ffda;margin-left:auto">'+h.editors+'ред · '+h.edits+'пр</span>'
+          +'</div>';
+      }).join('');
+
+      body.innerHTML =
+        '<div style="display:flex;gap:0.5rem;margin-bottom:0.6rem">'
+          +'<div class="retro-sig" style="flex:1">'
+            +'<div class="retro-sig-val" style="color:'+sigCol+'">'+(fs?'T'+fs.t+'д':'—')+'</div>'
+            +'<div class="retro-sig-sub">'+(fs?fs.editors+'ред · '+fs.signal:'сигналу не виявлено')+'</div>'
+          +'</div>'
+          +'<div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:0.5rem;background:rgba(255,255,255,0.02);border-radius:3px;font-size:0.65rem">'
+            +'<div>✏️ <b style="color:#64ffda">'+data.total+'</b> правок за 14 днів</div>'
+            +'<div style="margin-top:4px">👥 <b style="color:#64ffda">'+(new Set(tl.map(d=>d.editors))).size+'</b> унікальних редакторів</div>'
+          +'</div>'
+        +'</div>'
+        +'<div class="retro-bar-wrap">'+bars+'</div>'
+        +'<div style="display:flex;justify-content:space-between;font-size:0.5rem;color:rgba(255,255,255,0.2);margin-bottom:0.6rem">'
+          +'<span>'+(tl[0]?.day?.slice(5)||'')+'</span>'
+          +'<span style="color:#fff">← сьогодні</span>'
+          +'<span>'+(tl[tl.length-1]?.day?.slice(5)||'')+'</span>'
+        +'</div>'
+        +(burstRows?'<div style="font-size:0.55rem;color:rgba(255,255,255,0.3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.25rem">⚡ burst windows</div>'+burstRows:'');
+    })
+    .catch(e => { body.innerHTML = '<div class="hint" style="color:#ff4757">'+e.message+'</div>'; });
+}
+document.getElementById('retroModal').addEventListener('click',function(e){if(e.target===this)this.style.display='none';});
+
 // ── AI MODAL ──
 let _aimAbort=null;
 fetchAiCtx.ver=0;
@@ -1261,7 +1353,7 @@ function openAiModal(article){
   _aimAbort=new AbortController();
   const modal=document.getElementById('aiModal');modal.style.display='flex';
   document.getElementById('aimTitle').textContent=article;
-  document.getElementById('aimGoogle').href='https://www.google.com/search?q='+encodeURIComponent(article+' news '+new Date().getFullYear());
+  document.getElementById('aimGoogle').href='https://www.google.com/search?q='+encodeURIComponent(article+' news '+new Date().getFullYear())+'&udm=50';
   document.getElementById('aimContent').innerHTML='';
   document.getElementById('aimLoad').innerHTML='<div style="display:flex;flex-direction:column;gap:0.25rem;margin-bottom:0.5rem">'
     +[{id:'src-wiki',icon:'📖',label:'Wikipedia',col:'#64ffda'},
