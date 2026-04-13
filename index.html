@@ -11,262 +11,253 @@ html{font-size:16px}
 body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;height:100vh;overflow:hidden;display:flex;flex-direction:column}
 
 /* HEADER */
-.hdr{display:flex;align-items:center;justify-content:space-between;padding:0 1rem;height:32px;border-bottom:1px solid rgba(255,255,255,0.07);background:#07070f;flex-shrink:0}
-.logo{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:0.1em;color:#fff}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:0 1rem;height:36px;border-bottom:1px solid rgba(255,255,255,0.07);background:#07070f;flex-shrink:0}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:0.1em;color:#fff}
 .logo em{color:#64ffda;font-style:normal}
-.logo small{font-size:0.65rem;opacity:0.2;font-family:'IBM Plex Mono',monospace;margin-left:0.5rem}
-.hstats{display:flex;align-items:center;gap:1rem}
-.hs .v{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;color:#fff;line-height:1}
-.hs .l{font-size:0.65rem;letter-spacing:0.07em;text-transform:uppercase;color:rgba(255,255,255,0.6)}
-.ldot{width:5px;height:5px;border-radius:50%;background:#64ffda;animation:blink 2s infinite}
+.logo small{font-size:0.5rem;opacity:0.25;font-family:'IBM Plex Mono',monospace;margin-left:0.5rem}
+.hstats{display:flex;align-items:center;gap:1.2rem}
+.hs .v{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:#fff;line-height:1}
+.hs .l{font-size:0.52rem;letter-spacing:0.07em;text-transform:uppercase;color:rgba(255,255,255,0.3)}
+.ldot{width:6px;height:6px;border-radius:50%;background:#64ffda;animation:blink 2s infinite}
 .ldot.off{background:#ff4757;animation:none}
 .ldot.wait{background:#ffc800;animation:none}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0.15}}
-.lbl{display:flex;align-items:center;gap:0.3rem;font-size:0.7rem}
-.stimer{font-size:0.65rem;color:rgba(255,255,255,0.5)}
+.lbl{display:flex;align-items:center;gap:0.3rem;font-size:0.6rem}
+.stimer{font-size:0.52rem;color:rgba(255,255,255,0.2)}
 
-/* FILTER */
-.fbar{display:flex;align-items:center;gap:0.25rem;padding:0 1rem;height:22px;border-bottom:1px solid rgba(255,255,255,0.05);background:#07070f;flex-shrink:0}
-.fbl{font-size:0.5rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-right:0.15rem}
-.fb{padding:0 6px;height:14px;border-radius:2px;font-size:0.7rem;cursor:pointer;border:1px solid rgba(255,255,255,0.07);background:transparent;color:rgba(255,255,255,0.65);font-family:'IBM Plex Mono',monospace;transition:all 0.15s}
-.fb:hover{color:rgba(255,255,255,0.55)}
-.fb.on{border-color:#64ffda;color:#64ffda;background:rgba(100,255,218,0.06)}
-.fsep{width:1px;height:12px;background:rgba(255,255,255,0.06);margin:0 0.1rem}
+/* FILTER BAR */
+.fbar{display:flex;align-items:center;gap:0.3rem;padding:0 1rem;height:24px;border-bottom:1px solid rgba(255,255,255,0.05);background:#07070f;flex-shrink:0}
+.fbl{font-size:0.52rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-right:0.2rem}
+.fb{padding:0 7px;height:16px;border-radius:2px;font-size:0.56rem;cursor:pointer;border:1px solid rgba(255,255,255,0.08);background:transparent;color:rgba(255,255,255,0.4);font-family:'IBM Plex Mono',monospace;transition:all 0.15s}
+.fb:hover{color:rgba(255,255,255,0.7)}
+.fb.on{border-color:#64ffda;color:#64ffda;background:rgba(100,255,218,0.07)}
+.fsep{width:1px;height:14px;background:rgba(255,255,255,0.07);margin:0 0.15rem}
 
-/* GRID — 4 cols */
-.body{display:grid;grid-template-columns:1fr 1fr 0.75fr 0.75fr;gap:1px;background:rgba(255,255,255,0.05);flex:1;overflow:hidden;min-height:0}
+/* GRID */
+.body{display:grid;grid-template-columns:1.4fr 1fr 0.9fr 0.9fr;gap:1px;background:rgba(255,255,255,0.05);flex:1;overflow:hidden;min-height:0}
 .col{background:#07070f;display:flex;flex-direction:column;overflow:hidden;min-height:0}
-.ph{display:flex;justify-content:space-between;align-items:center;padding:0 0.7rem;height:24px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.75);background:#09091a}
-.ph .ac{color:#64ffda}.ph .rd{color:#ff4757}.ph .gd{color:#ffc800}.ph .pk{color:#f72585}
+.ph{display:flex;justify-content:space-between;align-items:center;padding:0 0.7rem;height:26px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;font-size:0.58rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.6);background:#09091a}
+.ph .ac{color:#64ffda}.ph .rd{color:#ff4757}.ph .gd{color:#ffc800}.ph .pk{color:#f72585}.ph .pu{color:#7209b7}
 .pb{flex:1;overflow-y:auto;overflow-x:hidden;min-height:0}
 .pb::-webkit-scrollbar{width:2px}
-.pb::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08)}
-.hint{padding:0.6rem 0.7rem;font-size:0.7rem;color:rgba(255,255,255,0.55);line-height:1.6}
+.pb::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1)}
 .sec{border-top:1px solid rgba(255,255,255,0.05);flex-shrink:0}
+.hint{padding:0.8rem 0.7rem;font-size:0.62rem;color:rgba(255,255,255,0.25);line-height:1.6}
 
-/* EDIT CARDS */
-.pc{margin:0.35rem 0.4rem;padding:0.45rem 0.6rem;border-radius:2px;animation:cin 0.3s ease}
+/* ═══════════════════════════════════
+   КОЛОНКА 1 — ЖИВИЙ СИГНАЛ
+   Газетна верстка: топ картка велика,
+   наступні менші
+═══════════════════════════════════ */
+
+/* HERO картка — топ 1 */
+.hero{margin:0.5rem 0.5rem;padding:0.7rem 0.8rem;border-radius:3px;animation:cin 0.4s ease}
+.hero.type-death{border:2px solid #ff4757;background:rgba(255,71,87,0.08)}
+.hero.type-res{border:2px solid #f72585;background:rgba(247,37,133,0.07)}
+.hero.type-new{border:2px solid #7209b7;background:rgba(114,9,183,0.08)}
+.hero.type-geo{border:2px solid #f72585;background:rgba(247,37,133,0.06)}
+.hero.type-default{border:1px solid rgba(255,200,0,0.3);background:rgba(255,200,0,0.04)}
+
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.3rem}
+.hero-kw{display:flex;gap:0.2rem;flex-wrap:wrap}
+.kw{padding:2px 7px;border-radius:2px;font-size:0.6rem;font-weight:700;letter-spacing:0.05em}
+.kw-death{background:rgba(255,71,87,0.2);color:#ff4757;border:1px solid rgba(255,71,87,0.4)}
+.kw-disaster{background:rgba(255,71,87,0.15);color:#ff6b6b;border:1px solid rgba(255,71,87,0.3)}
+.kw-scandal{background:rgba(255,165,0,0.15);color:#ffa500;border:1px solid rgba(255,165,0,0.3)}
+.kw-bankrupt{background:rgba(255,165,0,0.12);color:#ffb347;border:1px solid rgba(255,165,0,0.25)}
+.kw-appointed{background:rgba(100,255,218,0.1);color:#64ffda;border:1px solid rgba(100,255,218,0.25)}
+.kw-new{background:rgba(114,9,183,0.15);color:#b388ff;border:1px solid rgba(114,9,183,0.3)}
+.kw-war{background:rgba(255,71,87,0.1);color:#ff8888;border:1px solid rgba(255,71,87,0.2)}
+.kw-trend{background:rgba(66,133,244,0.1);color:#4285f4;border:1px solid rgba(66,133,244,0.2)}
+
+.hero-score-wrap{text-align:right;flex-shrink:0}
+.hero-score{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;line-height:1}
+.hero-score-label{font-size:0.5rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.3)}
+
+.hero-title{font-size:1.1rem;color:#fff;font-weight:600;line-height:1.25;margin-bottom:0.2rem}
+.hero-title a{color:inherit;text-decoration:none}
+.hero-title a:hover{color:#64ffda}
+
+.hero-prog{height:3px;background:rgba(255,255,255,0.07);border-radius:2px;overflow:hidden;margin-bottom:0.3rem}
+.hero-prog-f{height:100%;border-radius:2px;transition:width 0.6s}
+
+.hero-stats{display:flex;gap:0.8rem;margin-bottom:0.25rem;align-items:flex-end}
+.hstat .v{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;line-height:1}
+.hstat .l{font-size:0.48rem;letter-spacing:0.06em;text-transform:uppercase;color:rgba(255,255,255,0.35)}
+
+.hero-delta{font-size:0.65rem;margin-bottom:0.2rem}
+.hero-desc{font-size:0.65rem;color:rgba(255,255,255,0.45);line-height:1.5;font-style:italic;border-left:2px solid rgba(255,255,255,0.1);padding-left:0.5rem;margin-bottom:0.25rem}
+.hero-acts{display:flex;gap:0.3rem;align-items:center}
+.btn-g{padding:2px 8px;border-radius:2px;font-size:0.55rem;cursor:pointer;border:1px solid rgba(255,255,255,0.15);background:transparent;color:rgba(255,255,255,0.5);font-family:'IBM Plex Mono',monospace;text-decoration:none;display:inline-block;transition:all 0.15s}
+.btn-g:hover{color:#fff;border-color:rgba(255,255,255,0.4)}
+.btn-ai{padding:2px 8px;border-radius:2px;font-size:0.55rem;cursor:pointer;border:1px solid rgba(100,255,218,0.4);background:rgba(100,255,218,0.08);color:#64ffda;font-family:'IBM Plex Mono',monospace;transition:all 0.15s;font-weight:600}
+.btn-ai:hover{background:rgba(100,255,218,0.18)}
+.btn-sp{padding:2px 8px;border-radius:2px;font-size:0.55rem;cursor:pointer;border:1px solid rgba(247,37,133,0.4);background:rgba(247,37,133,0.08);color:#f72585;font-family:'IBM Plex Mono',monospace;transition:all 0.15s;font-weight:600}
+.btn-sp:hover{background:rgba(247,37,133,0.18)}
+.hero-timer{font-size:0.5rem;color:rgba(255,255,255,0.2);margin-left:auto}
+
+/* MEDIUM картка — позиції 2-4 */
+.mc{margin:0.3rem 0.5rem;padding:0.4rem 0.6rem;border-radius:2px;animation:cin 0.3s ease;cursor:pointer}
+.mc:hover{background:rgba(255,255,255,0.02)}
+.mc.type-death{border-left:3px solid #ff4757;background:rgba(255,71,87,0.04)}
+.mc.type-res{border-left:3px solid #f72585;background:rgba(247,37,133,0.04)}
+.mc.type-new{border-left:3px solid #7209b7;background:rgba(114,9,183,0.04)}
+.mc.type-default{border-left:2px solid rgba(255,200,0,0.3);background:transparent}
+.mc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.1rem}
+.mc-title{font-size:0.88rem;color:rgba(255,255,255,0.92);font-weight:600;flex:1;padding-right:0.4rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mc-score{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;flex-shrink:0}
+.mc-meta{display:flex;gap:0.4rem;align-items:center;font-size:0.6rem;color:rgba(255,255,255,0.5)}
+.mc-kws{display:flex;gap:0.15rem}
+
+/* SMALL картка — позиції 5+ */
+.sc{display:flex;align-items:center;gap:0.3rem;padding:0.22rem 0.6rem;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background 0.1s}
+.sc:hover{background:rgba(255,255,255,0.02)}
+.sc-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.sc-title{font-size:0.78rem;color:rgba(255,255,255,0.88);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc-meta{font-size:0.58rem;color:rgba(255,255,255,0.4);flex-shrink:0}
+.sc-score{font-family:'Bebas Neue',sans-serif;font-size:0.95rem;flex-shrink:0;width:28px;text-align:right}
+.sc-ai{padding:1px 5px;border-radius:2px;font-size:0.52rem;cursor:pointer;border:1px solid rgba(100,255,218,0.3);background:rgba(100,255,218,0.06);color:#64ffda;font-family:'IBM Plex Mono',monospace;flex-shrink:0}
+.sc-sp{padding:1px 5px;border-radius:2px;font-size:0.52rem;cursor:pointer;border:1px solid rgba(247,37,133,0.3);background:rgba(247,37,133,0.06);color:#f72585;font-family:'IBM Plex Mono',monospace;flex-shrink:0}
+
 @keyframes cin{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-.pc.res{border:1.5px solid #f72585;background:rgba(247,37,133,0.07)}
-.pc.mul{border:1px solid rgba(255,200,0,0.35);background:rgba(255,200,0,0.03)}
-.pc.sng{border:1px solid rgba(255,71,87,0.22);background:rgba(255,71,87,0.02)}
-.pc-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.15rem}
-.pc-label{font-size:0.5rem;letter-spacing:0.07em;text-transform:uppercase}
-.pc-label.pk{color:#f72585}.pc-label.gd{color:#ffc800}.pc-label.rd{color:#ff4757}
-.pc-score{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;line-height:1;flex-shrink:0}
-.pc-score span{display:block;font-family:'IBM Plex Mono',monospace;font-size:0.65rem;opacity:0.45;text-align:center}
-.pc-title{font-size:0.92rem;color:#fff;font-weight:600;line-height:1.2;margin-bottom:0.1rem}
-.pc-title a{color:inherit;text-decoration:none}.pc-title a:hover{color:#64ffda}
-.pc-prog{height:2px;background:rgba(255,255,255,0.06);border-radius:1px;overflow:hidden;margin-bottom:0.18rem}
-.pc-prog-f{height:100%;border-radius:1px;transition:width 0.5s}
-.pc-stats{display:flex;gap:0.5rem;margin-bottom:0.15rem}
-.pc-stat .v{font-family:'Bebas Neue',sans-serif;font-size:0.95rem;line-height:1}
-.pc-stat .l{font-size:0.7rem;letter-spacing:0.05em;text-transform:uppercase;color:rgba(255,255,255,0.55)}
-.pc-badges{display:flex;flex-wrap:wrap;gap:0.18rem;margin-bottom:0.12rem}
-.pb2{padding:1px 5px;border-radius:2px;font-size:0.5rem}
-.pc-sigs{display:flex;gap:0.18rem;flex-wrap:wrap;margin-bottom:0.12rem}
-.sig{padding:1px 5px;border-radius:2px;font-size:0.5rem;font-weight:600}
-.sig-war{background:rgba(255,71,87,0.13);color:#ff6b6b;border:1px solid rgba(255,71,87,0.25)}
-.sig-ret{background:rgba(255,200,0,0.1);color:#ffc800;border:1px solid rgba(255,200,0,0.22)}
-.sig-prot{background:rgba(255,71,87,0.08);color:#ff8888;border:1px solid rgba(255,71,87,0.18)}
-.sig-trend{background:rgba(100,255,218,0.08);color:#64ffda;border:1px solid rgba(100,255,218,0.2)}
-.sig-new{background:rgba(247,37,133,0.15);color:#f72585;border:1px solid rgba(247,37,133,0.3)}
-.sig-delta-pos{background:rgba(100,255,218,0.08);color:#64ffda;border:1px solid rgba(100,255,218,0.2)}
-.sig-delta-neg{background:rgba(255,71,87,0.1);color:#ff4757;border:1px solid rgba(255,71,87,0.2)}
-.sig-death{background:rgba(255,71,87,0.2);color:#ff4757;border:1px solid rgba(255,71,87,0.4);font-weight:700}
-.sig-scandal{background:rgba(255,165,0,0.15);color:#ffa500;border:1px solid rgba(255,165,0,0.3)}
-.sig-disaster{background:rgba(255,71,87,0.15);color:#ff6b6b;border:1px solid rgba(255,71,87,0.3)}
-.pc-desc{font-size:0.68rem;color:rgba(255,255,255,0.6);line-height:1.45;font-style:italic;margin-bottom:0.12rem;border-left:2px solid rgba(255,255,255,0.08);padding-left:0.4rem}
-.pc-acts{display:flex;gap:0.25rem;align-items:center;margin-top:0.1rem}
-.btn-g{padding:1px 7px;border-radius:2px;font-size:0.5rem;cursor:pointer;border:1px solid rgba(255,255,255,0.12);background:transparent;color:rgba(255,255,255,0.42);font-family:'IBM Plex Mono',monospace;text-decoration:none;display:inline-block;transition:all 0.15s}
-.btn-g:hover{color:#fff}
-.btn-ai{padding:1px 7px;border-radius:2px;font-size:0.5rem;cursor:pointer;border:1px solid rgba(100,255,218,0.4);background:rgba(100,255,218,0.08);color:#64ffda;font-family:'IBM Plex Mono',monospace;transition:all 0.15s;font-weight:600}
-.btn-ai:hover{background:rgba(100,255,218,0.15)}
-.pc-timer{font-size:0.7rem;color:rgba(255,255,255,0.5);margin-left:auto}
 
-/* compact cards */
-.pc2{display:flex;align-items:center;gap:0.35rem;padding:0.28rem 0.6rem;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background 0.15s;animation:cin 0.3s ease}
-.pc2:hover{background:rgba(255,255,255,0.02)}
-.pc2.res{border-left:2px solid #f72585}.pc2.mul{border-left:2px solid rgba(255,200,0,0.5)}.pc2.sng{border-left:2px solid rgba(255,71,87,0.35)}
-.pc2-icon{font-size:0.6rem;flex-shrink:0;width:12px}
-.pc2-body{flex:1;min-width:0}
-.pc2-title{font-size:0.8rem;color:rgba(255,255,255,0.88);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pc2-meta{font-size:0.62rem;color:rgba(255,255,255,0.6);margin-top:1px}
-.pc2-score{font-family:'Bebas Neue',sans-serif;font-size:1.05rem;flex-shrink:0}
-.pc2-ai{padding:1px 5px;border-radius:2px;font-size:0.5rem;cursor:pointer;border:1px solid rgba(100,255,218,0.35);background:rgba(100,255,218,0.07);color:#64ffda;font-family:'IBM Plex Mono',monospace;flex-shrink:0;font-weight:600}
+/* ═══════════════════════════════════
+   КОЛОНКА 2 — РЕЙТИНГИ
+═══════════════════════════════════ */
+.rank-item{display:flex;align-items:center;gap:0.4rem;padding:0.28rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background 0.1s}
+.rank-item:hover{background:rgba(255,255,255,0.02)}
+.rank-n{font-family:'Bebas Neue',sans-serif;font-size:0.9rem;width:18px;text-align:center;flex-shrink:0;color:rgba(255,255,255,0.25)}
+.rank-body{flex:1;min-width:0}
+.rank-title{font-size:0.78rem;color:rgba(255,255,255,0.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank-meta{font-size:0.58rem;color:rgba(255,255,255,0.45);margin-top:1px}
+.rank-score{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;flex-shrink:0}
+.rank-ai{padding:1px 4px;border-radius:2px;font-size:0.5rem;cursor:pointer;border:1px solid rgba(100,255,218,0.3);background:rgba(100,255,218,0.06);color:#64ffda;font-family:'IBM Plex Mono',monospace;flex-shrink:0}
+.rank-sp{padding:1px 4px;border-radius:2px;font-size:0.5rem;cursor:pointer;border:1px solid rgba(247,37,133,0.3);background:rgba(247,37,133,0.06);color:#f72585;font-family:'IBM Plex Mono',monospace;flex-shrink:0}
 
-/* PAGEVIEW CARDS */
-.pvc{margin:0.35rem 0.4rem;padding:0.45rem 0.6rem;border-radius:2px;border:1px solid rgba(247,37,133,0.2);background:rgba(247,37,133,0.025);animation:cin 0.3s ease}
-.pvc-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.12rem}
-.pvc-label{font-size:0.5rem;letter-spacing:0.07em;text-transform:uppercase;color:#f72585}
-.pvc-ratio{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:#f72585;line-height:1}
-.pvc-ratio span{display:block;font-family:'IBM Plex Mono',monospace;font-size:0.65rem;opacity:0.5;text-align:center}
-.pvc-title{font-size:0.9rem;color:#fff;font-weight:600;margin-bottom:0.1rem}
-.pvc-title a{color:inherit;text-decoration:none}.pvc-title a:hover{color:#f72585}
-.pvc-prog{height:2px;background:rgba(255,255,255,0.06);border-radius:1px;overflow:hidden;margin-bottom:0.15rem}
-.pvc-prog-f{height:100%;border-radius:1px;background:#f72585;transition:width 0.5s}
-.pvc-stats{display:flex;gap:0.5rem;margin-bottom:0.12rem}
-.pvc-stat .v{font-family:'Bebas Neue',sans-serif;font-size:0.95rem;color:#f72585;line-height:1}
-.pvc-stat .l{font-size:0.65rem;letter-spacing:0.05em;text-transform:uppercase;color:rgba(255,255,255,0.6)}
-.pvc2{display:flex;align-items:center;gap:0.35rem;padding:0.25rem 0.6rem;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background 0.15s}
-.pvc2:hover{background:rgba(255,255,255,0.02)}
-.pvc2-title{font-size:0.78rem;color:rgba(255,255,255,0.82);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pvc2-ratio{font-family:'Bebas Neue',sans-serif;font-size:1rem;color:#f72585;flex-shrink:0}
-.pvc2-views{font-size:0.5rem;color:rgba(255,255,255,0.65);flex-shrink:0;width:30px;text-align:right}
+/* Pageview */
+.pv-item{display:flex;align-items:center;gap:0.4rem;padding:0.26rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background 0.1s}
+.pv-item:hover{background:rgba(255,255,255,0.02)}
+.pv-title{font-size:0.78rem;color:rgba(255,255,255,0.9);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pv-views{font-size:0.58rem;color:rgba(255,255,255,0.35);flex-shrink:0}
+.pv-ratio{font-family:'Bebas Neue',sans-serif;font-size:1.05rem;color:#f72585;flex-shrink:0}
 
-/* TRENDING */
-.ti-top{margin:0.35rem 0.4rem 0;padding:0.45rem 0.55rem;border-radius:2px;border:1px solid rgba(100,255,218,0.15);background:rgba(100,255,218,0.025);cursor:pointer;transition:background 0.15s}
-.ti-top:hover{background:rgba(100,255,218,0.05)}
-.ti-top-h{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.12rem}
-.ti-top-name{font-size:0.9rem;color:#fff;font-weight:600;flex:1;padding-right:0.4rem}
-.ti-top-pct{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:#64ffda;line-height:1}
-.ti-top-sub{display:flex;justify-content:space-between;align-items:center}
-.ti-top-vw{font-size:0.7rem;color:rgba(255,255,255,0.75)}
-.ti{display:flex;align-items:center;gap:0.35rem;padding:0.26rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:background 0.15s}
-.ti:hover{background:rgba(255,255,255,0.02)}
-.ti-nm{font-size:0.76rem;color:rgba(255,255,255,0.82);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ti-vw{font-size:0.7rem;color:rgba(255,255,255,0.6);flex-shrink:0;width:28px;text-align:right}
-.ti-dl{font-family:'Bebas Neue',sans-serif;font-size:0.85rem;flex-shrink:0;width:46px;text-align:right}
-.ti-ai{padding:1px 4px;border-radius:2px;font-size:0.5rem;cursor:pointer;border:1px solid rgba(100,255,218,0.3);background:rgba(100,255,218,0.06);color:#64ffda;font-family:'IBM Plex Mono',monospace;flex-shrink:0;font-weight:600}
+/* ═══════════════════════════════════
+   КОЛОНКА 3 — ЗАЛ СЛАВИ
+═══════════════════════════════════ */
+.hof-item{display:flex;align-items:center;gap:0.4rem;padding:0.28rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background 0.1s}
+.hof-item:hover{background:rgba(255,255,255,0.02)}
+.hof-rank{font-size:0.65rem;flex-shrink:0;width:18px;text-align:center}
+.hof-rank.gold{color:#ffc800}.hof-rank.silver{color:rgba(255,255,255,0.5)}.hof-rank.bronze{color:#cd7f32}
+.hof-body{flex:1;min-width:0}
+.hof-title{font-size:0.8rem;color:rgba(255,255,255,0.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hof-meta{font-size:0.58rem;color:rgba(255,255,255,0.45);margin-top:1px;display:flex;gap:0.3rem;align-items:center}
+.hof-score{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;flex-shrink:0}
+.hof-kw{font-size:0.52rem;padding:1px 4px;border-radius:2px}
 
-/* SUSTAINED + HOF */
-.si{display:flex;align-items:flex-start;gap:0.35rem;padding:0.28rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:background 0.15s}
-.si:hover{background:rgba(255,255,255,0.02)}
-.si-sc{font-family:'Bebas Neue',sans-serif;font-size:0.9rem;flex-shrink:0;width:22px;text-align:center;line-height:1.2}
-.si-nm{font-size:0.74rem;color:rgba(255,255,255,0.78);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.si-me{font-size:0.62rem;color:rgba(255,255,255,0.6);margin-top:1px;display:flex;gap:0.22rem}
-.si-bar{width:20px;height:3px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden;flex-shrink:0;margin-top:7px}
-.si-fill{height:100%;border-radius:2px}
-.hr{display:flex;align-items:center;gap:0.35rem;padding:0.28rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background 0.15s}
-.hr:hover{background:rgba(255,255,255,0.02)}
-.hr-rank{font-size:0.6rem;flex-shrink:0;width:16px;text-align:center}
-.hr-rank.gold{color:#ffc800}.hr-rank.silver{color:rgba(255,255,255,0.5)}.hr-rank.bronze{color:#cd7f32}
-.hr-body{flex:1;min-width:0}
-.hof-link{color:inherit;text-decoration:none}
-.hof-link:hover{color:#64ffda}
-.hr-title{font-size:0.88rem;color:rgba(255,255,255,0.95);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hr-meta{font-size:0.68rem;color:rgba(255,255,255,0.55);margin-top:1px}
-.hr-score{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;flex-shrink:0}
-.hr-ai{padding:1px 4px;border-radius:2px;font-size:0.5rem;cursor:pointer;border:1px solid rgba(100,255,218,0.3);background:rgba(100,255,218,0.06);color:#64ffda;font-family:'IBM Plex Mono',monospace;flex-shrink:0;font-weight:600}
-.hof-sub{padding:0.2rem 0.7rem;font-size:0.65rem;color:rgba(255,255,255,0.45);border-bottom:1px solid rgba(255,255,255,0.04);flex-shrink:0}
+/* Sustained */
+.sus-item{display:flex;align-items:center;gap:0.4rem;padding:0.26rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background 0.1s}
+.sus-item:hover{background:rgba(255,255,255,0.02)}
+.sus-body{flex:1;min-width:0}
+.sus-title{font-size:0.78rem;color:rgba(255,255,255,0.88)}
+.sus-meta{font-size:0.58rem;color:rgba(255,255,255,0.45);margin-top:1px}
+.sus-sc{font-family:'Bebas Neue',sans-serif;font-size:1.0rem;flex-shrink:0}
+.sus-bar{width:24px;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;flex-shrink:0}
+.sus-fill{height:100%;border-radius:2px}
 
-/* CONTEXT COL */
-.ctx-block{padding:0.5rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.05)}
-.ctx-title{font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.65);margin-bottom:0.3rem}
-.fng-val{font-family:'Bebas Neue',sans-serif;font-size:2rem;line-height:1}
-.fng-label{font-size:0.7rem;margin-top:2px}
+/* ═══════════════════════════════════
+   КОЛОНКА 4 — КОНТЕКСТ (не Wikipedia)
+═══════════════════════════════════ */
+.ctx-block{padding:0.5rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0}
+.ctx-title{font-size:0.55rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:0.3rem}
+.fng-val{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1}
+.fng-label{font-size:0.65rem;margin-top:2px}
 .fng-bar{height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;margin-top:0.3rem}
 .fng-fill{height:100%;border-radius:2px;transition:width 0.5s}
 
-/* CROSS SIGNALS */
-.xs-item{display:flex;align-items:flex-start;gap:0.35rem;padding:0.28rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background 0.15s}
+.bn-item{display:flex;align-items:center;gap:0.3rem;padding:0.22rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03)}
+.bn-sym{font-size:0.72rem;color:rgba(255,255,255,0.75);flex-shrink:0;width:55px}
+.bn-pct{font-family:'Bebas Neue',sans-serif;font-size:0.95rem;flex-shrink:0;width:50px;text-align:right}
+.bn-vol{font-size:0.55rem;color:rgba(255,255,255,0.3);flex-shrink:0}
+
+.tr-item{display:flex;align-items:center;gap:0.3rem;padding:0.22rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03);font-size:0.65rem}
+.tr-geo{color:#4285f4;flex-shrink:0;width:22px}
+.tr-title{color:rgba(255,255,255,0.7);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.xs-item{display:flex;align-items:flex-start;gap:0.3rem;padding:0.26rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background 0.1s}
 .xs-item:hover{background:rgba(255,255,255,0.02)}
-.xs-type{font-size:0.6rem;padding:1px 4px;border-radius:2px;flex-shrink:0;margin-top:2px}
+.xs-type{font-size:0.48rem;padding:1px 4px;border-radius:2px;flex-shrink:0;margin-top:2px}
 .xs-wiki{background:rgba(100,255,218,0.1);color:#64ffda;border:1px solid rgba(100,255,218,0.2)}
 .xs-trends{background:rgba(66,133,244,0.1);color:#4285f4;border:1px solid rgba(66,133,244,0.2)}
 .xs-poly{background:rgba(6,214,160,0.1);color:#06d6a0;border:1px solid rgba(6,214,160,0.2)}
+.xs-pv{background:rgba(247,37,133,0.1);color:#f72585;border:1px solid rgba(247,37,133,0.2)}
 .xs-body{flex:1;min-width:0}
-.xs-link{color:inherit;text-decoration:none}
-.xs-link:hover{color:#64ffda}
-.xs-title{font-size:0.9rem;color:rgba(255,255,255,0.95);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.xs-detail{font-size:0.7rem;color:rgba(255,255,255,0.55);margin-top:1px}
-.xs-score{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;flex-shrink:0;color:#64ffda}
+.xs-title{font-size:0.78rem;color:rgba(255,255,255,0.88);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.xs-detail{font-size:0.58rem;color:rgba(255,255,255,0.4);margin-top:1px}
+.xs-score{font-family:'Bebas Neue',sans-serif;font-size:0.95rem;flex-shrink:0;color:#64ffda}
 
-/* BINANCE */
-.bn-item{display:flex;align-items:center;gap:0.35rem;padding:0.24rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03)}
-.bn-sym{font-size:0.88rem;color:rgba(255,255,255,0.92);flex-shrink:0;width:65px;font-weight:600}
-.bn-pct{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;flex-shrink:0;width:60px;text-align:right}
-.bn-vol{font-size:0.7rem;color:rgba(255,255,255,0.5);flex-shrink:0}
-
-/* LIVE FEED */
-.spd{display:flex;align-items:center;gap:0.45rem;padding:0.32rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.04);flex-shrink:0}
-.spd-v{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:#fff;line-height:1}
-.spd-l{font-size:0.65rem;text-transform:uppercase;color:rgba(255,255,255,0.6);letter-spacing:0.06em}
-.spd-t{font-size:0.7rem;margin-top:2px}
-.spl{display:flex;align-items:flex-end;gap:2px;height:18px;flex:1}
-.sc{border-radius:1px 1px 0 0;flex:1;min-width:2px}
-.hmap{padding:0.25rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.04);flex-shrink:0}
-.hmap-g{display:grid;grid-template-columns:repeat(24,1fr);gap:2px;height:10px}
-.hm{border-radius:1px}
-.fi{padding:0.26rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:background 0.15s}
+/* LIVE FEED (col 4 bottom) */
+.fi{padding:0.22rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:background 0.1s}
 .fi:hover{background:rgba(255,255,255,0.02)}
-.fi.spike{border-left:2px solid #64ffda}.fi.high{border-left:2px solid #ffc800}
-.fi-t{font-size:0.76rem;color:rgba(255,255,255,0.82);text-decoration:none;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fi.spike{border-left:2px solid #64ffda}.fi.high{border-left:2px solid #ffc800}.fi.death{border-left:2px solid #ff4757}.fi.new_{border-left:2px solid #7209b7}
+.fi-t{font-size:0.75rem;color:rgba(255,255,255,0.85);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none}
 .fi-t:hover{color:#64ffda}
-.fi-m{display:flex;gap:0.2rem;margin-top:0.08rem;align-items:center}
-.tg{padding:1px 3px;border-radius:1px;font-size:0.65rem}
+.fi-m{display:flex;gap:0.2rem;margin-top:0.06rem;align-items:center;flex-wrap:wrap}
+.tg{padding:1px 4px;border-radius:1px;font-size:0.5rem}
 .tg-b{background:rgba(100,100,255,0.13);color:#8888ff}
 .tg-a{background:rgba(255,200,0,0.1);color:#ffc800}
 .tg-u{background:rgba(100,255,218,0.07);color:#64ffda}
 .tg-n{background:rgba(100,255,218,0.13);color:#64ffda;font-weight:600}
 .tg-m{background:rgba(255,200,0,0.15);color:#ffc800;font-weight:600}
-.fi-lang{font-size:0.7rem;color:rgba(255,255,255,0.5)}
-.langs-sec{border-top:1px solid rgba(255,255,255,0.05);flex-shrink:0}
-.li{display:flex;align-items:center;gap:0.35rem;padding:0.18rem 0.7rem}
-.li-c{font-size:0.7rem;width:16px;color:rgba(255,255,255,0.65)}
+.tg-death{background:rgba(255,71,87,0.2);color:#ff4757;font-weight:700}
+.tg-new{background:rgba(114,9,183,0.2);color:#b388ff;font-weight:700}
+.tg-delta-p{background:rgba(100,255,218,0.1);color:#64ffda}
+.tg-delta-n{background:rgba(255,71,87,0.1);color:#ff4757}
+.fi-lang{font-size:0.5rem;color:rgba(255,255,255,0.25)}
+
+/* Sparkline */
+.spd{display:flex;align-items:center;gap:0.4rem;padding:0.3rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.04);flex-shrink:0}
+.spd-v{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:#fff;line-height:1}
+.spd-l{font-size:0.5rem;text-transform:uppercase;color:rgba(255,255,255,0.25);letter-spacing:0.06em}
+.spd-t{font-size:0.55rem;margin-top:2px}
+.spl{display:flex;align-items:flex-end;gap:2px;height:18px;flex:1}
+.sc_{border-radius:1px 1px 0 0;flex:1;min-width:2px}
+
+/* LANGS */
+.li{display:flex;align-items:center;gap:0.3rem;padding:0.16rem 0.7rem}
+.li-c{font-size:0.55rem;width:16px;color:rgba(255,255,255,0.4)}
 .li-t{flex:1;height:4px;background:rgba(255,255,255,0.04);border-radius:2px;overflow:hidden}
 .li-f{height:100%;border-radius:2px;transition:width 0.5s}
-.li-n{font-size:0.7rem;color:rgba(255,255,255,0.6);width:24px;text-align:right}
-.asl{padding:0.22rem 0.7rem;border-top:1px solid rgba(255,255,255,0.04);flex-shrink:0}
-.asl-l{font-size:0.65rem;color:rgba(255,255,255,0.55);letter-spacing:0.05em;text-transform:uppercase;margin-bottom:2px}
-.asl-g{display:flex;align-items:flex-end;gap:2px;height:14px}
-.abar{flex:1;min-width:2px;border-radius:1px 1px 0 0}
+.li-n{font-size:0.55rem;color:rgba(255,255,255,0.3);width:24px;text-align:right}
 
 /* AI MODAL */
-#aiModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9999;align-items:center;justify-content:center}
-.aim-box{background:#0d0d1a;border:1px solid rgba(100,255,218,0.2);border-radius:4px;width:min(680px,96vw);max-height:88vh;display:flex;flex-direction:column;overflow:hidden}
-.aim-hdr{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.2rem;border-bottom:1px solid rgba(255,255,255,0.08);flex-shrink:0}
-.aim-title{font-size:1.15rem;color:#fff;font-weight:600}
-.aim-close{background:transparent;border:none;color:rgba(255,255,255,0.75);font-size:1.3rem;cursor:pointer;line-height:1;padding:0}
-.aim-body{padding:1rem 1.2rem;overflow-y:auto;flex:1;font-size:0.9rem;line-height:1.7;color:#d0d0e8}
-.aim-src{font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.4rem}
+#aiModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:9999;align-items:center;justify-content:center}
+.aim-box{background:#0d0d1a;border:1px solid rgba(100,255,218,0.2);border-radius:3px;width:min(560px,92vw);max-height:82vh;display:flex;flex-direction:column;overflow:hidden}
+.aim-hdr{display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0.9rem;border-bottom:1px solid rgba(255,255,255,0.07);flex-shrink:0}
+.aim-title{font-size:0.9rem;color:#fff;font-weight:600}
+.aim-close{background:transparent;border:none;color:rgba(255,255,255,0.3);font-size:1.4rem;cursor:pointer;line-height:1;padding:0}
+.aim-body{padding:0.75rem 0.9rem;overflow-y:auto;flex:1;font-size:0.75rem;line-height:1.75;color:#d0d0e8}
+.aim-src{font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.2rem}
 .aim-item{margin-bottom:0.35rem;padding-bottom:0.35rem;border-bottom:1px solid rgba(255,255,255,0.05)}
-.aim-item a{color:rgba(255,255,255,0.9);text-decoration:none;font-size:0.88rem;line-height:1.5;display:block}
+.aim-item a{color:rgba(255,255,255,0.88);text-decoration:none;font-size:0.72rem;line-height:1.4;display:block}
 .aim-item a:hover{color:#64ffda}
-.aim-item-meta{font-size:0.7rem;color:rgba(255,255,255,0.75);margin-top:3px}
-.aim-links{padding-top:0.4rem;border-top:1px solid rgba(255,255,255,0.06);display:flex;gap:1rem}
-.aim-links a{font-size:0.7rem;color:rgba(100,255,218,0.6);text-decoration:none}
-.aim-src-row{display:flex;align-items:center;gap:0.6rem;padding:0.4rem 0.7rem;border:1px solid rgba(255,255,255,0.07);border-radius:3px;margin-bottom:0.3rem}
-.aim-src-label{font-size:0.75rem;width:120px;flex-shrink:0;font-weight:600}
-.aim-src-status{font-size:0.72rem;color:rgba(255,255,255,0.4);flex:1}
-.aim-src-time{font-size:0.65rem;color:rgba(255,255,255,0.65);flex-shrink:0;min-width:36px;text-align:right}
-
-/* ── GLOBAL READABILITY RULES ── */
-/* Мінімальний розмір будь-якого тексту */
-* { min-font-size: 0; }
-.hint, .asl-l, .ctx-title, .ph, .lbl, .stimer,
-.pc-timer, .tg, .fi-lang, .fi-m, .si-me,
-.pc2-meta, .hof-sub, .aim-src, .aim-src-time,
-.xs-detail, .hr-meta, .bn-vol, .li-c, .li-n,
-.ti-vw, .pvc2-views, .spd-l {
-  font-size: 0.7rem !important;
-  color: rgba(255,255,255,0.65) !important;
-}
-/* Заголовки секцій — завжди видимі */
-.ph { color: rgba(255,255,255,0.75) !important; font-size: 0.6rem !important; }
-/* Назви в списках — яскраві */
-.pc2-title, .ti-nm, .xs-title, .hr-title,
-.si-nm, .pvc2-title, .bn-sym, .li-name {
-  color: rgba(255,255,255,0.92) !important;
-}
-/* Мета інфо — читабельне */
-.pc2-meta, .hr-meta, .xs-detail, .fi-m {
-  color: rgba(255,255,255,0.65) !important;
-  font-size: 0.68rem !important;
-}
+.aim-item-meta{font-size:0.55rem;color:rgba(255,255,255,0.3);margin-top:1px}
+.aim-src-row{display:flex;align-items:center;gap:0.5rem;padding:0.28rem 0.5rem;border:1px solid rgba(255,255,255,0.06);border-radius:2px;margin-bottom:0.25rem}
+.aim-src-label{font-size:0.55rem;width:110px;flex-shrink:0}
+.aim-src-status{font-size:0.52rem;color:rgba(255,255,255,0.4);flex:1}
+.aim-src-time{font-size:0.5rem;color:rgba(255,255,255,0.2);flex-shrink:0}
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
 <div class="hdr">
-  <div style="display:flex;align-items:center;gap:0.7rem">
+  <div style="display:flex;align-items:center;gap:0.8rem">
     <div class="logo">RESO<em>NANCE</em><small>// signal detector</small></div>
     <div class="stimer" id="stimer">0:00</div>
   </div>
   <div class="hstats">
     <div class="hs"><div class="v" id="hEpm">0</div><div class="l">прав/хв</div></div>
-    <div class="hs"><div class="v" id="hAnom" style="color:#ff4757">0</div><div class="l">edit</div></div>
+    <div class="hs"><div class="v" id="hAnom" style="color:#ff4757">0</div><div class="l">аном</div></div>
     <div class="hs"><div class="v" id="hPv" style="color:#f72585">0</div><div class="l">👁 pv</div></div>
     <div class="hs"><div class="v" id="hRes" style="color:#f72585">0</div><div class="l">★</div></div>
     <div class="hs"><div class="v" id="hTotal" style="color:rgba(255,255,255,0.4)">0</div><div class="l">всього</div></div>
@@ -293,84 +284,71 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
   <button class="fb" data-tp="БІЗНЕС" onclick="toggleType(this)">💼</button>
 </div>
 
-<!-- BODY: 4 columns -->
+<!-- BODY -->
 <div class="body">
 
-  <!-- COL 1: EDIT РЕЙТИНГ -->
+  <!-- COL 1: ЖИВИЙ СИГНАЛ -->
   <div class="col">
     <div class="ph">
-      <span>✏️ edit рейтинг</span>
-      <span><span class="pk" id="cR">0</span><span style="opacity:0.2">★ </span><span class="gd" id="cM">0</span><span style="opacity:0.2">m</span></span>
+      <span>⚡ живий сигнал</span>
+      <span><span class="pk" id="cR">0</span><span style="opacity:0.3">★ </span><span class="gd" id="cM">0</span><span style="opacity:0.3">m</span></span>
     </div>
-    <div class="pb" id="feedRank" style="max-height:55%"><div class="hint">Очікуємо аномалії...</div></div>
-    <div class="sec" style="flex:1;display:flex;flex-direction:column;min-height:0">
-      <div class="ph"><span>🏆 зала слави</span><span class="gd" id="hofCnt">—</span></div>
-      <div class="hof-sub" id="hofSub">сьогодні · завантаження...</div>
-      <div class="pb" id="feedHof" style="flex:1;min-height:0"><div class="hint">...</div></div>
+    <div class="pb" id="feedSignal"><div class="hint">Очікуємо аномалії...</div></div>
+  </div>
+
+  <!-- COL 2: РЕЙТИНГИ -->
+  <div class="col">
+    <div class="ph"><span>📊 edit рейтинг</span><span class="rd" id="rankCnt">0</span></div>
+    <div class="pb" id="feedRank" style="flex:1.2"><div class="hint">Завантаження...</div></div>
+    <div class="sec">
+      <div class="ph"><span>👁 pageview спайки</span><span class="pk" id="pvCnt">0</span></div>
+      <div class="pb" id="feedPv" style="max-height:200px"><div class="hint">...</div></div>
     </div>
   </div>
 
-  <!-- COL 2: PAGEVIEW РЕЙТИНГ -->
+  <!-- COL 3: ЗАЛ СЛАВИ + SUSTAINED -->
   <div class="col">
-    <div class="ph">
-      <span>👁 pageview спайки</span>
-      <span class="pk" id="pvCnt">0</span>
-    </div>
-    <div class="pb" id="feedPv" style="flex:1"><div class="hint">Перевіряємо trending...</div></div>
+    <div class="ph"><span>🏆 зал слави</span><span class="gd" id="hofCnt">—</span></div>
+    <div class="hint" id="hofSub" style="padding:0.3rem 0.7rem;font-size:0.58rem;color:rgba(255,255,255,0.3);border-bottom:1px solid rgba(255,255,255,0.04)">сьогодні · завантаження...</div>
+    <div class="pb" id="feedHof" style="flex:1.2"><div class="hint">...</div></div>
     <div class="sec">
-      <div class="ph"><span>📈 trending вікі</span><span class="ac" id="tTime">...</span></div>
-      <div class="pb" id="feedTrend" style="max-height:200px"><div class="hint">Завантаження...</div></div>
-    </div>
-    <div class="sec">
-      <div class="ph"><span>📊 google trends</span><span class="ac" id="trTime">...</span></div>
-      <div class="pb" id="feedTrends" style="max-height:130px"><div class="hint">...</div></div>
+      <div class="ph"><span>⏱ sustained</span><span class="gd" id="sCnt">0</span></div>
+      <div id="feedSust"></div>
     </div>
   </div>
 
-  <!-- COL 3: КОНТЕКСТ -->
+  <!-- COL 4: КОНТЕКСТ -->
   <div class="col">
-    <div class="ph"><span>📊 контекст</span></div>
+    <div class="ph"><span>🌍 контекст</span><span class="ac" id="lt">—</span></div>
+    <!-- Speedometer -->
+    <div class="spd">
+      <canvas id="speedo" width="48" height="30" style="flex-shrink:0"></canvas>
+      <div>
+        <div class="spd-v" id="sVal">0</div>
+        <div class="spd-l">прав/хв</div>
+        <div class="spd-t" id="sTrend" style="color:rgba(255,255,255,0.2)">—</div>
+      </div>
+      <div class="spl" id="sparkline"></div>
+    </div>
     <!-- Fear & Greed -->
     <div class="ctx-block" id="fngBlock">
-      <div class="ctx-title">😨 fear &amp; greed index</div>
-      <div class="hint" style="padding:0.2rem 0">завантаження...</div>
+      <div class="ctx-title">😨 fear &amp; greed</div>
+      <div class="hint" style="padding:0.2rem 0;font-size:0.62rem">завантаження...</div>
+    </div>
+    <!-- Google Trends -->
+    <div class="ctx-block">
+      <div class="ctx-title">📊 google trends <span class="ac" id="trTime" style="font-size:0.5rem"></span></div>
+      <div id="feedTrends"></div>
     </div>
     <!-- Binance -->
     <div class="ctx-block">
-      <div class="ctx-title">💰 binance топ мувери</div>
-      <div id="feedBinance"><div class="hint" style="padding:0.2rem 0">...</div></div>
+      <div class="ctx-title">💰 binance</div>
+      <div id="feedBinance"></div>
     </div>
     <!-- Cross signals -->
     <div class="sec" style="flex:1;display:flex;flex-direction:column;min-height:0">
       <div class="ph"><span>⚡ cross signals</span><span class="ac" id="xsCnt">0</span></div>
-      <div class="pb" id="feedXs"><div class="hint">Очікуємо крос-сигнали...</div></div>
-    </div>
-  </div>
-
-  <!-- COL 4: ПОТІК -->
-  <div class="col">
-    <!-- Секція 1: Статистика -->
-    <div class="ph"><span>📊 потік</span><span class="ac" id="langT"></span></div>
-    <div class="spd">
-      <canvas id="speedo" width="44" height="28" style="flex-shrink:0"></canvas>
-      <div>
-        <div class="spd-v" id="sVal">0</div>
-        <div class="spd-l">прав/хв</div>
-        <div class="spd-t" id="sTrend" style="color:rgba(255,255,255,0.6)">—</div>
-      </div>
-      <div class="spl" id="sparkline"></div>
-    </div>
-    <div class="hmap"><div class="hmap-g" id="hmGrid"></div></div>
-    <div id="feedLang"></div>
-    <div class="asl">
-      <div class="asl-l">аномалії / хв</div>
-      <div class="asl-g" id="anomSpark"></div>
-    </div>
-
-    <!-- Секція 2: Активні — sustained + live події -->
-    <div class="sec" style="flex:1;display:flex;flex-direction:column;min-height:0">
-      <div class="ph"><span>⚡ активні</span><span class="ac" id="lt">—</span></div>
-      <div class="pb" id="feedActive" style="flex:1"></div>
+      <div class="pb" id="feedXs"><div class="hint">...</div></div>
     </div>
   </div>
 </div>
@@ -381,7 +359,7 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
     <div class="aim-hdr">
       <div class="aim-title" id="aimTitle"></div>
       <div style="display:flex;gap:0.4rem;align-items:center">
-        <a id="aimGoogle" href="#" target="_blank" class="btn-g" style="font-size:0.52rem">🔍 Google</a>
+        <a id="aimGoogle" href="#" target="_blank" class="btn-g">🔍 Google</a>
         <button class="aim-close" onclick="document.getElementById('aiModal').style.display='none'">×</button>
       </div>
     </div>
@@ -399,13 +377,11 @@ const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 
 let totalEdits=0,anomCnt=0,resCnt=0,mulCnt=0,pvCnt=0;
 let editsTs=[],articles={},langs={},anomWin={},sustained={};
-let editAct=new Array(30).fill(0),anomAct=new Array(30).fill(0),hourAct=new Array(24).fill(0);
-let lastBin=Math.floor(Date.now()/2000),lastABin=Math.floor(Date.now()/10000);
+let editAct=new Array(30).fill(0),hourAct=new Array(24).fill(0);
+let lastBin=Math.floor(Date.now()/2000);
 let prevEpm=0,trendData=[],es,sessStart=Date.now(),lastMsg=Date.now();
 let langF='all',typeF=new Set();
-const pinned={};   // edit anomalies
-const pvPinned={}; // pageview anomalies
-const sbCounts={anom:0,mul:0,res:0,sng:0};
+const pinned={},pvPinned={},sbCounts={anom:0,mul:0,res:0,sng:0};
 
 // ── UTILS ──
 function ts(){return new Date().toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
@@ -416,17 +392,16 @@ function getDateStr(off){const d=new Date(Date.now()+off*86400000);return d.getF
 function setLang(b){document.querySelectorAll('.fb[data-l]').forEach(x=>x.classList.remove('on'));b.classList.add('on');langF=b.dataset.l;}
 function toggleType(b){const t=b.dataset.tp;if(typeF.has(t)){typeF.delete(t);b.classList.remove('on');}else{typeF.add(t);b.classList.add('on');}}
 
-// ── COMMENT PARSER (client) ──
-function parseCommentClient(comment) {
-  if (!comment) return [];
-  const c = comment.toLowerCase();
-  const kw = [];
-  if (/\bdied\b|\bdeath\b|\bkilled\b/.test(c))          kw.push('DEATH');
-  if (/\bcrash\b|\bdisaster\b|\battack\b/.test(c))      kw.push('DISASTER');
-  if (/\barrested\b|\bscandal\b|\bconvicted\b/.test(c)) kw.push('SCANDAL');
-  if (/\belected\b|\bappointed\b|\bwon\b/.test(c))      kw.push('APPOINTED');
-  if (/\bbankrupt\b|\bcollapsed\b/.test(c))               kw.push('BANKRUPT');
-  if (/\breverted\b|\bundone\b/.test(c))                  kw.push('REVERT');
+// ── COMMENT PARSER ──
+function parseCommentClient(comment){
+  if(!comment)return[];
+  const c=comment.toLowerCase(),kw=[];
+  if(/\bdied\b|\bdeath\b|\bkilled\b/.test(c))kw.push('DEATH');
+  if(/\bcrash\b|\bdisaster\b|\battack\b/.test(c))kw.push('DISASTER');
+  if(/\barrested\b|\bscandal\b|\bconvicted\b/.test(c))kw.push('SCANDAL');
+  if(/\belected\b|\bappointed\b|\bwon\b/.test(c))kw.push('APPOINTED');
+  if(/\bbankrupt\b|\bcollapsed\b/.test(c))kw.push('BANKRUPT');
+  if(/\breverted\b|\bundone\b/.test(c))kw.push('REVERT');
   return kw;
 }
 
@@ -434,27 +409,49 @@ function parseCommentClient(comment) {
 function calcScore(p){
   const tw={'СМЕРТЬ':50,'ГЕОПОЛІТИКА':20,'ПОЛІТИК':18,'ВІЙСЬКОВІ':15,'БІЗНЕС':12,'НАУКА':8,'КУЛЬТУРА':6,'СПОРТ':5,'ФУТБОЛ':4,'ПЕРСОНА':3};
   const span=(Date.now()-p.firstSeen)/60000;
-  const ts=tw[p.articleType]||0;
+  const ts_=tw[p.articleType]||0;
   const ls=Math.min((p.langCount||0)*0.4,30);
   const tr=trendData.find(t=>t.article.toLowerCase()===p.title.toLowerCase());
   if(tr)p.trendPct=tr.delta;
   const trs=p.trendPct?Math.min(p.trendPct/20,20):0;
   const sus=Math.min(span/10,15)+(p.isRet||0)*5;
-  const e=p.editors||0;
-  const editorScore=e<=2?e*2.5:e<=4?5+(e-2)*8:e<=9?21+(e-4)*20:121+(e-10)*40;
-  const act=p.edits*0.8+editorScore;
+  const e=p.editors;
+  const es_=e<=2?e*2.5:e<=4?5+(e-2)*8:e<=9?21+(e-4)*20:121+(e-10)*40;
+  const act=es_+p.edits*0.8;
   const pvs=Math.min(((p.pvRatio||0)-1)*3,15);
-  let sc=ts+ls+trs+sus+act+pvs;
+  const resonanceBonus=(tr&&p.editors>=2)?25:0;
+  const commentBonus=p.commentKeywords?.includes('DEATH')?30:p.commentKeywords?.includes('DISASTER')?25:p.commentKeywords?.includes('SCANDAL')?20:p.commentKeywords?.includes('APPOINTED')?20:0;
+  const deltaBonus=(p.deltaBytes||0)>5000?20:(p.deltaBytes||0)<-2000?15:0;
+  const ageBonus=p.isNewArticle?40:0;
+  let sc=ts_+ls+trs+sus+act+pvs+resonanceBonus+commentBonus+deltaBonus+ageBonus;
   if(tr&&p.editors>=2)sc+=25;
-  if((p.editors||0)>=5&&span<=10)sc+=30;
   return Math.round(sc);
+}
+
+// ── KEYWORD → CSS клас ──
+function kwClass(kw){
+  const map={DEATH:'kw-death',DISASTER:'kw-disaster',SCANDAL:'kw-scandal',BANKRUPT:'kw-bankrupt',APPOINTED:'kw-appointed',REVERT:'kw-war'};
+  return map[kw]||'kw-trend';
+}
+function kwLabel(kw){
+  const map={DEATH:'💀 DEATH',DISASTER:'🔴 DISASTER',SCANDAL:'⚠ SCANDAL',BANKRUPT:'💸 BANKRUPT',APPOINTED:'✅ APPOINTED',REVERT:'↩ REVERT'};
+  return map[kw]||kw;
+}
+
+// ── TYPE → CSS клас для картки ──
+function cardTypeClass(p){
+  if(p.commentKeywords?.includes('DEATH')||p.articleType==='СМЕРТЬ')return'type-death';
+  if(p.isNewArticle)return'type-new';
+  if(p.type==='res')return'type-res';
+  if(p.articleType==='ГЕОПОЛІТИКА'||p.articleType==='ПОЛІТИК')return'type-geo';
+  return'type-default';
 }
 
 // ── SPEEDO ──
 function drawSpeedo(v,mx){
   const c=document.getElementById('speedo');if(!c)return;
-  const ctx=c.getContext('2d'),cx=26,cy=28,r=20;
-  ctx.clearRect(0,0,52,32);
+  const ctx=c.getContext('2d'),cx=24,cy=26,r=18;
+  ctx.clearRect(0,0,48,30);
   ctx.beginPath();ctx.arc(cx,cy,r,Math.PI,2*Math.PI);ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=3;ctx.stroke();
   const p=Math.min(v/mx,1);const col=p>0.8?'#ff4757':p>0.5?'#ffc800':'#64ffda';
   if(p>0){ctx.beginPath();ctx.arc(cx,cy,r,Math.PI,Math.PI+p*Math.PI);ctx.strokeStyle=col;ctx.lineWidth=3;ctx.lineCap='round';ctx.stroke();}
@@ -475,7 +472,7 @@ function updSpark(){
   const el=document.getElementById('sparkline');
   if(el)el.innerHTML=editAct.map((v,i)=>{
     const h=Math.max(2,Math.round(v/mx*18));const op=0.25+(i/editAct.length)*0.75;
-    return'<div class="sc" style="height:'+h+'px;background:'+(v>mx*0.7?'#64ffda':v>mx*0.4?'#0096c7':'#1a1a2e')+';opacity:'+op+'"></div>';
+    return'<div class="sc_" style="height:'+h+'px;background:'+(v>mx*0.7?'#64ffda':v>mx*0.4?'#0096c7':'#1a1a2e')+';opacity:'+op+'"></div>';
   }).join('');
   drawSpeedo(epm,300);document.getElementById('sVal').textContent=epm;
   const diff=epm-prevEpm;const tr=document.getElementById('sTrend');
@@ -483,29 +480,6 @@ function updSpark(){
   tr.style.color=diff>5?'#64ffda':diff<-5?'#ff4757':'rgba(255,255,255,0.2)';
   prevEpm=epm;
 }
-function updAnomSpark(){
-  const now=Date.now();const b=Math.floor(now/10000);
-  if(b!==lastABin){anomAct.shift();anomAct.push(0);lastABin=b;}
-  anomAct[anomAct.length-1]++;
-  const mx=Math.max(...anomAct,1);
-  const el=document.getElementById('anomSpark');
-  if(el)el.innerHTML=anomAct.map((v,i)=>{
-    const h=Math.max(2,Math.round(v/mx*14));const op=0.25+(i/anomAct.length)*0.75;
-    return'<div class="abar" style="height:'+h+'px;background:'+(v>mx*0.6?'#ff4757':'#2a1020')+';opacity:'+op+'"></div>';
-  }).join('');
-}
-function updHeatmap(){
-  const h=new Date().getHours();hourAct[h]++;const mx=Math.max(...hourAct,1);
-  const g=document.getElementById('hmGrid');if(!g)return;
-  g.innerHTML=hourAct.map((v,i)=>{
-    const p=v/mx;const col=p>0.8?'#ff4757':p>0.5?'#ffc800':p>0.2?'#64ffda':'rgba(255,255,255,0.04)';
-    const cur=i===new Date().getHours()?'outline:1px solid rgba(255,255,255,0.2);outline-offset:-1px;':'';
-    return'<div class="hm" style="background:'+col+';opacity:'+(0.3+p*0.7)+';'+cur+'"></div>';
-  }).join('');
-}
-document.getElementById('hmGrid').innerHTML=new Array(24).fill('<div class="hm" style="background:rgba(255,255,255,0.04)"></div>').join('');
-document.getElementById('sparkline').innerHTML=new Array(30).fill('<div class="sc" style="height:2px;background:#1a1a2e"></div>').join('');
-document.getElementById('anomSpark').innerHTML=new Array(30).fill('<div class="abar" style="height:2px;background:#2a1020"></div>').join('');
 
 function updHdr(){
   const now=Date.now();editsTs=editsTs.filter(t=>now-t<60000);
@@ -516,110 +490,162 @@ function updHdr(){
   document.getElementById('hRes').textContent=sbCounts.res||resCnt;
   document.getElementById('cR').textContent=sbCounts.res||resCnt;
   document.getElementById('cM').textContent=sbCounts.mul||mulCnt;
-  document.getElementById('langT').textContent=Object.keys(langs).length+' мов';
   const sec=Math.floor((now-sessStart)/1000);
   document.getElementById('stimer').textContent=Math.floor(sec/60)+':'+(sec%60<10?'0':'')+sec%60;
 }
+
 function updLangs(){
-  const sorted=Object.entries(langs).sort((a,b)=>b[1]-a[1]).slice(0,10);if(!sorted.length)return;
+  const sorted=Object.entries(langs).sort((a,b)=>b[1]-a[1]).slice(0,8);if(!sorted.length)return;
   const mx=sorted[0][1];
-  const cols=['#64ffda','#48cae4','#0096c7','#023e8a','#7209b7','#b5179e','#f72585','#ff4757','#ffc800','#06d6a0'];
-  document.getElementById('feedLang').innerHTML=sorted.map(([l,cnt],i)=>
-    '<div class="li"><div class="li-c">'+l+'</div><div class="li-t"><div class="li-f" style="width:'+(cnt/mx*100).toFixed(0)+'%;background:'+(cols[i]||'#64ffda')+'"></div></div><div class="li-n">'+cnt+'</div></div>'
-  ).join('');
+  const cols=['#64ffda','#48cae4','#0096c7','#023e8a','#7209b7','#b5179e','#f72585','#ff4757'];
+  document.getElementById('feedLang')||void 0;
 }
 
-// ── RENDER EDIT RANK ──
-function renderRank(){
-  const sec=document.getElementById('feedRank');if(!sec)return;
+// ── RENDER COL 1: ЖИВИЙ СИГНАЛ ──
+function renderSignal(){
+  const sec=document.getElementById('feedSignal');if(!sec)return;
   const now=Date.now();
   Object.keys(pinned).forEach(k=>{if(now-pinned[k].lastSeen>7200000)delete pinned[k];});
-  // Мердж по title — сумуємо редакторів і мови з різних вікі
+
+  // Merge по title
   const byTitle={};
   Object.values(pinned).forEach(p=>{
     p.score=calcScore(p);
     if(!byTitle[p.title]){
       byTitle[p.title]={...p,wikis:new Set([p.wiki]),allEditors:p.editors,allEdits:p.edits};
-    } else {
+    }else{
       const m=byTitle[p.title];
-      m.wikis.add(p.wiki);
-      m.allEditors+=p.editors;
-      m.allEdits+=p.edits;
+      m.wikis.add(p.wiki);m.allEditors+=p.editors;m.allEdits+=p.edits;
       m.langCount=m.wikis.size;
-      // Беремо найсвіжіший lastSeen і найвищий score
       if(p.lastSeen>m.lastSeen)m.lastSeen=p.lastSeen;
-      if(p.score>m.score){m.score=p.score;m.badges=p.badges;m.desc=p.desc;}
-      // Якщо 2+ вікі — це резонанс
+      if(p.score>m.score){m.score=p.score;m.badges=p.badges;m.desc=p.desc;m.commentKeywords=p.commentKeywords;}
       if(m.wikis.size>=2)m.type='res';
     }
   });
-  // Оновлюємо editors/edits з merged значень
   Object.values(byTitle).forEach(m=>{
     m.editors=m.allEditors;m.edits=m.allEdits;
     m.langCount=m.wikis?m.wikis.size:m.langCount;
     m.score=calcScore(m);
   });
+
   const sorted=Object.values(byTitle).sort((a,b)=>b.score-a.score);
   if(!sorted.length){sec.innerHTML='<div class="hint">Очікуємо аномалії...</div>';return;}
   sec.innerHTML='';
+  document.getElementById('rankCnt').textContent=sorted.length;
+
   sorted.forEach((p,rank)=>{
-    const cls=p.type==='res'?'res':p.type==='mul'?'mul':'sng';
-    const lc=p.type==='res'?'pk':p.type==='mul'?'gd':'rd';
-    const icon=p.type==='res'?'★ РЕЗОНАНС':p.type==='mul'?'👥 МУЛЬТІ':'⚡ SPIKE';
-    const sc=p.score;const col=sc>=50?'#ff4757':sc>=25?'#ffc800':'#64ffda';
-    const prog=Math.min(sc,100);
-    const ageMin=Math.round((now-p.firstSeen)/60000);
+    const col=p.score>=50?'#ff4757':p.score>=25?'#ffc800':'#64ffda';
+    const typeClass=cardTypeClass(p);
     const gUrl='https://www.google.com/search?q='+encodeURIComponent(p.title+' news '+new Date().getFullYear());
+    const ageMin=Math.round((now-p.firstSeen)/60000);
+    const kws=(p.commentKeywords||[]).filter(k=>k!=='REVERT');
+    const kwsHtml=kws.map(k=>'<span class="kw '+kwClass(k)+'">'+kwLabel(k)+'</span>').join('');
+    const isNew=p.isNewArticle?'<span class="kw kw-new">🆕 NEW</span>':'';
+    const deltaHtml=p.deltaBytes>3000?'<span style="color:#64ffda;font-size:0.62rem">+'+Math.round(p.deltaBytes/1000)+'KB</span>':p.deltaBytes<-1000?'<span style="color:#ff4757;font-size:0.62rem">'+Math.round(p.deltaBytes/1000)+'KB</span>':'';
+    const trendHtml=p.trendPct?'<span class="kw kw-trend">📈+'+p.trendPct+'%</span>':'';
 
     if(rank===0){
-      const d=document.createElement('div');d.className='pc '+cls;
-      let sigs='';
-      if(p.isNewArticle) sigs+='<span class="sig sig-new">🆕 NEW</span>';
-      if(p.commentKeywords?.includes('DEATH'))    sigs+='<span class="sig sig-death">💀 DEATH</span>';
-      if(p.commentKeywords?.includes('DISASTER')) sigs+='<span class="sig sig-disaster">🔴 DISASTER</span>';
-      if(p.commentKeywords?.includes('SCANDAL'))  sigs+='<span class="sig sig-scandal">⚠ SCANDAL</span>';
-      if(p.commentKeywords?.includes('BANKRUPT')) sigs+='<span class="sig sig-scandal">💸 BANKRUPT</span>';
-      if(p.commentKeywords?.includes('APPOINTED'))sigs+='<span class="sig sig-trend">✅ APPOINTED</span>';
-      if(p.deltaBytes>3000)  sigs+='<span class="sig sig-delta-pos">+'+Math.round(p.deltaBytes/1000)+'KB</span>';
-      if(p.deltaBytes<-1000) sigs+='<span class="sig sig-delta-neg">'+Math.round(p.deltaBytes/1000)+'KB</span>';
-      if(p.isWar)sigs+='<span class="sig sig-war">⚔ edit war</span>';
-      if(p.isRet>0)sigs+='<span class="sig sig-ret">↩ '+p.isRet+'</span>';
-      if(p.isProt)sigs+='<span class="sig sig-prot">🔒</span>';
-      if(p.trendPct)sigs+='<span class="sig sig-trend">📈+'+p.trendPct+'%</span>';
+      // HERO картка
+      const d=document.createElement('div');
+      d.className='hero '+typeClass;
       d.innerHTML=
-        '<div class="pc-head"><div><div class="pc-label '+lc+'">'+icon+'</div></div>'
-        +'<div class="pc-score" style="color:'+col+'">'+sc+'<span>score</span></div></div>'
-        +'<div class="pc-title"><a href="'+p.url+'" target="_blank">'+p.title+'</a></div>'
-        +'<div class="pc-prog"><div class="pc-prog-f" style="width:'+prog+'%;background:'+col+'"></div></div>'
-        +'<div class="pc-stats">'
-          +'<div class="pc-stat"><div class="v" style="color:'+col+'">'+p.edits+'</div><div class="l">правок</div></div>'
-          +'<div class="pc-stat"><div class="v" style="color:#64ffda">'+p.editors+'</div><div class="l">ред</div></div>'
-          +'<div class="pc-stat"><div class="v" style="color:rgba(255,255,255,0.45)">'+(ageMin<1?'<1':ageMin)+'хв</div><div class="l">активна</div></div>'
+        '<div class="hero-top">'
+          +'<div class="hero-kw">'+isNew+kwsHtml+trendHtml+'</div>'
+          +'<div class="hero-score-wrap"><div class="hero-score" style="color:'+col+'">'+p.score+'<div class="hero-score-label">score</div></div></div>'
         +'</div>'
-        +(p.badges?'<div class="pc-badges">'+p.badges+'</div>':'')
-        +(sigs?'<div class="pc-sigs">'+sigs+'</div>':'')
-        +(p.desc?'<div class="pc-desc">'+p.desc+'</div>':'')
-        +'<div class="pc-acts"><a class="btn-g" href="'+gUrl+'" target="_blank">🔍</a>'
-        +'<button class="btn-ai" data-t="'+p.title.replace(/"/g,'')+'">✦ AI</button>'
-        +'<span class="pc-timer">'+ago(p.lastSeen)+'</span></div>';
+        +'<div class="hero-title"><a href="'+p.url+'" target="_blank">'+p.title+'</a></div>'
+        +'<div class="hero-prog"><div class="hero-prog-f" style="width:'+Math.min(p.score,100)+'%;background:'+col+'"></div></div>'
+        +'<div class="hero-stats">'
+          +'<div class="hstat"><div class="v" style="color:'+col+'">'+p.edits+'</div><div class="l">правок</div></div>'
+          +'<div class="hstat"><div class="v" style="color:#64ffda">'+p.editors+'</div><div class="l">ред</div></div>'
+          +'<div class="hstat"><div class="v" style="color:rgba(255,255,255,0.5)">'+(ageMin<1?'<1':ageMin)+'</div><div class="l">хв</div></div>'
+          +(p.langCount>1?'<div class="hstat"><div class="v" style="color:#4285f4">'+p.langCount+'</div><div class="l">мов</div></div>':'')
+        +'</div>'
+        +(p.deltaBytes?'<div class="hero-delta">'+deltaHtml+'</div>':'')
+        +(p.desc?'<div class="hero-desc">'+p.desc.slice(0,140)+'…</div>':'')
+        +'<div class="hero-acts">'
+          +'<a class="btn-g" href="'+gUrl+'" target="_blank">🔍</a>'
+          +'<button class="btn-ai" data-t="'+p.title.replace(/"/g,'')+'">✦ AI</button>'
+          +'<button class="btn-sp" data-t="'+p.title.replace(/"/g,'')+'">🕸</button>'
+          +'<span class="hero-timer">'+ago(p.lastSeen)+'</span>'
+        +'</div>';
       d.querySelector('.btn-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
+      d.querySelector('.btn-sp').addEventListener('click',function(e){e.stopPropagation();openSpider(this.dataset.t);});
+      sec.appendChild(d);
+    } else if(rank<4){
+      // MEDIUM картка
+      const d=document.createElement('div');
+      d.className='mc '+typeClass;
+      d.addEventListener('click',()=>window.open(p.url,'_blank'));
+      d.innerHTML=
+        '<div class="mc-top">'
+          +'<div class="mc-title">'+p.title+'</div>'
+          +'<div class="mc-score" style="color:'+col+'">'+p.score+'</div>'
+        +'</div>'
+        +'<div class="mc-meta">'
+          +'<span>'+p.edits+'пр</span><span>'+p.editors+'ред</span>'
+          +(ageMin<1?'<span><1хв</span>':'<span>'+ageMin+'хв</span>')
+          +'<div class="mc-kws">'+isNew+kwsHtml+'</div>'
+          +'<button class="sc-ai" data-t="'+p.title.replace(/"/g,'')+'" style="margin-left:auto">✦</button>'
+          +'<button class="sc-sp" data-t="'+p.title.replace(/"/g,'')+'">🕸</button>'
+        +'</div>';
+      d.querySelector('.sc-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
+      d.querySelector('.sc-sp').addEventListener('click',function(e){e.stopPropagation();openSpider(this.dataset.t);});
       sec.appendChild(d);
     } else {
-      const d=document.createElement('div');d.className='pc2 '+cls;
+      // SMALL рядок
+      const d=document.createElement('div');
+      d.className='sc';
       d.addEventListener('click',()=>window.open(p.url,'_blank'));
-      const typeIco=({'СМЕРТЬ':'💀','ПОЛІТИК':'🏛','ГЕОПОЛІТИКА':'🌏','БІЗНЕС':'💼','КУЛЬТУРА':'🎭','СПОРТ':'⚽','НАУКА':'🔬','ВІЙСЬКОВІ':'🎖','ПЕРСОНА':'👤'})[p.articleType]||'◆';
-      d.innerHTML='<div class="pc2-icon">'+typeIco+'</div>'
-        +'<div class="pc2-body"><div class="pc2-title">'+p.title+'</div>'
-        +'<div class="pc2-meta">'+(p.articleType||p.lang)+' · '+p.edits+'пр · '+(ageMin<1?'<1':ageMin)+'хв</div></div>'
-        +'<div class="pc2-score" style="color:'+col+'">'+sc+'</div>'
-        +'<button class="pc2-ai" data-t="'+p.title.replace(/"/g,'')+'">✦</button>';
-      d.querySelector('.pc2-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
+      const dotCol=kws.includes('DEATH')?'#ff4757':kws.includes('DISASTER')?'#ff6b6b':p.type==='res'?'#f72585':col;
+      d.innerHTML='<div class="sc-dot" style="background:'+dotCol+'"></div>'
+        +'<div class="sc-title">'+p.title+'</div>'
+        +'<div class="sc-meta">'+p.editors+'р·'+(ageMin<1?'<1':ageMin)+'хв</div>'
+        +'<div class="sc-score" style="color:'+col+'">'+p.score+'</div>'
+        +'<button class="sc-ai" data-t="'+p.title.replace(/"/g,'')+'">✦</button>'
+        +'<button class="sc-sp" data-t="'+p.title.replace(/"/g,'')+'">🕸</button>';
+      d.querySelector('.sc-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
+      d.querySelector('.sc-sp').addEventListener('click',function(e){e.stopPropagation();openSpider(this.dataset.t);});
       sec.appendChild(d);
     }
   });
 }
 
-// ── PAGEVIEW RANK ──
+// ── RENDER COL 2: РЕЙТИНГИ ──
+function renderRank(){
+  const sec=document.getElementById('feedRank');if(!sec)return;
+  const now=Date.now();
+  const byTitle={};
+  Object.values(pinned).forEach(p=>{
+    if(!byTitle[p.title]||byTitle[p.title].score<p.score)byTitle[p.title]=p;
+  });
+  const sorted=Object.values(byTitle).sort((a,b)=>b.score-a.score);
+  if(!sorted.length){sec.innerHTML='<div class="hint">Очікуємо...</div>';return;}
+  sec.innerHTML='';
+  sorted.forEach((p,i)=>{
+    const col=p.score>=50?'#ff4757':p.score>=25?'#ffc800':'#64ffda';
+    const kws=(p.commentKeywords||[]);
+    const typeIco={'СМЕРТЬ':'💀','ПОЛІТИК':'🏛','ГЕОПОЛІТИКА':'🌏','БІЗНЕС':'💼','СПОРТ':'⚽','КУЛЬТУРА':'🎭','НАУКА':'🔬','ПЕРСОНА':'👤'}[p.articleType]||'◆';
+    const d=document.createElement('div');
+    d.className='rank-item';
+    d.addEventListener('click',()=>window.open(p.url,'_blank'));
+    d.innerHTML='<div class="rank-n">'+(i+1)+'</div>'
+      +'<div class="rank-body">'
+        +'<div class="rank-title">'+typeIco+' '+p.title+'</div>'
+        +'<div class="rank-meta">'+p.editors+'ред · '+p.edits+'пр'+(kws.includes('DEATH')?' · <span style="color:#ff4757">💀</span>':kws.includes('SCANDAL')?' · <span style="color:#ffa500">⚠</span>':'')+'</div>'
+      +'</div>'
+      +'<div class="rank-score" style="color:'+col+'">'+p.score+'</div>'
+      +'<button class="rank-ai" data-t="'+p.title.replace(/"/g,'')+'">✦</button>'
+      +'<button class="rank-sp" data-t="'+p.title.replace(/"/g,'')+'">🕸</button>';
+    d.querySelector('.rank-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
+    d.querySelector('.rank-sp').addEventListener('click',function(e){e.stopPropagation();openSpider(this.dataset.t);});
+    sec.appendChild(d);
+  });
+  document.getElementById('rankCnt').textContent=sorted.length;
+}
+
+// ── RENDER COL 2: PAGEVIEW ──
+const pvPinnedArr=[];
 function renderPvRank(){
   const sec=document.getElementById('feedPv');if(!sec)return;
   const now=Date.now();
@@ -627,114 +653,55 @@ function renderPvRank(){
   const sorted=Object.values(pvPinned).sort((a,b)=>b.pvRatio-a.pvRatio);
   pvCnt=sorted.length;
   document.getElementById('pvCnt').textContent=pvCnt;
-  if(!sorted.length){sec.innerHTML='<div class="hint">Перевіряємо trending...</div>';return;}
+  if(!sorted.length){sec.innerHTML='<div class="hint">...</div>';return;}
   sec.innerHTML='';
-  sorted.forEach((p,rank)=>{
+  sorted.forEach(p=>{
     const ratio=p.pvRatio||0;
     const col=ratio>=10?'#ff4757':ratio>=5?'#ffc800':'#f72585';
     const url=p.url||'https://en.wikipedia.org/wiki/'+encodeURIComponent(p.title.replace(/ /g,'_'));
-    if(rank===0){
-      const d=document.createElement('div');d.className='pvc';
-      d.innerHTML=
-        '<div class="pvc-head"><div><div class="pvc-label">👁 PAGEVIEW SPIKE</div></div>'
-        +'<div class="pvc-ratio" style="color:'+col+'">×'+ratio.toFixed(1)+'<span>від норми</span></div></div>'
-        +'<div class="pvc-title"><a href="'+url+'" target="_blank">'+p.title+'</a></div>'
-        +'<div class="pvc-prog"><div class="pvc-prog-f" style="width:'+Math.min(ratio/20*100,100)+'%;background:'+col+'"></div></div>'
-        +'<div class="pvc-stats">'
-          +'<div class="pvc-stat"><div class="v">'+fmt(p.views||0)+'</div><div class="l">переглядів</div></div>'
-          +'<div class="pvc-stat"><div class="v" style="color:#64ffda">'+(p.trendPct?'+'+p.trendPct+'%':'—')+'</div><div class="l">trending</div></div>'
-        +'</div>'
-        +'<div class="pc-acts"><a class="btn-g" href="https://www.google.com/search?q='+encodeURIComponent(p.title+' news')+'" target="_blank">🔍</a>'
-        +'<button class="btn-ai" data-t="'+p.title.replace(/"/g,'')+'">✦ AI</button></div>';
-      d.querySelector('.btn-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
-      sec.appendChild(d);
-    } else {
-      const d=document.createElement('div');d.className='pvc2';
-      d.addEventListener('click',()=>window.open(url,'_blank'));
-      d.innerHTML='<div class="pvc2-title">'+p.title+'</div>'
-        +'<div class="pvc2-views">'+fmt(p.views||0)+'</div>'
-        +'<div class="pvc2-ratio" style="color:'+col+'">×'+ratio.toFixed(1)+'</div>';
-      sec.appendChild(d);
-    }
+    const d=document.createElement('div');d.className='pv-item';
+    d.addEventListener('click',()=>window.open(url,'_blank'));
+    d.innerHTML='<div class="pv-title">'+p.title+'</div>'
+      +'<div class="pv-views">'+fmt(p.views||0)+'</div>'
+      +'<div class="pv-ratio" style="color:'+col+'">×'+ratio.toFixed(1)+'</div>';
+    sec.appendChild(d);
   });
 }
 
-// ── PAGEVIEW SPIKE DETECTOR ──
-async function checkPageviewSpikes(){
+// ── RENDER COL 3: ЗАЛ СЛАВИ ──
+async function loadHof(){
   try{
-    const since=new Date(Date.now()-6*3600000).toISOString();
-    const r=await fetch(SB_URL+'/rest/v1/pageview_spikes?created_at=gte.'+since+'&order=ratio.desc&limit=30',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
-    const rows=await r.json();if(!Array.isArray(rows)||!rows.length)return;
-    rows.forEach(row=>{
-      const key='pv:'+row.title;
-      if(!pvPinned[key]){
-        pvPinned[key]={key,title:row.title,pvRatio:row.ratio,views:row.last_views,trendPct:row.trend_pct,firstSeen:Date.now(),lastSeen:Date.now(),url:row.url||'https://en.wikipedia.org/wiki/'+encodeURIComponent(row.title.replace(/ /g,'_'))};
-        pvCnt++;
-      } else {
-        pvPinned[key].pvRatio=row.ratio;pvPinned[key].views=row.last_views;pvPinned[key].lastSeen=Date.now();
-      }
+    const since=new Date(Date.now()-20*3600000).toISOString();
+    const r=await fetch(SB_URL+'/rest/v1/anomalies?created_at=gte.'+since+'&order=score.desc&limit=50',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+    const rows=await r.json();if(!Array.isArray(rows))return;
+    const today=new Date();today.setHours(0,0,0,0);
+    const todayRows=rows.filter(r=>new Date(r.created_at)>=today);
+    const seen={};const uniq=todayRows.filter(r=>{if(seen[r.title])return false;seen[r.title]=true;return true;});
+    document.getElementById('hofSub').textContent='сьогодні · '+uniq.length+' подій';
+    document.getElementById('hofCnt').textContent=uniq.length;
+    const el=document.getElementById('feedHof');el.innerHTML='';
+    uniq.forEach((row,i)=>{
+      const sc=Math.round(row.score||0);
+      const col=sc>=50?'#ff4757':sc>=25?'#ffc800':'#64ffda';
+      const rankCls=i===0?'gold':i===1?'silver':i===2?'bronze':'';
+      const rankIco=['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩'][i]||(i+1)+'.';
+      const time=new Date(row.created_at).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
+      const kws=(row.comment_keywords||'').split(',').filter(Boolean);
+      const kwHtml=kws.includes('DEATH')?'<span class="hof-kw kw-death">💀</span>':kws.includes('SCANDAL')?'<span class="hof-kw kw-scandal">⚠</span>':row.is_new_article?'<span class="hof-kw kw-new">🆕</span>':'';
+      const d=document.createElement('div');d.className='hof-item';
+      d.addEventListener('click',()=>window.open(row.url||'#','_blank'));
+      d.innerHTML='<div class="hof-rank '+rankCls+'">'+rankIco+'</div>'
+        +'<div class="hof-body">'
+          +'<div class="hof-title">'+row.title+'</div>'
+          +'<div class="hof-meta">'+kwHtml+'<span style="color:rgba(255,255,255,0.4)">'+time+'</span>'+(row.article_type?'<span style="color:rgba(255,255,255,0.35)"> · '+row.article_type+'</span>':'')+'</div>'
+        +'</div>'
+        +'<div class="hof-score" style="color:'+col+'">'+sc+'</div>'
+        +'<button class="rank-ai" data-t="'+row.title.replace(/"/g,'')+'">✦</button>'
+        +'<button class="rank-sp" data-t="'+row.title.replace(/"/g,'')+'">🕸</button>';
+      d.querySelector('.rank-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
+      d.querySelector('.rank-sp').addEventListener('click',function(e){e.stopPropagation();openSpider(this.dataset.t);});
+      el.appendChild(d);
     });
-    renderPvRank();
-  }catch(e){}
-}
-
-// ── UPSERT EDIT PINNED ──
-function upsertPinned(title,wiki,type,edits,editors,lang,url){
-  const key=(wiki||lang+'wiki')+':'+title;
-  const now=Date.now();
-  const ir=trendData.some(t=>t.article.toLowerCase()===title.toLowerCase()&&t.delta>=50);
-  const ftype=ir?'res':type;
-  if(!pinned[key]){
-    pinned[key]={key,title,wiki:wiki||lang+'wiki',type:ftype,edits,editors,firstSeen:now,lastSeen:now,url:url||getUrl(title,wiki),lang,score:0,isWar:false,isRet:0,isProt:false,desc:'',pvText:'',badges:'',trendPct:null,langCount:0,articleType:'',pvRatio:0,deltaBytes:0,commentKeywords:[],isNewArticle:false,sentiment:0};
-    anomCnt++;if(ftype==='res')resCnt++;else if(ftype==='mul')mulCnt++;
-  } else {
-    pinned[key].edits=Math.max(pinned[key].edits,edits);
-    pinned[key].editors=Math.max(pinned[key].editors,editors);
-    pinned[key].lastSeen=now;
-    if(ir)pinned[key].type='res';
-  }
-  // Оновлюємо нові поля
-  if(pinned[key]){
-    if(deltaBytes) pinned[key].deltaBytes = deltaBytes;
-    if(commentKeywords.length) pinned[key].commentKeywords = commentKeywords;
-    if(isNewArticle) pinned[key].isNewArticle = true;
-  }
-  renderRank();
-  setTimeout(()=>enrich(title,lang,key),600);
-}
-
-// ── ENRICH ──
-async function enrich(title,lang,key){
-  try{
-    const[mr,pvr]=await Promise.all([
-      fetch('https://'+lang+'.wikipedia.org/w/api.php?action=query&prop=categories|langlinks|extracts|info&titles='+encodeURIComponent(title)+'&cllimit=30&clshow=!hidden&lllimit=500&exintro=1&exsentences=2&explaintext=1&inprop=protection&format=json&origin=*'),
-      fetch('https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/'+lang+'.wikipedia/all-access/all-agents/'+encodeURIComponent(title.replace(/ /g,'_'))+'/daily/'+getDateStr(-8)+'/'+getDateStr(-1),{headers:{'User-Agent':'ResonanceDash/1.0'}}).catch(()=>null)
-    ]);
-    const d=await mr.json();const pg=Object.values(d.query?.pages||{})[0];if(!pg)return;
-    const cats=(pg.categories||[]).map(c=>c.title.toLowerCase()).join(' ');
-    const lc=(pg.langlinks||[]).length+1;
-    const ex=pg.extract?pg.extract.split('.')[0].trim():'';
-    const isProt=(pg.protection||[]).some(p=>p.type==='edit');
-    let pvText='',pvRatio=0;
-    if(pvr&&pvr.ok){try{const pv=await pvr.json();const its=pv.items||[];if(its.length>=2){const td=its[its.length-1].views;const avg=Math.round(its.slice(0,-1).reduce((s,i)=>s+i.views,0)/(its.length-1));pvRatio=avg>0?td/avg:0;const pc=pvRatio>=5?'#ff4757':pvRatio>=2?'#ffc800':'#64ffda';if(td>0)pvText='<span style="color:'+pc+'">👁 '+td.toLocaleString()+' · ×'+pvRatio.toFixed(1)+'</span>';}}catch(e){}}
-    let atype='',icon='◆',col='#555';
-    if(/deaths in 20|died 20/.test(cats)){atype='СМЕРТЬ';icon='💀';col='#ff4757';}
-    else if(/politician|president|minister|senator|parliament/.test(cats)){atype='ПОЛІТИК';icon='🏛';col='#f72585';}
-    else if(/businessperson|ceo|billionaire|executive/.test(cats)){atype='БІЗНЕС';icon='💼';col='#ffc800';}
-    else if(/sportsperson|athlete|footballer|olympic/.test(cats)){atype='СПОРТ';icon='⚽';col='#48cae4';}
-    else if(/actor|musician|singer|director|comedian/.test(cats)){atype='КУЛЬТУРА';icon='🎭';col='#b5179e';}
-    else if(/military|general|admiral|colonel/.test(cats)){atype='ВІЙСЬКОВІ';icon='🎖';col='#e76f51';}
-    else if(/scientist|professor|physicist/.test(cats)){atype='НАУКА';icon='🔬';col='#64ffda';}
-    else if(/strait|canal|conflict|crisis|war/.test(cats)){atype='ГЕОПОЛІТИКА';icon='🌏';col='#f72585';}
-    else if(/living people/.test(cats)){atype='ПЕРСОНА';icon='👤';col='#90e0ef';}
-    const wc=lc>=50?'#ff4757':lc>=20?'#ffc800':lc>=10?'#64ffda':'rgba(255,255,255,0.28)';
-    const badges=(atype?'<span class="pb2" style="background:'+col+'18;color:'+col+';border:1px solid '+col+'33">'+icon+' '+atype+'</span>':'')+
-      '<span class="pb2" style="background:'+wc+'18;color:'+wc+';border:1px solid '+wc+'33">🌍('+lc+')</span>'+
-      (isProt?'<span class="pb2" style="background:rgba(255,71,87,0.1);color:#ff8888;border:1px solid rgba(255,71,87,0.2)">🔒</span>':'');
-    const p=pinned[key];if(!p)return;
-    p.badges=badges;p.desc=ex.slice(0,120)+(ex.length>120?'…':'');
-    p.pvText=pvText;p.pvRatio=pvRatio;p.isProt=isProt;p.langCount=lc;p.articleType=atype;
-    renderRank();
   }catch(e){}
 }
 
@@ -750,177 +717,50 @@ function updSustained(title,wiki,user,isBot){
   }
   const span=(s.last-s.first)/60000;
   s.score=s.edits+s.editors.size*3+Math.min(span/10,20);
-  const pt=pinned[(wiki||'enwiki')+':'+title]||Object.values(pinned).find(p=>p.title===title);
-  if(pt){pt.editors=s.editors.size;pt.edits=s.edits;const ret=Object.values(s.ret).filter(ts=>ts.length>1).length;pt.isRet=ret;if(s.edits>5&&s.editors.size>=2)pt.isWar=true;}
   Object.keys(sustained).forEach(k=>{if(now-sustained[k].last>10800000)delete sustained[k];});
 }
 function updSustPanel(){
-  // Об'єднуємо sustained в feedActive
-  updActive();
-}
-
-// ── АКТИВНІ — sustained + live події ──
-const _activeItems={};
-function updActive(){
-  const el=document.getElementById('feedActive');if(!el)return;
-  const now=Date.now();
-  // Sustained items
-  Object.values(sustained).filter(s=>(now-s.first)/60000>=3&&s.edits>=2).forEach(s=>{
-    const ageM=Math.round((now-s.first)/60000);
-    const sc=Math.round(s.score);
-    _activeItems['sus:'+s.title]={title:s.title,url:s.url,score:sc,
-      meta:(ageM>=60?Math.floor(ageM/60)+'г':ageM+'хв')+' · '+s.edits+'пр'+(s.editors.size>=2?' · 👥'+s.editors.size:''),
-      col:sc>=40?'#ff4757':sc>=20?'#ffc800':'#64ffda',t:s.last||now};
-  });
-  // Видаляємо старі
-  Object.keys(_activeItems).forEach(k=>{if(now-(_activeItems[k].t||0)>3600000)delete _activeItems[k];});
-  const sorted=Object.values(_activeItems).sort((a,b)=>b.score-a.score).slice(0,20);
-  if(!sorted.length){el.innerHTML='<div class="hint">Очікуємо активність...</div>';return;}
+  const sorted=Object.values(sustained).filter(s=>(Date.now()-s.first)/60000>=5&&s.edits>=3).sort((a,b)=>b.score-a.score).slice(0,5);
+  const el=document.getElementById('feedSust');if(!el)return;
+  if(!sorted.length){el.innerHTML='';return;}
   el.innerHTML='';
-  sorted.forEach(item=>{
-    const div=document.createElement('div');div.className='si';
-    div.style.cssText='display:flex;align-items:flex-start;gap:0.35rem;padding:0.28rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer';
-    div.addEventListener('click',()=>window.open(item.url,'_blank'));
-    div.innerHTML='<div class="si-sc" style="color:'+item.col+'">'+item.score+'</div>'
-      +'<div style="flex:1;min-width:0"><div class="si-nm">'+item.title+'</div>'
-      +'<div class="si-me">'+item.meta+'</div></div>'
-      +'<div class="si-bar"><div class="si-fill" style="width:'+Math.min(item.score,100)+'%;background:'+item.col+'"></div></div>';
-    el.appendChild(div);
+  sorted.forEach(s=>{
+    const sc=Math.round(s.score);const col=sc>=40?'#ff4757':sc>=20?'#ffc800':'#64ffda';
+    const ageM=Math.round((Date.now()-s.first)/60000);
+    const d=document.createElement('div');d.className='sus-item';
+    d.addEventListener('click',()=>window.open(s.url,'_blank'));
+    d.innerHTML='<div class="sus-body"><div class="sus-title">'+s.title+'</div>'
+      +'<div class="sus-meta">'+(ageM>=60?Math.floor(ageM/60)+'г':ageM+'хв')+' · '+s.edits+'пр · '+s.editors.size+'ред</div></div>'
+      +'<div class="sus-sc" style="color:'+col+'">'+sc+'</div>'
+      +'<div class="sus-bar"><div class="sus-fill" style="width:'+Math.min(sc,100)+'%;background:'+col+'"></div></div>';
+    el.appendChild(d);
   });
-  const ltEl=document.getElementById('lt');if(ltEl)ltEl.textContent=sorted.length+'';
+  document.getElementById('sCnt').textContent=sorted.length;
 }
 
-// ── HOF ──
-async function loadHof(){
-  try{
-    const today=new Date();today.setHours(0,0,0,0);
-    const since=today.toISOString();
-    const r=await fetch(SB_URL+'/rest/v1/anomalies?created_at=gte.'+since+'&order=editors.desc,score.desc&limit=200',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
-    const rows=await r.json();if(!Array.isArray(rows))return;
-    const seen={};const uniq=rows.filter(r=>{if(seen[r.title])return false;seen[r.title]=true;return true;});
-    const d=document.getElementById('hofSub');if(d)d.textContent='сьогодні · '+uniq.length+' подій';
-    document.getElementById('hofCnt').textContent=uniq.length;
-    const el=document.getElementById('feedHof');el.innerHTML='';
-    uniq.forEach((row,i)=>{
-      const sc=Math.round(row.score||0);const col=sc>=50?'#ff4757':sc>=25?'#ffc800':'#64ffda';
-      const rankCls=i===0?'gold':i===1?'silver':i===2?'bronze':'';
-      const rankIco=i===0?'①':i===1?'②':i===2?'③':i===3?'④':i===4?'⑤':i===5?'⑥':i===6?'⑦':i===7?'⑧':i===8?'⑨':i===9?'⑩':(i+1)+'.';
-      const peakTime=new Date(row.updated_at||row.created_at).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
-      const typeCol={СМЕРТЬ:'#ff4757',ПОЛІТИК:'#f72585',ГЕОПОЛІТИКА:'#f72585',БІЗНЕС:'#ffc800'}[row.article_type]||'rgba(255,255,255,0.25)';
-      const div=document.createElement('div');div.className='hr';
-      div.addEventListener('click',()=>window.open(row.url||'#','_blank'));
-      div.innerHTML='<div class="hr-rank '+rankCls+'">'+rankIco+'</div>'
-        +'<div class="hr-body"><div class="hr-title"><a href="'+(row.url||'#')+'" target="_blank" style="color:inherit;text-decoration:none" onmouseover="this.style.color=\'#64ffda\'" onmouseout="this.style.color=\'inherit\'">'+row.title+'</a></div>'
-        +'<div class="hr-meta" style="font-size:0.68rem;color:rgba(255,255,255,0.6)">'+(row.article_type?'<span style="color:'+typeCol+'">'+row.article_type+'</span> · ':'')+peakTime+'</div></div>'
-        +'<div class="hr-score" style="color:'+col+'">'+sc+'</div>'
-        +'<button class="hr-ai" data-t="'+row.title.replace(/"/g,'')+'">✦</button>';
-      div.querySelector('.hr-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
-      el.appendChild(div);
-    });
-  }catch(e){}
-}
-
-// ── TRENDING ──
-async function loadTrend(){
-  try{
-    const r=await fetch(PROXY+'/trending');const d=await r.json();
-    if(!d.items||!d.items.length)return;
-    trendData=d.items;
-    document.getElementById('tTime').textContent=new Date(d.fetchedAt).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
-    const el=document.getElementById('feedTrend');el.innerHTML='';
-    trendData.slice(0,25).forEach((item,i)=>{
-      const col=item.delta>=200?'#64ffda':item.delta>=50?'#48cae4':item.delta<0?'#ff4757':'rgba(255,255,255,0.28)';
-      const ic=item.delta>=500?'🚀':item.delta>=100?'📈':item.delta<-50?'💥':'';
-      const url='https://en.wikipedia.org/wiki/'+encodeURIComponent(item.article.replace(/ /g,'_'));
-      const art=item.article;
-      if(i===0){
-        const div=document.createElement('div');div.className='ti-top';
-        div.innerHTML='<div class="ti-top-h"><div class="ti-top-name">'+ic+(ic?' ':'')+item.article+'</div>'
-          +'<div class="ti-top-pct" style="color:'+col+'">'+(item.delta>0?'+':'')+item.delta+'%</div></div>'
-          +'<div class="ti-top-sub"><div class="ti-top-vw">'+fmt(item.views)+' переглядів</div>'
-          +'<button class="ti-ai" data-t="'+art.replace(/"/g,'')+'">✦ AI</button></div>';
-        div.querySelector('.ti-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
-        div.addEventListener('click',()=>window.open(url,'_blank'));
-        el.appendChild(div);
-      } else {
-        const sh=item.article.length>18?item.article.slice(0,18)+'…':item.article;
-        const row=document.createElement('div');row.className='ti';
-        row.innerHTML='<div class="ti-nm">'+ic+(ic?' ':'')+sh+'</div>'
-          +'<div class="ti-vw">'+fmt(item.views)+'</div>'
-          +'<div class="ti-dl" style="color:'+col+'">'+(item.delta>0?'+':'')+item.delta+'%</div>'
-          +'<button class="ti-ai" data-t="'+art.replace(/"/g,'')+'">✦</button>';
-        row.querySelector('.ti-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
-        row.addEventListener('click',()=>window.open(url,'_blank'));
-        el.appendChild(row);
-      }
-    });
-  }catch(e){}
-}
-
-// ── GOOGLE TRENDS ──
-async function loadGoogleTrends(){
-  try{
-    const r=await fetch(SB_URL+'/rest/v1/trends_signals?order=geo_count.desc&limit=30',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
-    const rows=await r.json();
-    const el=document.getElementById('feedTrends');el.innerHTML='';
-    if(!Array.isArray(rows)||!rows.length){
-      // fallback to proxy
-      const r2=await fetch(PROXY+'/trends');const d=await r2.json();
-      if(!d.items||!d.items.length)return;
-      document.getElementById('trTime').textContent=new Date(d.fetchedAt||Date.now()).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
-      const byGeo={};
-      d.items.forEach(it=>{if(!byGeo[it.geo])byGeo[it.geo]=[];byGeo[it.geo].push(it.title);});
-      Object.entries(byGeo).slice(0,6).forEach(([geo,titles])=>{
-        const row=document.createElement('div');
-        row.style.cssText='padding:0.28rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03);font-size:0.68rem';
-        row.innerHTML='<span style="color:#4285f4;margin-right:0.4rem;font-size:0.58rem">'+geo+'</span><span style="color:rgba(255,255,255,0.65)">'+titles.slice(0,3).join(' · ')+'</span>';
-        el.appendChild(row);
-      });
-      return;
-    }
-    document.getElementById('trTime').textContent=new Date(rows[0]?.updated_at||Date.now()).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
-    rows.forEach(row=>{
-      const geos=(row.geos||[]).join(' ');
-      const col=row.geo_count>=5?'#ff4757':row.geo_count>=3?'#ffc800':'#4285f4';
-      const div=document.createElement('div');
-      div.style.cssText='display:flex;align-items:center;gap:0.4rem;padding:0.28rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer';
-      div.addEventListener('click',()=>window.open('https://www.google.com/search?q='+encodeURIComponent(row.title),'_blank'));
-      div.innerHTML='<div style="flex:1;font-size:0.78rem;color:rgba(255,255,255,0.85);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+row.title+'</div>'
-        +'<div style="font-size:0.58rem;color:'+col+';flex-shrink:0">'+geos+'</div>'
-        +'<div style="font-family:Bebas Neue,sans-serif;font-size:0.9rem;color:'+col+';flex-shrink:0;width:16px;text-align:center">'+row.geo_count+'</div>';
-      el.appendChild(div);
-    });
-  }catch(e){}
-}
-
-// ── FEAR & GREED ──
+// ── RENDER COL 4: КОНТЕКСТ ──
 async function loadFng(){
   try{
     const r=await fetch(PROXY+'/fng');const d=await r.json();
     if(!d.value)return;
     const col=d.value<=25?'#ff4757':d.value<=45?'#ffc800':d.value<=55?'#64ffda':d.value<=75?'#48cae4':'#06d6a0';
     const el=document.getElementById('fngBlock');
-    el.style.cursor='pointer';
-    el.onclick=()=>window.open('https://edition.cnn.com/markets/fear-and-greed','_blank');
-    el.innerHTML='<div class="ctx-title">😨 fear &amp; greed index</div>'
+    el.innerHTML='<div class="ctx-title">😨 fear &amp; greed</div>'
+      +'<div style="display:flex;align-items:baseline;gap:0.4rem">'
       +'<div class="fng-val" style="color:'+col+'">'+d.value+'</div>'
-      +'<div class="fng-label" style="color:'+col+'">'+d.classification+'</div>'
+      +'<div class="fng-label" style="color:'+col+'">'+d.classification+'</div></div>'
       +'<div class="fng-bar"><div class="fng-fill" style="width:'+d.value+'%;background:'+col+'"></div></div>';
   }catch(e){}
 }
 
-// ── BINANCE ──
 async function loadBinance(){
   try{
     const r=await fetch(PROXY+'/binance');const d=await r.json();
     if(!d.items)return;
     const el=document.getElementById('feedBinance');el.innerHTML='';
-    d.items.slice(0,6).forEach(t=>{
+    d.items.slice(0,5).forEach(t=>{
       const col=t.change>0?'#64ffda':'#ff4757';
-      const bnUrl='https://www.binance.com/en/trade/'+t.symbol+'?type=spot';
       const row=document.createElement('div');row.className='bn-item';
-      row.style.cursor='pointer';
-      row.addEventListener('click',()=>window.open(bnUrl,'_blank'));
       row.innerHTML='<div class="bn-sym">'+t.symbol.replace('USDT','')+'</div>'
         +'<div class="bn-pct" style="color:'+col+'">'+(t.change>0?'+':'')+t.change+'%</div>'
         +'<div class="bn-vol">'+fmt(t.vol)+'</div>';
@@ -929,45 +769,194 @@ async function loadBinance(){
   }catch(e){}
 }
 
-// ── CROSS SIGNALS ──
+async function loadGoogleTrends(){
+  try{
+    const r=await fetch(PROXY+'/trends');const d=await r.json();
+    if(!d.items?.length)return;
+    document.getElementById('trTime').textContent=new Date(d.fetchedAt||Date.now()).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
+    const el=document.getElementById('feedTrends');el.innerHTML='';
+    const byGeo={};
+    d.items.forEach(it=>{if(!byGeo[it.geo])byGeo[it.geo]=[];byGeo[it.geo].push(it.title);});
+    Object.entries(byGeo).slice(0,5).forEach(([geo,titles])=>{
+      const row=document.createElement('div');row.className='tr-item';
+      row.innerHTML='<div class="tr-geo">'+geo+'</div>'
+        +'<div class="tr-title">'+titles.slice(0,2).join(' · ')+'</div>';
+      el.appendChild(row);
+    });
+  }catch(e){}
+}
+
 async function loadCrossSignals(){
   try{
     const since=new Date(Date.now()-6*3600000).toISOString();
-    const r=await fetch(SB_URL+'/rest/v1/cross_signals?created_at=gte.'+since+'&order=score.desc&limit=20',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+    const r=await fetch(SB_URL+'/rest/v1/cross_signals?created_at=gte.'+since+'&order=score.desc&limit=15',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
     const rows=await r.json();if(!Array.isArray(rows)||!rows.length)return;
     const el=document.getElementById('feedXs');el.innerHTML='';
     document.getElementById('xsCnt').textContent=rows.length;
+    const typeMap={'WIKI+GDELT':'xs-wiki','WIKI+TRENDS':'xs-trends','WIKI+POLYMARKET':'xs-poly','WIKI+PAGEVIEW':'xs-pv'};
     rows.forEach(row=>{
-      const typeMap={'WIKI+GDELT':'xs-wiki','WIKI+TRENDS':'xs-trends','WIKI+POLYMARKET':'xs-poly'};
       const cls=typeMap[row.type]||'xs-wiki';
       const sc=Math.round(row.score||0);
-      const wikiUrl='https://en.wikipedia.org/wiki/'+encodeURIComponent((row.wiki_title||row.title).replace(/ /g,'_'));
       const div=document.createElement('div');div.className='xs-item';
-      div.addEventListener('click',()=>window.open(wikiUrl,'_blank'));
-      const aEl=document.createElement('a');aEl.href=wikiUrl;aEl.target='_blank';
-      aEl.className='xs-link';
-      aEl.textContent=row.title;
       div.innerHTML='<span class="xs-type '+cls+'">'+row.type+'</span>'
-        +'<div class="xs-body"><div class="xs-title"></div>'
+        +'<div class="xs-body"><div class="xs-title">'+row.title+'</div>'
         +'<div class="xs-detail">'+row.detail+'</div></div>'
         +'<div class="xs-score">'+sc+'</div>';
-      div.querySelector('.xs-title').appendChild(aEl);
       el.appendChild(div);
     });
   }catch(e){}
 }
 
-// ── SYNC COUNTS ──
-async function syncCounts(){
+// ── LIVE FEED (col 4) ──
+function addFeedItem(data){
+  const title=data.title,wiki=data.wiki||'enwiki';
+  const lang=(wiki.replace('wiki','')||'en').slice(0,8);
+  const url=getUrl(title,wiki);
+  const isBot=!!data.bot,user=data.user||'';
+  const isNew=data.isNewArticle||data.type==='new';
+  const deltaBytes=data.deltaBytes||0;
+  const kws=parseCommentClient(data.comment||'');
+
+  if(langF!=='all'&&lang!==langF)return;
+
+  const count=(articles[title]?.count||0);
+  let cls='';
+  if(kws.includes('DEATH'))cls='death';
+  else if(isNew)cls='new_';
+  else if(count>=8)cls='spike';
+  else if(count>=4)cls='high';
+
+  const tags=[
+    isBot?'<span class="tg tg-b">bot</span>':(!user||/^\d+\.\d+/.test(user))?'<span class="tg tg-a">anon</span>':'<span class="tg tg-u">user</span>',
+    isNew?'<span class="tg tg-new">🆕</span>':'',
+    kws.includes('DEATH')?'<span class="tg tg-death">💀</span>':'',
+    articles[title]?.editors?.size>=2?'<span class="tg tg-m">👥'+articles[title].editors.size+'</span>':'',
+    deltaBytes>3000?'<span class="tg tg-delta-p">+'+Math.round(deltaBytes/1000)+'K</span>':'',
+    deltaBytes<-1000?'<span class="tg tg-delta-n">'+Math.round(deltaBytes/1000)+'K</span>':'',
+  ].join('');
+
+  const html='<div class="fi '+cls+'" onclick="window.open(\''+url+'\',\'_blank\')">'
+    +'<a class="fi-t" href="'+url+'" target="_blank" onclick="event.stopPropagation()">'+title+'</a>'
+    +'<div class="fi-m">'+tags+'<span class="fi-lang">'+lang+'</span></div></div>';
+
+  const feed=document.getElementById('feedRecent');
+  if(feed){feed.innerHTML=html+feed.innerHTML;const ch=Array.from(feed.children);if(ch.length>60)ch.slice(60).forEach(el=>feed.removeChild(el));}
+  document.getElementById('lt').textContent=ts();
+}
+
+// ── UPSERT PINNED ──
+function upsertPinned(title,wiki,type,edits,editors,lang,url,meta={}){
+  const key=(wiki||lang+'wiki')+':'+title;
+  const now=Date.now();
+  const ir=trendData.some(t=>t.article.toLowerCase()===title.toLowerCase()&&t.delta>=50);
+  const ftype=ir?'res':type;
+  if(!pinned[key]){
+    pinned[key]={key,title,wiki:wiki||lang+'wiki',type:ftype,edits,editors,firstSeen:now,lastSeen:now,
+      url:url||getUrl(title,wiki),lang,score:0,isWar:false,isRet:0,isProt:false,desc:'',pvText:'',
+      badges:'',trendPct:null,langCount:0,articleType:'',pvRatio:0,
+      deltaBytes:meta.deltaBytes||0,commentKeywords:meta.commentKeywords||[],
+      isNewArticle:meta.isNewArticle||false,sentiment:meta.sentiment||0};
+    anomCnt++;if(ftype==='res')resCnt++;else if(ftype==='mul')mulCnt++;
+  }else{
+    pinned[key].edits=Math.max(pinned[key].edits,edits);
+    pinned[key].editors=Math.max(pinned[key].editors,editors);
+    pinned[key].lastSeen=now;
+    if(ir)pinned[key].type='res';
+    if(meta.deltaBytes)pinned[key].deltaBytes=meta.deltaBytes;
+    if(meta.commentKeywords?.length)pinned[key].commentKeywords=meta.commentKeywords;
+    if(meta.isNewArticle)pinned[key].isNewArticle=true;
+  }
+  renderSignal();renderRank();
+  setTimeout(()=>enrich(title,lang,key),600);
+}
+
+// ── ENRICH ──
+async function enrich(title,lang,key){
   try{
-    const since=new Date();since.setHours(0,0,0,0);
-    const r=await fetch(SB_URL+'/rest/v1/anomalies?created_at=gte.'+since.toISOString()+'&select=type',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
-    const rows=await r.json();if(!Array.isArray(rows))return;
-    sbCounts.anom=rows.length;
-    sbCounts.mul=rows.filter(r=>r.type==='mul').length;
-    sbCounts.res=rows.filter(r=>r.type==='res').length;
-    sbCounts.sng=rows.filter(r=>r.type==='sng').length;
+    const[mr,pvr]=await Promise.all([
+      fetch('https://'+lang+'.wikipedia.org/w/api.php?action=query&prop=categories|langlinks|extracts|info&titles='+encodeURIComponent(title)+'&cllimit=30&clshow=!hidden&lllimit=500&exintro=1&exsentences=2&explaintext=1&inprop=protection&format=json&origin=*'),
+      fetch('https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/'+lang+'.wikipedia/all-access/all-agents/'+encodeURIComponent(title.replace(/ /g,'_'))+'/daily/'+getDateStr(-8)+'/'+getDateStr(-1),{headers:{'User-Agent':'ResonanceDash/1.0'}}).catch(()=>null)
+    ]);
+    const d=await mr.json();const pg=Object.values(d.query?.pages||{})[0];if(!pg)return;
+    const cats=(pg.categories||[]).map(c=>c.title.toLowerCase()).join(' ');
+    const lc=(pg.langlinks||[]).length+1;
+    const ex=pg.extract?pg.extract.split('.')[0].trim():'';
+    const isProt=(pg.protection||[]).some(p=>p.type==='edit');
+    let pvRatio=0;
+    if(pvr&&pvr.ok){try{const pv=await pvr.json();const its=pv.items||[];if(its.length>=2){const td=its[its.length-1].views;const avg=Math.round(its.slice(0,-1).reduce((s,i)=>s+i.views,0)/(its.length-1));pvRatio=avg>0?td/avg:0;}}catch(e){}}
+    let atype='';
+    if(/deaths in 20|died 20/.test(cats))atype='СМЕРТЬ';
+    else if(/politician|president|minister|senator|parliament/.test(cats))atype='ПОЛІТИК';
+    else if(/businessperson|ceo|billionaire|executive/.test(cats))atype='БІЗНЕС';
+    else if(/sportsperson|athlete|footballer|olympic/.test(cats))atype='СПОРТ';
+    else if(/actor|musician|singer|director|comedian/.test(cats))atype='КУЛЬТУРА';
+    else if(/military|general|colonel/.test(cats))atype='ВІЙСЬКОВІ';
+    else if(/scientist|professor|physicist/.test(cats))atype='НАУКА';
+    else if(/strait|conflict|crisis|war/.test(cats))atype='ГЕОПОЛІТИКА';
+    else if(/living people/.test(cats))atype='ПЕРСОНА';
+    const p=pinned[key];if(!p)return;
+    p.desc=ex.slice(0,140)+(ex.length>140?'…':'');
+    p.pvRatio=pvRatio;p.isProt=isProt;p.langCount=lc;p.articleType=atype;
+    renderSignal();renderRank();
   }catch(e){}
+}
+
+// ── TRENDING ──
+async function loadTrend(){
+  try{
+    const r=await fetch(PROXY+'/trending');const d=await r.json();
+    if(!d.items?.length)return;
+    trendData=d.items;
+  }catch(e){}
+}
+
+// ── PROCESS EDIT ──
+function processEdit(data){
+  const title=data.title||'',wiki=data.wiki||'enwiki';
+  const user=data.user||'',isBot=!!data.bot;
+  const lang=(wiki.replace('wiki','')||'en').slice(0,8);
+  const url=getUrl(title,wiki);
+  const deltaBytes=data.deltaBytes||0;
+  const commentKeywords=parseCommentClient(data.comment||'');
+  const isNewArticle=data.isNewArticle||data.type==='new';
+  const meta={deltaBytes,commentKeywords,isNewArticle};
+
+  totalEdits++;editsTs.push(Date.now());
+  langs[lang]=(langs[lang]||0)+1;
+  if(!articles[title])articles[title]={count:0,editors:new Set(),wiki,url,lang};
+  articles[title].count++;
+  if(user&&!isBot)articles[title].editors.add(user);
+  updSustained(title,wiki,user,isBot);
+
+  const key=wiki+':'+title,now=Date.now();
+  if(!anomWin[key])anomWin[key]={ts60:[],u60:new Set(),ts300:[],u300:new Set(),fM:false,fS:false,firstSeen:now};
+  const w=anomWin[key];
+  w.ts60.push(now);w.ts300.push(now);
+  if(user&&!isBot){w.u60.add(user);w.u300.add(user);}
+  w.ts60=w.ts60.filter(t=>now-t<60000);w.ts300=w.ts300.filter(t=>now-t<300000);
+  if(w.ts60.length===0)w.u60=new Set();
+  if(w.ts300.length===0){w.u300=new Set();w.fM=false;w.fS=false;}
+  const h60=w.ts60.length,u60=w.u60.size,h300=w.ts300.length,u300=w.u300.size;
+  const ir=trendData.some(t=>t.article.toLowerCase()===title.toLowerCase()&&t.delta>=50);
+
+  // Автоматична аномалія при keywords
+  const hasImportantKW=commentKeywords.some(k=>['DEATH','DISASTER','SCANDAL','BANKRUPT'].includes(k));
+
+  if((u300>=2&&h300>=2&&!w.fM)||(hasImportantKW&&h60>=2&&!w.fM)){
+    w.fM=true;upsertPinned(title,wiki,ir?'res':'mul',h300||h60,u300||u60,lang,url,meta);
+  }else if(h60>=4&&u60<=1&&!w.fS){
+    w.fS=true;upsertPinned(title,wiki,'sng',h60,1,lang,url,meta);
+  }else{
+    const pt=pinned[key]||Object.values(pinned).find(p=>p.title===title);
+    if(pt){pt.edits=Math.max(pt.edits,h300||h60);pt.editors=Math.max(pt.editors,u300||u60);pt.lastSeen=now;
+      if(meta.deltaBytes)pt.deltaBytes=meta.deltaBytes;
+      if(meta.commentKeywords?.length)pt.commentKeywords=meta.commentKeywords;
+    }
+  }
+
+  addFeedItem({...data,deltaBytes,commentKeywords,isNewArticle});
+  updHdr();updSpark();
+  if(totalEdits%8===0)updLangs();
 }
 
 // ── SUPABASE LOAD ──
@@ -977,9 +966,11 @@ function rowToPinned(row){
   return{key,title:row.title,wiki:row.wiki||row.lang+'wiki',type:row.type||'sng',
     edits:row.edits||0,editors:row.editors||0,firstSeen:created,lastSeen:created,
     url:row.url||getUrl(row.title,row.wiki),lang:row.lang||'en',score:row.score||0,
-    isWar:false,isRet:0,isProt:false,desc:'',pvText:'',badges:row.article_type?
-      '<span class="pb2" style="color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.1)">'+row.article_type+'</span>':'',
-    trendPct:row.trend_pct,langCount:row.lang_count||0,articleType:row.article_type||'',pvRatio:0};
+    isWar:false,isRet:0,isProt:false,desc:'',pvText:'',badges:'',
+    trendPct:row.trend_pct,langCount:row.lang_count||0,articleType:row.article_type||'',pvRatio:0,
+    deltaBytes:row.delta_bytes||0,
+    commentKeywords:(row.comment_keywords||'').split(',').filter(Boolean),
+    isNewArticle:row.is_new_article||false,sentiment:row.sentiment||0};
 }
 
 async function loadFromSupabase(){
@@ -997,14 +988,7 @@ async function loadFromSupabase(){
       const p=rowToPinned(row);
       if(!pinned[p.key]||pinned[p.key].score<p.score)pinned[p.key]=p;
     });
-    // Заповнюємо _activeItems з бази при старті
-    Object.values(pinned).forEach(p=>{
-      const sc=p.score||0;const col=sc>=50?'#ff4757':sc>=25?'#ffc800':'#64ffda';
-      const ageM=Math.round((Date.now()-p.firstSeen)/60000);
-      _activeItems['ev:'+p.title]={title:p.title,url:p.url,score:sc,
-        meta:p.lang+' · '+p.editors+'ред · '+(ageM<1?'<1':ageM)+'хв',col,t:p.lastSeen||Date.now()};
-    });
-    updHdr();renderRank();updActive();
+    renderSignal();renderRank();
   }catch(e){}
 }
 
@@ -1024,94 +1008,26 @@ function subscribeRealtime(){
       const row=msg.payload?.data?.record;if(!row)return;
       const p=rowToPinned(row);pinned[p.key]=p;
       anomCnt++;if(row.type==='res')resCnt++;else if(row.type==='mul')mulCnt++;
-      syncCounts();renderRank();loadHof();loadCrossSignals();
+      syncCounts();renderSignal();renderRank();loadHof();loadCrossSignals();
     }catch(err){}
   };
   ws.onclose=()=>{clearInterval(hb);setTimeout(subscribeRealtime,5000);};
   ws.onerror=()=>ws.close();
 }
 
-// ── PROCESS EDIT ──
-function processEdit(data){
-  // Нові поля з SSE
-  const deltaBytes = (data.deltaBytes)||0;
-  const commentKeywords = data.comment ? parseCommentClient(data.comment) : [];
-  const isNewArticle = data.isNewArticle || data.type==='new';
-  const title=data.title||'',wiki=data.wiki||'enwiki';
-  const user=data.user||'',isBot=!!data.bot,isNew=data.type==='new';
-  const lang=(wiki.replace('wiki','')||'en').slice(0,8);
-  const url=getUrl(title,wiki);
-  totalEdits++;editsTs.push(Date.now());
-  langs[lang]=(langs[lang]||0)+1;
-  if(!articles[title])articles[title]={count:0,editors:new Set(),wiki,url,lang};
-  articles[title].count++;articles[title].lang=lang;
-  if(user&&!isBot)articles[title].editors.add(user);
-  updSustained(title,wiki,user,isBot);
-
-  const key=wiki+':'+title,now=Date.now();
-  if(!anomWin[key])anomWin[key]={ts60:[],u60:new Set(),ts300:[],u300:new Set(),fM:false,fS:false};
-  const w=anomWin[key];
-  w.ts60.push(now);w.ts300.push(now);
-  if(user&&!isBot){w.u60.add(user);w.u300.add(user);}
-  w.ts60=w.ts60.filter(t=>now-t<60000);w.ts300=w.ts300.filter(t=>now-t<300000);
-  if(w.ts60.length===0)w.u60=new Set();
-  if(w.ts300.length===0){w.u300=new Set();w.fM=false;w.fS=false;}
-  const h60=w.ts60.length,u60=w.u60.size,h300=w.ts300.length,u300=w.u300.size;
-  const ir=trendData.some(t=>t.article.toLowerCase()===title.toLowerCase()&&t.delta>=50);
-  if(u300>=2&&h300>=2&&!w.fM){w.fM=true;upsertPinned(title,wiki,ir?'res':'mul',h300,u300,lang,url);}
-  else if(h60>=4&&u60<=1&&!w.fS){w.fS=true;upsertPinned(title,wiki,'sng',h60,1,lang,url);}
-  else{const pt=pinned[key]||Object.values(pinned).find(p=>p.title===title);if(pt){pt.edits=Math.max(pt.edits,h300||h60);pt.editors=Math.max(pt.editors,u300||u60);pt.lastSeen=now;}}
-
-  if(langF!=='all'&&lang!==langF)return;
-  const count=articles[title].count;
-  const tags=[
-    isBot?'<span class="tg tg-b">bot</span>':(!user||/^\d+\.\d+/.test(user))?'<span class="tg tg-a">anon</span>':'<span class="tg tg-u">user</span>',
-    isNew?'<span class="tg tg-n">new</span>':'',
-    articles[title].editors.size>=2?'<span class="tg tg-m">👥'+articles[title].editors.size+'</span>':'',
-  ].join('');
-  const cls=count>=8?'spike':count>=4?'high':'';
-  // Тільки mul/res/sng аномалії в live feed
-  const isAnom=pinned[wiki+':'+title]||Object.values(pinned).find(p=>p.title===title);
-  if(isAnom){
-    const ltEl=document.getElementById('lt');if(ltEl)ltEl.textContent=ts();
-    const feed=document.getElementById('feedAnomalOnly');
-    if(feed){
-      const typeIco=({'СМЕРТЬ':'💀','ПОЛІТИК':'🏛','ГЕОПОЛІТИКА':'🌏','БІЗНЕС':'💼','СПОРТ':'⚽','КУЛЬТУРА':'🎭','ВІЙСЬКОВІ':'🎖','ПЕРСОНА':'👤'})[isAnom.articleType]||'◆';
-      const sc=isAnom.score||0;const col=sc>=50?'#ff4757':sc>=25?'#ffc800':'#64ffda';
-      const row='<div class="fi spike" onclick="window.open(\''+url+'\',\'_blank\')" style="border-left:2px solid '+col+'">'
-        +'<a class="fi-t" href="'+url+'" target="_blank" onclick="event.stopPropagation()">'+typeIco+' '+title+'</a>'
-        +'<div class="fi-m"><span class="fi-lang">'+lang+'</span><span style="color:'+col+';font-size:0.5rem;margin-left:auto">'+sc+'</span></div></div>';
-      feed.innerHTML=row+feed.innerHTML;
-      const ch=Array.from(feed.children);if(ch.length>30)ch.slice(30).forEach(el=>feed.removeChild(el));
-    }
-  }
-  if(totalEdits%8===0)updLangs();
-  updHdr();updSpark();updHeatmap();updAnomSpark();
+async function syncCounts(){
+  try{
+    const since=new Date();since.setHours(0,0,0,0);
+    const r=await fetch(SB_URL+'/rest/v1/anomalies?created_at=gte.'+since.toISOString()+'&select=type',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+    const rows=await r.json();if(!Array.isArray(rows))return;
+    sbCounts.anom=rows.length;sbCounts.mul=rows.filter(r=>r.type==='mul').length;
+    sbCounts.res=rows.filter(r=>r.type==='res').length;sbCounts.sng=rows.filter(r=>r.type==='sng').length;
+  }catch(e){}
 }
 
-// ── RECENT ANOMALIES від Supabase ──
-async function loadRecentAnom(){
-  try{
-    const since=new Date(Date.now()-3*3600000).toISOString();
-    const r=await fetch(SB_URL+'/rest/v1/anomalies?created_at=gte.'+since+'&order=created_at.desc&limit=20',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
-    const rows=await r.json();if(!Array.isArray(rows)||!rows.length)return;
-    const el=document.getElementById('feedRecentAnom');if(!el)return;
-    document.getElementById('recentCnt').textContent=rows.length;
-    el.innerHTML='';
-    const seen={};
-    rows.filter(r=>{if(seen[r.title])return false;seen[r.title]=true;return true;}).forEach(row=>{
-      const sc=Math.round(row.score||0);const col=sc>=50?'#ff4757':sc>=25?'#ffc800':'#64ffda';
-      const time=new Date(row.created_at).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
-      const typeCol={СМЕРТЬ:'#ff4757',ПОЛІТИК:'#f72585',ГЕОПОЛІТИКА:'#f72585',БІЗНЕС:'#ffc800'}[row.article_type]||'rgba(255,255,255,0.2)';
-      const div=document.createElement('div');div.className='hr';
-      div.style.cssText='padding:0.22rem 0.7rem';
-      div.addEventListener('click',()=>window.open(row.url||'#','_blank'));
-      div.innerHTML='<div class="hr-body"><div class="hr-title" style="font-size:0.8rem">'+row.title+'</div>'
-        +'<div class="hr-meta">'+(row.article_type?'<span style="color:'+typeCol+';font-size:0.58rem">'+row.article_type+'</span> · ':'')+peakTime+'</div></div>'
-        +'<div class="hr-score" style="color:'+col+';font-size:1rem">'+sc+'</div>';
-      el.appendChild(div);
-    });
-  }catch(e){}
+// ── SPIDER ──
+function openSpider(title){
+  window.open('/spider?title='+encodeURIComponent(title.replace(/ /g,'_')),'_blank');
 }
 
 // ── AI MODAL ──
@@ -1126,7 +1042,7 @@ function openAiModal(article){
   document.getElementById('aimContent').innerHTML='';
   document.getElementById('aimLoad').innerHTML='<div style="display:flex;flex-direction:column;gap:0.25rem;margin-bottom:0.5rem">'
     +[{id:'src-wiki',icon:'📖',label:'Wikipedia',col:'#64ffda'},
-      {id:'src-ddg',icon:'📰',label:'GNews',col:'#ffc800'},
+      {id:'src-ddg',icon:'🦆',label:'DuckDuckGo',col:'#ffc800'},
       {id:'src-rss',icon:'📡',label:'RSS',col:'#ff9f1c'},
       {id:'src-hn',icon:'🔶',label:'Hacker News',col:'#ff6600'},
       {id:'src-tr',icon:'📊',label:'Google Trends',col:'#4285f4'},
@@ -1144,98 +1060,69 @@ async function fetchAiCtx(article){
   const version=++fetchAiCtx.ver;
   const el=document.getElementById('aimContent');
   const tStart=Date.now();
-
-  // Start source timers
   const timerIds={};
   ['src-wiki','src-ddg','src-rss','src-hn','src-tr','src-gdelt'].forEach(id=>{
     timerIds[id]=setInterval(()=>{
       const t=document.getElementById(id+'-t');
       if(t)t.textContent=((Date.now()-tStart)/1000).toFixed(1)+'с';
-      if((Date.now()-tStart)>7000){
-        clearInterval(timerIds[id]);
-        const s=document.getElementById(id+'-st');
-        if(s&&s.textContent==='очікування...')s.textContent='⚠ не відповів';
-      }
+      if((Date.now()-tStart)>7000){clearInterval(timerIds[id]);const s=document.getElementById(id+'-st');if(s&&s.textContent==='очікування...')s.textContent='⚠ не відповів';}
     },100);
   });
-
   function done(id,status,ok){
     clearInterval(timerIds[id]);
     const s=document.getElementById(id+'-st');const t=document.getElementById(id+'-t');
-    if(s)s.textContent=status;
-    if(t)t.textContent=((Date.now()-tStart)/1000).toFixed(1)+'с';
-    const row=document.getElementById(id);
-    if(row)row.style.borderColor=ok?'rgba(100,255,218,0.2)':'rgba(255,71,87,0.15)';
+    if(s)s.textContent=status;if(t)t.textContent=((Date.now()-tStart)/1000).toFixed(1)+'с';
+    const row=document.getElementById(id);if(row)row.style.borderColor=ok?'rgba(100,255,218,0.2)':'rgba(255,71,87,0.15)';
   }
+  function append(html){if(fetchAiCtx.ver!==version)return;el.innerHTML+=html;}
 
-  function append(html){
-    if(fetchAiCtx.ver!==version)return;
-    el.innerHTML+=html;
-  }
-
-  // Wikipedia
   fetch('https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&exsentences=3&explaintext=1&titles='+encodeURIComponent(article)+'&format=json&origin=*')
     .then(r=>r.json()).then(d=>{
       const pg=Object.values(d.query?.pages||{})[0];
-      if(pg?.extract){
-        const ex=pg.extract.slice(0,280).trim();
-        append('<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#64ffda">📖 Wikipedia</div>'
-          +'<div style="font-size:0.72rem;color:rgba(255,255,255,0.4);line-height:1.6;font-style:italic">'+ex+'…</div></div>');
-        done('src-wiki','✓',true);
-      } else done('src-wiki','— немає',false);
+      if(pg?.extract){append('<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#64ffda">📖 Wikipedia</div><div style="font-size:0.72rem;color:rgba(255,255,255,0.4);line-height:1.6;font-style:italic">'+pg.extract.slice(0,280)+'…</div></div>');done('src-wiki','✓',true);}
+      else done('src-wiki','— немає',false);
     }).catch(()=>done('src-wiki','⚠ помилка',false));
 
-  // DDG
-  fetch(PROXY+'/gnews?q='+encodeURIComponent(article))
+  fetch(PROXY+'/ddg?q='+encodeURIComponent(article+' news'))
     .then(r=>r.json()).then(d=>{
-      const items=(d.items||[]).slice(0,5);
-      if(!items.length){done('src-ddg','— немає',false);return;}
-      let h='<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#ffc800">📰 GNews</div>';
-      items.forEach(it=>{h+='<div class="aim-item"><a href="'+it.url+'" target="_blank">'+it.title+'</a>'+(it.source?'<div class="aim-item-meta">'+it.source+(it.date?' · '+it.date:'')+'</div>':'')+'</div>';});
+      const items=(d.items||[]).slice(0,4);if(!items.length){done('src-ddg','— немає',false);return;}
+      let h='<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#ffc800">🦆 DuckDuckGo</div>';
+      items.forEach(it=>{h+='<div class="aim-item"><a href="'+it.url+'" target="_blank">'+it.title+'</a>'+(it.source?'<div class="aim-item-meta">'+it.source+'</div>':'')+'</div>';});
       append(h+'</div>');done('src-ddg','✓ '+items.length,true);
     }).catch(()=>done('src-ddg','⚠ помилка',false));
 
-  // RSS
   fetch(PROXY+'/rss?q='+encodeURIComponent(article))
     .then(r=>r.json()).then(d=>{
-      const items=(d.items||[]).slice(0,4);
-      if(!items.length){done('src-rss','— не знайдено',false);return;}
-      let h='<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#ff9f1c">📡 RSS · BBC / Al Jazeera</div>';
+      const items=(d.items||[]).slice(0,4);if(!items.length){done('src-rss','— не знайдено',false);return;}
+      let h='<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#ff9f1c">📡 RSS</div>';
       items.forEach(it=>{h+='<div class="aim-item"><a href="'+it.url+'" target="_blank">'+it.title+'</a><div class="aim-item-meta">'+it.source+'</div></div>';});
       append(h+'</div>');done('src-rss','✓ '+items.length,true);
     }).catch(()=>done('src-rss','⚠ помилка',false));
 
-  // Hacker News
   fetch(PROXY+'/hn?q='+encodeURIComponent(article))
     .then(r=>r.json()).then(d=>{
-      const items=(d.items||[]).slice(0,4);
-      if(!items.length){done('src-hn','— не знайдено',false);return;}
+      const items=(d.items||[]).slice(0,4);if(!items.length){done('src-hn','— не знайдено',false);return;}
       let h='<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#ff6600">🔶 Hacker News</div>';
       items.forEach(it=>{h+='<div class="aim-item"><a href="'+it.url+'" target="_blank">'+it.title+'</a><div class="aim-item-meta">'+it.source+'</div></div>';});
       append(h+'</div>');done('src-hn','✓ '+items.length,true);
     }).catch(()=>done('src-hn','⚠ помилка',false));
 
-  // Google Trends
   fetch(PROXY+'/trends?q='+encodeURIComponent(article))
     .then(r=>r.json()).then(d=>{
-      const items=(d.items||[]).slice(0,6);
-      if(!items.length){done('src-tr','— не в trending',false);return;}
+      const items=(d.items||[]).slice(0,6);if(!items.length){done('src-tr','— не в trending',false);return;}
       const geos=[...new Set(items.map(i=>i.geo))];
-      let h='<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#4285f4">📊 Google Trends · '+geos.join(', ')+'</div>';
-      h+='<div style="display:flex;flex-wrap:wrap;gap:0.22rem;margin-top:0.2rem">';
-      items.forEach(it=>{h+='<span style="padding:2px 5px;border-radius:2px;font-size:0.5rem;background:rgba(66,133,244,0.1);color:#4285f4;border:1px solid rgba(66,133,244,0.2)">'+it.geo+': '+it.title+'</span>';});
+      let h='<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#4285f4">📊 Google Trends · '+geos.join(', ')+'</div><div style="display:flex;flex-wrap:wrap;gap:0.22rem;margin-top:0.2rem">';
+      items.forEach(it=>{h+='<span style="padding:2px 5px;border-radius:2px;font-size:0.52rem;background:rgba(66,133,244,0.1);color:#4285f4;border:1px solid rgba(66,133,244,0.2)">'+it.geo+': '+it.title+'</span>';});
       append(h+'</div></div>');done('src-tr','✓ '+geos.length+' країн',true);
     }).catch(()=>done('src-tr','⚠ помилка',false));
 
-  // GDELT
   fetch(PROXY+'/gdelt?q='+encodeURIComponent(article))
     .then(r=>r.json()).then(d=>{
-      const items=(d.items||[]).slice(0,5);
-      if(!items.length){done('src-gdelt',d.rateLimited?'⚠ rate limit':'— не знайдено',false);return;}
+      const items=(d.items||[]).slice(0,5);if(!items.length){done('src-gdelt',d.rateLimited?'⚠ rate limit':'— не знайдено',false);return;}
       const countries=[...new Set(items.map(i=>i.country).filter(Boolean))];
       let h='<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#48cae4">🌍 GDELT · '+countries.slice(0,4).join(', ')+'</div>';
       items.forEach(it=>{h+='<div class="aim-item"><a href="'+it.url+'" target="_blank">'+it.title+'</a><div class="aim-item-meta">'+(it.source||'')+(it.country?' · '+it.country:'')+'</div></div>';});
-      append(h+'</div>');done('src-gdelt','✓ '+items.length+' · '+countries.length+' країн',true);
+      append(h+'</div>');done('src-gdelt','✓ '+items.length,true);
     }).catch(()=>done('src-gdelt','⚠ помилка',false));
 }
 
@@ -1252,34 +1139,20 @@ setInterval(()=>{if(Date.now()-lastMsg>25000&&document.visibilityState==='visibl
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&Date.now()-lastMsg>20000){if(Date.now()-lastMsg>60000)window.location.reload();else{connect();lastMsg=Date.now();}}});
 setInterval(()=>{try{fetch(PROXY+'/ping').catch(()=>{});}catch(e){}},25000);
 
+// ── INTERVALS ──
 setInterval(updHdr,1000);
 setInterval(updSustPanel,15000);
-setInterval(updLangs,10000);
 setInterval(loadTrend,300000);
 setInterval(loadGoogleTrends,900000);
 setInterval(loadFng,600000);
 setInterval(loadBinance,180000);
 setInterval(loadCrossSignals,120000);
 setInterval(syncCounts,30000);
-setInterval(loadHof,45000);
-setInterval(checkPageviewSpikes,900000);
-const _pushedScores={};
-async function pushPeakScore(p){
-  const prev=_pushedScores[p.key]||0;
-  if(p.score<=prev||p.score<10)return;
-  _pushedScores[p.key]=p.score;
-  try{
-    await fetch(SB_URL+'/rest/v1/anomalies?on_conflict=title,wiki',{
-      method:'POST',
-      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal,resolution=merge-duplicates'},
-      body:JSON.stringify({title:p.title,wiki:p.wiki,lang:p.lang||'en',type:p.type||'mul',edits:p.edits||0,editors:p.editors||0,lang_count:p.langCount||0,article_type:p.articleType||'',url:p.url||'',score:p.score,is_trending:!!(p.trendPct),trend_pct:p.trendPct||null})
-    });
-  }catch(e){}
-}
-setInterval(()=>{Object.values(pinned).forEach(p=>{p.score=calcScore(p);pushPeakScore(p);});renderRank();},30000);
+setInterval(()=>{Object.values(pinned).forEach(p=>{p.score=calcScore(p);});renderSignal();renderRank();},30000);
 
+// ── INIT ──
 connect();
-loadTrend().then(()=>{checkPageviewSpikes();});
+loadTrend();
 loadFromSupabase();
 subscribeRealtime();
 loadHof();
@@ -1288,6 +1161,7 @@ loadBinance();
 loadGoogleTrends();
 loadCrossSignals();
 syncCounts();
+document.getElementById('sparkline').innerHTML=new Array(30).fill('<div class="sc_" style="height:2px;background:#1a1a2e"></div>').join('');
 </script>
 </body>
 </html>
