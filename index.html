@@ -151,6 +151,10 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 .fng-label{font-size:0.58rem;margin-top:2px}
 .fng-bar{height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;margin-top:0.3rem}
 .fng-fill{height:100%;border-radius:2px;transition:width 0.5s}
+.mkt-item{display:flex;align-items:center;padding:0.22rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.04)}
+.mkt-name{font-size:0.75rem;color:rgba(255,255,255,0.75);flex-shrink:0;width:60px;font-weight:600}
+.mkt-val{font-family:'Bebas Neue',sans-serif;font-size:1rem;flex:1}
+.mkt-chg{font-size:0.72rem;flex-shrink:0;width:52px;text-align:right;font-weight:600}
 
 /* CROSS SIGNALS */
 .xs-item{display:flex;align-items:flex-start;gap:0.35rem;padding:0.28rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background 0.15s}
@@ -304,6 +308,11 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
     <div class="ctx-block" id="fngBlock">
       <div class="ctx-title">😨 fear &amp; greed index</div>
       <div class="hint" style="padding:0.2rem 0">завантаження...</div>
+    </div>
+    <!-- Markets -->
+    <div class="ctx-block" style="padding:0">
+      <div class="ctx-title" style="padding:0.3rem 0.7rem">📈 ринки</div>
+      <div id="feedMarkets"><div class="hint" style="padding:0.2rem 0.7rem">...</div></div>
     </div>
     <!-- Binance -->
     <div class="ctx-block">
@@ -836,6 +845,30 @@ async function loadGoogleTrends(){
 }
 
 // ── FEAR & GREED ──
+async function loadMarkets(){
+  try{
+    const r=await fetch(PROXY+'/markets');const d=await r.json();
+    if(!d.items||!d.items.length)return;
+    const el=document.getElementById('feedMarkets');if(!el)return;
+    el.innerHTML='';
+    d.items.forEach(item=>{
+      const col=item.change>0?'#64ffda':item.change<0?'#ff4757':'rgba(255,255,255,0.6)';
+      const div=document.createElement('div');div.className='mkt-item';
+      const url=item.key==='vix'?'https://finance.yahoo.com/quote/%5EVIX':
+                item.key==='gold'?'https://finance.yahoo.com/quote/GC=F':
+                item.key==='oil'?'https://finance.yahoo.com/quote/CL=F':
+                item.key==='dxy'?'https://finance.yahoo.com/quote/DX-Y.NYB':
+                item.key==='btcdom'?'https://www.coingecko.com/en/global-charts':'#';
+      div.style.cursor='pointer';
+      div.addEventListener('click',()=>window.open(url,'_blank'));
+      div.innerHTML='<div class="mkt-name">'+item.name+'</div>'
+        +'<div class="mkt-val" style="color:'+col+'">'+item.unit+item.value+'</div>'
+        +'<div class="mkt-chg" style="color:'+col+'">'+(item.change>0?'+':'')+item.change+'%</div>';
+      el.appendChild(div);
+    });
+  }catch(e){}
+}
+
 async function loadFng(){
   try{
     const r=await fetch(PROXY+'/fng');const d=await r.json();
@@ -1196,6 +1229,7 @@ setInterval(updLangs,10000);
 setInterval(loadTrend,300000);
 setInterval(loadGoogleTrends,900000);
 setInterval(loadFng,600000);
+setInterval(loadMarkets,300000);
 setInterval(loadBinance,180000);
 setInterval(loadCrossSignals,120000);
 setInterval(syncCounts,30000);
@@ -1222,6 +1256,7 @@ loadFromSupabase();
 subscribeRealtime();
 loadHof();
 loadFng();
+loadMarkets();
 loadBinance();
 loadGoogleTrends();
 loadCrossSignals();
