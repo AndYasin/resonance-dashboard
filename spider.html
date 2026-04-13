@@ -69,6 +69,10 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;min-
 .domino-chain{display:flex;align-items:center;gap:0.3rem;flex-wrap:wrap}
 .domino-node{padding:3px 10px;border-radius:2px;font-size:0.68rem;border:1px solid;white-space:nowrap}
 .domino-arrow{color:rgba(255,255,255,0.3);font-size:0.8rem}
+.pai-btn{padding:4px 12px;border-radius:3px;font-size:0.72rem;cursor:pointer;border:1px solid rgba(255,200,0,0.4);background:rgba(255,200,0,0.08);color:#ffc800;font-family:'IBM Plex Mono',monospace;font-weight:600;transition:all 0.15s}
+.pai-btn:hover{background:rgba(255,200,0,0.18)}
+.pai-btn:disabled{opacity:0.4;cursor:wait}
+.pai-block{margin:0.5rem 0.8rem;padding:0.6rem 0.8rem;border-radius:3px;border:1px solid}
 
 /* LOADING */
 .loading{display:flex;align-items:center;justify-content:center;flex:1;flex-direction:column;gap:0.5rem}
@@ -150,7 +154,8 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;min-
         </div>
       </div>
     </div>
-    <div style="display:flex;gap:0.5rem;flex-shrink:0">
+    <div style="display:flex;gap:0.5rem;flex-shrink:0;align-items:center">
+      <button class="pai-btn" id="paiBtn" onclick="runPAI()">⚡ PAI</button>
       <a id="wikiLink" href="#" target="_blank" class="ex" style="text-decoration:none">📖 Wiki</a>
       <a id="googleLink" href="#" target="_blank" class="ex" style="text-decoration:none">🔍 Google</a>
     </div>
@@ -177,6 +182,7 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;min-
   <!-- PANEL 3: SIGNALS -->
   <div class="panel">
     <div class="ph"><span>📡 сигнали</span><span id="sigTime" style="color:#64ffda">—</span></div>
+    <div id="paiPanel"></div>
     <div class="pb" id="signalsPanel">
       <div class="loading">
         <div class="hint-big">Сигнали з'являться після аналізу</div>
@@ -236,6 +242,69 @@ async function fetchKG(title) {
     const d = await r.json();
     return d.items || [];
   } catch(e) { return []; }
+}
+
+async function runPAI() {
+  if (!currentData?.graph) return;
+  const btn = document.getElementById('paiBtn');
+  btn.disabled = true;
+  btn.textContent = '⚡ ...';
+  const g = currentData.graph;
+
+  try {
+    const r = await fetch('/api/pai', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        title: g.label || currentData.title,
+        type: g.type,
+        lang_count: g.relCount || 0,
+        editors: currentData.signals?.wikipedia?.editors || 0,
+        description: document.getElementById('entityDesc')?.textContent || ''
+      }),
+      signal: AbortSignal.timeout(25000)
+    });
+    const data = await r.json();
+    if (data.pai !== undefined) renderPAI(data);
+    else throw new Error(data.error || 'failed');
+  } catch(e) {
+    document.getElementById('paiPanel').innerHTML =
+      '<div style="padding:0.5rem 0.8rem;color:#ff4757;font-size:0.7rem">⚠ PAI error: '+e.message+'</div>';
+  }
+  btn.disabled = false;
+  btn.textContent = '⚡ PAI';
+}
+
+function renderPAI(data) {
+  const { pai, details } = data;
+  const col = pai >= 0.3?'#ff4757':pai>=0.1?'#ffc800':'#64ffda';
+  const predEmoji = {'viral':'🔴','regional':'🟠','local':'🟡','contained':'⚪'}[details.resonance_prediction]||'⚪';
+  const el = document.getElementById('paiPanel');
+  el.innerHTML = '<div class="pai-block" style="border-color:'+col+'33;background:'+col+'08">'
+    +'<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem">'
+    +'<span style="font-size:0.6rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.08em">⚡ Піміно Amplification Index</span>'
+    +'<span style="font-family:Bebas Neue,sans-serif;font-size:1.5rem;color:'+col+'">'+pai+'</span>'
+    +'<span style="margin-left:auto;font-size:0.75rem">'+predEmoji+' '+details.resonance_prediction+'</span>'
+    +'</div>'
+    +(details.brief_reason?'<div style="font-size:0.68rem;color:rgba(255,255,255,0.55);font-style:italic;margin-bottom:0.4rem">'+details.brief_reason+'</div>':'')
+    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:0.3rem;margin-bottom:0.4rem">'
+    +[
+      {k:'identification',l:'Ідентиф.'},
+      {k:'concrete_villain',l:'Злочинець'},
+      {k:'amplifier',l:'Підсилювач'},
+      {k:'evidence',l:'Докази'}
+    ].map(({k,l})=>{
+      const v = details[k]||0;
+      const c = v>=0.7?'#ff4757':v>=0.4?'#ffc800':'rgba(255,255,255,0.4)';
+      return '<div style="text-align:center;padding:0.2rem;background:rgba(255,255,255,0.03);border-radius:2px">'
+        +'<div style="font-size:0.58rem;color:rgba(255,255,255,0.45)">'+l+'</div>'
+        +'<div style="font-size:0.9rem;font-family:Bebas Neue,sans-serif;color:'+c+'">'+v+'</div>'
+        +'</div>';
+    }).join('')
+    +'</div>'
+    +(details.domino_sectors?.length?'<div style="font-size:0.62rem;color:rgba(255,255,255,0.45)">🎯 '+details.domino_sectors.join(' → ')+'</div>':'')
+    +(details.time_horizon?'<div style="font-size:0.62rem;color:rgba(255,255,255,0.45);margin-top:0.2rem">⏱ горизонт: '+details.time_horizon+'</div>':'')
+    +'</div>';
 }
 
 async function fetchSignals(title) {
