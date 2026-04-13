@@ -251,6 +251,18 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 .aim-src-label{font-size:0.55rem;width:110px;flex-shrink:0}
 .aim-src-status{font-size:0.52rem;color:rgba(255,255,255,0.4);flex:1}
 .aim-src-time{font-size:0.5rem;color:rgba(255,255,255,0.2);flex-shrink:0}
+
+.sec-item{display:flex;align-items:center;gap:0.35rem;padding:0.24rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:background 0.1s}
+.sec-item:hover{background:rgba(255,255,255,0.02)}
+.sec-emoji{font-size:0.7rem;flex-shrink:0;width:18px;text-align:center}
+.sec-body{flex:1;min-width:0}
+.sec-name{font-size:0.72rem;color:rgba(255,255,255,0.85);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sec-meta{font-size:0.52rem;color:rgba(255,255,255,0.3);margin-top:1px;display:flex;gap:0.3rem}
+.sec-form{padding:1px 5px;border-radius:2px;font-size:0.5rem;font-weight:600}
+.sec-ipo{background:rgba(100,255,218,0.1);color:#64ffda;border:1px solid rgba(100,255,218,0.2)}
+.sec-ma{background:rgba(72,202,228,0.1);color:#48cae4;border:1px solid rgba(72,202,228,0.2)}
+.sec-event{background:rgba(255,200,0,0.1);color:#ffc800;border:1px solid rgba(255,200,0,0.2)}
+.sec-other{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.1)}
 </style>
 </head>
 <body>
@@ -328,6 +340,10 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
   <div class="col">
     <div class="ph"><span>🧪 сигнали ринку</span><span class="ac" id="predCnt">0</span></div>
     <div class="pb" id="feedPred" style="flex:1"><div class="hint">...</div></div>
+    <div class="sec" style="flex-shrink:0">
+      <div class="ph"><span>📋 sec filings</span><span class="ac" id="secCnt">0</span></div>
+      <div id="feedSec" style="max-height:140px;overflow-y:auto"><div class="hint">...</div></div>
+    </div>
     <div class="sec">
       <div class="ph"><span>📊 google trends</span><span class="ac" id="trTime">...</span></div>
       <div id="feedTrends" style="max-height:200px;overflow-y:auto"></div>
@@ -896,6 +912,33 @@ async function loadGoogleTrends(){
   }catch(e){}
 }
 
+async function loadSec(){
+  try{
+    const r=await fetch(PROXY+'/sec');
+    const d=await r.json();
+    if(!d.items?.length)return;
+    document.getElementById('secCnt').textContent=d.count;
+    const el=document.getElementById('feedSec');if(!el)return;
+    el.innerHTML='';
+    d.items.slice(0,12).forEach(item=>{
+      const formCls = item.form.startsWith('S-1')?'sec-ipo':
+                      ['425','DEFM14A'].includes(item.form)?'sec-ma':
+                      item.form==='8-K'?'sec-event':'sec-other';
+      const div=document.createElement('div');div.className='sec-item';
+      div.addEventListener('click',()=>window.open(item.url,'_blank'));
+      div.innerHTML='<div class="sec-emoji">'+item.emoji+'</div>'
+        +'<div class="sec-body">'
+          +'<div class="sec-name">'+(item.ticker?'<b style="color:#64ffda">'+item.ticker+'</b> ':'')+item.company+'</div>'
+          +'<div class="sec-meta"><span class="sec-form '+formCls+'">'+item.form+'</span>'
+          +'<span>'+item.label+'</span>'
+          +(item.state?'<span>'+item.state+'</span>':'')
+          +'</div>'
+        +'</div>';
+      el.appendChild(div);
+    });
+  }catch(e){}
+}
+
 async function loadPredictions(){
   try{
     const r=await fetch(PROXY+'/predictions');
@@ -1328,6 +1371,7 @@ setInterval(loadFng,600000);
 setInterval(loadBinance,180000);
 setInterval(loadCrossSignals,120000);
 setInterval(loadPredictions,600000);
+setInterval(loadSec,900000);
 setInterval(loadHof,20000);
 setInterval(syncCounts,30000);
 setInterval(()=>{Object.values(pinned).forEach(p=>{p.score=calcScore(p);});renderSignal();renderRank();},30000);
@@ -1343,6 +1387,7 @@ loadBinance();
 loadGoogleTrends();
 loadCrossSignals();
 loadPredictions();
+loadSec();
 syncCounts();
 document.getElementById('sparkline').innerHTML=new Array(30).fill('<div class="sc_" style="height:2px;background:#1a1a2e"></div>').join('');
 </script>
