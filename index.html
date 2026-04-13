@@ -505,6 +505,7 @@ function renderSignal(){
   const sec=document.getElementById('feedSignal');if(!sec)return;
   const now=Date.now();
   Object.keys(pinned).forEach(k=>{if(now-pinned[k].lastSeen>7200000)delete pinned[k];});
+  
 
   // Merge по title
   const byTitle={};
@@ -530,7 +531,7 @@ function renderSignal(){
   const sorted=Object.values(byTitle).sort((a,b)=>b.score-a.score);
   if(!sorted.length){sec.innerHTML='<div class="hint">Очікуємо аномалії...</div>';return;}
   sec.innerHTML='';
-  document.getElementById('rankCnt').textContent=sorted.length;
+  
 
   sorted.forEach((p,rank)=>{
     const col=p.score>=50?'#ff4757':p.score>=25?'#ffc800':'#64ffda';
@@ -640,7 +641,7 @@ function renderRank(){return;
     d.querySelector('.rank-sp').addEventListener('click',function(e){e.stopPropagation();openSpider(this.dataset.t);});
     sec.appendChild(d);
   });
-  document.getElementById('rankCnt').textContent=sorted.length;
+  
 }
 
 // ── RENDER COL 2: PAGEVIEW ──
@@ -757,12 +758,17 @@ async function loadBinance(){
     const r=await fetch(PROXY+'/binance');const d=await r.json();
     if(!d.items)return;
     const el=document.getElementById('feedBinance');el.innerHTML='';
-    d.items.slice(0,5).forEach(t=>{
+    d.items.slice(0,6).forEach(t=>{
       const col=t.change>0?'#64ffda':'#ff4757';
+      const sym=t.symbol.replace('USDT','');
+      const url='https://www.binance.com/en/trade/'+sym+'_USDT';
       const row=document.createElement('div');row.className='bn-item';
-      row.innerHTML='<div class="bn-sym">'+t.symbol.replace('USDT','')+'</div>'
+      row.style.cursor='pointer';
+      row.addEventListener('click',()=>window.open(url,'_blank'));
+      row.innerHTML='<div class="bn-sym" style="color:rgba(255,255,255,0.85)">'+sym+'</div>'
         +'<div class="bn-pct" style="color:'+col+'">'+(t.change>0?'+':'')+t.change+'%</div>'
-        +'<div class="bn-vol">'+fmt(t.vol)+'</div>';
+        +'<div class="bn-vol">'+fmt(t.vol)+'</div>'
+        +'<div style="font-size:0.52rem;color:rgba(255,255,255,0.2);margin-left:auto">↗</div>';
       el.appendChild(row);
     });
   }catch(e){}
@@ -1004,7 +1010,7 @@ async function loadFromSupabase(){
   try{
     const since=new Date(Date.now()-6*3600000).toISOString();
     const r=await fetch(SB_URL+'/rest/v1/anomalies?created_at=gte.'+since+'&order=score.desc&limit=100',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
-    const rows=await r.json();if(!Array.isArray(rows)||!rows.length)return;
+    const rows=await r.json();console.log('Supabase rows:',Array.isArray(rows)?rows.length:rows);if(!Array.isArray(rows)||!rows.length)return;
     const best={};
     rows.forEach(row=>{
       if(Date.now()-new Date(row.created_at).getTime()>7200000)return;
