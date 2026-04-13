@@ -287,26 +287,30 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 <!-- BODY -->
 <div class="body">
 
-  <!-- COL 1: ЖИВИЙ СИГНАЛ -->
+  <!-- COL 1: АНОМАЛІЇ — картки різного розміру -->
   <div class="col">
     <div class="ph">
-      <span>⚡ живий сигнал</span>
+      <span>⚡ аномалії</span>
       <span><span class="pk" id="cR">0</span><span style="opacity:0.3">★ </span><span class="gd" id="cM">0</span><span style="opacity:0.3">m</span></span>
     </div>
     <div class="pb" id="feedSignal"><div class="hint">Очікуємо аномалії...</div></div>
   </div>
 
-  <!-- COL 2: РЕЙТИНГИ -->
+  <!-- COL 2: МЕТРИКИ — pageviews, trending, google trends -->
   <div class="col">
-    <div class="ph"><span>📊 edit рейтинг</span><span class="rd" id="rankCnt">0</span></div>
-    <div class="pb" id="feedRank" style="flex:1.2"><div class="hint">Завантаження...</div></div>
+    <div class="ph"><span>📈 trending вікі</span><span class="ac" id="tTime">...</span></div>
+    <div class="pb" id="feedTrend" style="flex:1.3"><div class="hint">Завантаження...</div></div>
     <div class="sec">
       <div class="ph"><span>👁 pageview спайки</span><span class="pk" id="pvCnt">0</span></div>
-      <div class="pb" id="feedPv" style="max-height:200px"><div class="hint">...</div></div>
+      <div class="pb" id="feedPv" style="max-height:160px"><div class="hint">...</div></div>
+    </div>
+    <div class="sec">
+      <div class="ph"><span>📊 google trends</span><span class="ac" id="trTime">...</span></div>
+      <div id="feedTrends" style="max-height:130px;overflow-y:auto"></div>
     </div>
   </div>
 
-  <!-- COL 3: ЗАЛ СЛАВИ + SUSTAINED -->
+  <!-- COL 3: АРХІВ ДНЯ -->
   <div class="col">
     <div class="ph"><span>🏆 зал слави</span><span class="gd" id="hofCnt">—</span></div>
     <div class="hint" id="hofSub" style="padding:0.3rem 0.7rem;font-size:0.58rem;color:rgba(255,255,255,0.3);border-bottom:1px solid rgba(255,255,255,0.04)">сьогодні · завантаження...</div>
@@ -317,10 +321,9 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
     </div>
   </div>
 
-  <!-- COL 4: КОНТЕКСТ -->
+  <!-- COL 4: СЕРЕДОВИЩЕ — не Wikipedia -->
   <div class="col">
-    <div class="ph"><span>🌍 контекст</span><span class="ac" id="lt">—</span></div>
-    <!-- Speedometer -->
+    <div class="ph"><span>🌍 середовище</span><span class="ac" id="lt">—</span></div>
     <div class="spd">
       <canvas id="speedo" width="48" height="30" style="flex-shrink:0"></canvas>
       <div>
@@ -330,25 +333,17 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
       </div>
       <div class="spl" id="sparkline"></div>
     </div>
-    <!-- Fear & Greed -->
     <div class="ctx-block" id="fngBlock">
       <div class="ctx-title">😨 fear &amp; greed</div>
       <div class="hint" style="padding:0.2rem 0;font-size:0.62rem">завантаження...</div>
     </div>
-    <!-- Google Trends -->
     <div class="ctx-block">
-      <div class="ctx-title">📊 google trends <span class="ac" id="trTime" style="font-size:0.5rem"></span></div>
-      <div id="feedTrends"></div>
-    </div>
-    <!-- Binance -->
-    <div class="ctx-block">
-      <div class="ctx-title">💰 binance</div>
+      <div class="ctx-title">💰 binance топ мувери</div>
       <div id="feedBinance"></div>
     </div>
-    <!-- Cross signals -->
     <div class="sec" style="flex:1;display:flex;flex-direction:column;min-height:0">
       <div class="ph"><span>⚡ cross signals</span><span class="ac" id="xsCnt">0</span></div>
-      <div class="pb" id="feedXs"><div class="hint">...</div></div>
+      <div class="pb" id="feedXs" style="flex:1"><div class="hint">...</div></div>
     </div>
     <div class="sec" style="flex:1;display:flex;flex-direction:column;min-height:0">
       <div class="ph"><span>📡 потік</span></div>
@@ -615,8 +610,8 @@ function renderSignal(){
   });
 }
 
-// ── RENDER COL 2: РЕЙТИНГИ ──
-function renderRank(){
+// ── RENDER COL 2: РЕЙТИНГИ (відключено — дублювання) ──
+function renderRank(){return;
   const sec=document.getElementById('feedRank');if(!sec)return;
   const now=Date.now();
   const byTitle={};
@@ -905,6 +900,34 @@ async function enrich(title,lang,key){
   }catch(e){}
 }
 
+// ── TRENDING WIKI (col 2) ──
+async function loadTrendWiki(){
+  try{
+    const r=await fetch(PROXY+'/trending');const d=await r.json();
+    if(!d.items?.length)return;
+    trendData=d.items;
+    const el=document.getElementById('feedTrend');if(!el)return;
+    document.getElementById('tTime').textContent=new Date(d.fetchedAt).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
+    el.innerHTML='';
+    d.items.slice(0,25).forEach((item,i)=>{
+      const col=item.delta>=200?'#64ffda':item.delta>=50?'#48cae4':item.delta<0?'#ff4757':'rgba(255,255,255,0.4)';
+      const ic=item.delta>=500?'🚀':item.delta>=100?'📈':item.delta<-50?'💥':'';
+      const url='https://en.wikipedia.org/wiki/'+encodeURIComponent(item.article.replace(/ /g,'_'));
+      const d2=document.createElement('div');
+      d2.style.cssText='display:flex;align-items:center;gap:0.35rem;padding:0.24rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:background 0.1s';
+      d2.onmouseenter=function(){this.style.background='rgba(255,255,255,0.02)'};
+      d2.onmouseleave=function(){this.style.background=''};
+      d2.onclick=()=>window.open(url,'_blank');
+      const nm=item.article.length>22?item.article.slice(0,22)+'…':item.article;
+      d2.innerHTML='<div style="font-size:0.76rem;color:rgba(255,255,255,0.88);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+ic+(ic?' ':'')+nm+'</div>'
+        +'<div style="font-size:0.6rem;color:rgba(255,255,255,0.3);flex-shrink:0">'+fmt(item.views)+'</div>'
+        +'<div style="font-family:Bebas Neue,sans-serif;font-size:0.9rem;color:'+col+';flex-shrink:0;width:44px;text-align:right">'+(item.delta>0?'+':'')+item.delta+'%</div>'
+        ;
+      el.appendChild(d2);
+    });
+  }catch(e){}
+}
+
 // ── TRENDING ──
 async function loadTrend(){
   try{
@@ -1146,7 +1169,7 @@ setInterval(()=>{try{fetch(PROXY+'/ping').catch(()=>{});}catch(e){}},25000);
 // ── INTERVALS ──
 setInterval(updHdr,1000);
 setInterval(updSustPanel,15000);
-setInterval(loadTrend,300000);
+setInterval(loadTrendWiki,300000);
 setInterval(loadGoogleTrends,900000);
 setInterval(loadFng,600000);
 setInterval(loadBinance,180000);
@@ -1156,7 +1179,7 @@ setInterval(()=>{Object.values(pinned).forEach(p=>{p.score=calcScore(p);});rende
 
 // ── INIT ──
 connect();
-loadTrend();
+loadTrendWiki();
 loadFromSupabase();
 subscribeRealtime();
 loadHof();
