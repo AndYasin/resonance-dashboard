@@ -77,7 +77,9 @@ Respond ONLY with valid JSON:
     });
 
     const data = await r.json();
-    const text = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('').trim();
+    let text = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('').trim();
+    // Strip markdown code fences if present
+    text = text.replace(/```json\s*/gi,'').replace(/```\s*/g,'').trim();
     const details = JSON.parse(text);
     const pai = Math.round(
       details.identification * details.concrete_villain * details.amplifier * details.evidence * 100
