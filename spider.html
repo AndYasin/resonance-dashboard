@@ -211,23 +211,20 @@ function investigate(titleOverride) {
   if (!raw) return;
   const title = raw.replace(/ /g,'_');
 
-  // Clear canvas
   graphNodes=[]; graphEdges=[];
-  const cv=document.getElementById('graphCanvas');
-  if(cv){const ctx=cv.getContext('2d');ctx.clearRect(0,0,cv.width,cv.height);}
-
+  const _cv=document.getElementById('graphCanvas');
+  if(_cv){_cv.getContext('2d').clearRect(0,0,_cv.width,_cv.height);}
   // Show loading
   document.getElementById('layersPanel').innerHTML = '<div class="loading"><div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div><div style="font-size:0.65rem;color:rgba(255,255,255,0.3);margin-top:0.5rem">Будуємо граф...</div></div>';
   document.getElementById('signalsPanel').innerHTML = '<div class="loading"><div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div></div>';
 
   // Fetch graph + signals in parallel
   Promise.all([
-    fetchWithTimeout('/api/wikidata?title='+encodeURIComponent(title),{},12000).then(r=>r.json()).catch(e=>({error:e.message})),
+    fetch('/api/wikidata?title='+encodeURIComponent(title)).then(r=>r.json()).catch(e=>({error:e.message})),
     fetchSignals(title),
-    fetchWikiSignal(title),
-    fetchKG(title.replace(/_/g,' '))
-  ]).then(([graph, signals, wikiSig, kg]) => {
-    currentData = { graph, signals, wikiSig, kg, title };
+    fetchWikiSignal(title)
+  ]).then(([graph, signals, wikiSig]) => {
+    currentData = { graph, signals, wikiSig, title };
     render(currentData);
   });
 }
@@ -257,14 +254,8 @@ async function fetchSignals(title) {
     if (rows?.length) results.cross = rows;
   } catch(e){}
 
-  // Pageview spikes
-  try {
-    try{
-      const pvr = await fetchWithTimeout(SB_URL+'/rest/v1/pageview_spikes?title=eq.'+encodeURIComponent(title.replace(/_/g,' '))+'&limit=1',
-        {headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}},4000);
-      if(pvr.ok){const rows=await pvr.json();if(rows?.[0])results.pageview=rows[0];}
-    }catch(e){}
-  } catch(e){}
+  // Pageview spikes — skip if table missing
+  
 
   return results;
 }
@@ -278,7 +269,7 @@ async function fetchWikiSignal(title) {
   } catch(e){ return ''; }
 }
 
-function render({graph, signals, wikiSig, kg, title}) {
+function render({graph, signals, wikiSig, title}) {
   if (graph.error && !graph.qid) {
     document.getElementById('layersPanel').innerHTML = '<div class="loading"><div class="hint-big" style="color:#ff4757">Не знайдено в Wikidata.<br>Спробуй точну назву Wikipedia статті.</div></div>';
     return;
@@ -292,17 +283,6 @@ function render({graph, signals, wikiSig, kg, title}) {
   document.getElementById('entityDesc').textContent = wikiSig ? wikiSig.slice(0,180)+'…' : (graph.description||'');
   document.getElementById('wikiLink').href = 'https://en.wikipedia.org/wiki/'+encodeURIComponent(title);
   document.getElementById('googleLink').href = 'https://www.google.com/search?q='+encodeURIComponent(title.replace(/_/g,' ')+' news '+new Date().getFullYear());
-
-  // KG enrichment
-  if (kg?.length) {
-    const top = kg[0];
-    const kgTypes = (top.types||[]).filter(t=>t!=='Thing').join(' · ');
-    if (kgTypes) {
-      const m = document.getElementById('entityMeta');
-      if (m && !m.textContent.includes(kgTypes)) m.textContent += ' · ' + kgTypes;
-    }
-    if (top.detail && !wikiSig) document.getElementById('entityDesc').textContent = top.detail+'…';
-  }
 
   // Pimino score
   const pimino = calcPimino(graph, signals);
@@ -441,15 +421,6 @@ function renderSignals(signals, graph) {
       +`<div class="sig-label">${row.label}</div>`;
     el.appendChild(div);
   });
-
-  // KG entities
-  if (kg?.length > 1) {
-    const div = document.createElement('div');
-    div.style.cssText='padding:0.5rem 0.8rem;border-top:1px solid rgba(255,255,255,0.05);margin-top:0.3rem';
-    div.innerHTML='<div style="font-size:0.6rem;color:rgba(255,255,255,0.55);margin-bottom:0.3rem;text-transform:uppercase;letter-spacing:0.08em">🔍 Knowledge Graph</div>'
-      +kg.map(item=>`<div style="display:flex;align-items:center;gap:0.4rem;padding:0.2rem 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer" onclick="window.open('${item.url||'https://www.google.com/search?q='+encodeURIComponent(item.name)}','_blank')"><span style="font-size:0.72rem;color:rgba(255,255,255,0.88)">${item.name}</span><span style="font-size:0.6rem;color:rgba(255,255,255,0.45);margin-left:auto">${(item.types||[]).slice(0,2).join(' · ')}</span></div>`).join('');
-    el.appendChild(div);
-  }
 
   // Tickers якщо є
   if (graph.tickers?.length) {
