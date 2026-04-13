@@ -576,20 +576,34 @@ function buildGraph(graph) {
     { r: 160, max: 16 },
   ];
 
-  let nodeIdx = 0;
-  types.forEach((type, ti) => {
+  // Збираємо всі вузли спочатку
+  const allNodes = [];
+  types.forEach(type => {
     const cfg = LAYER_CONFIG[type] || LAYER_CONFIG.related;
-    byType[type].slice(0, 6).forEach((item, i) => {
-      const ring = rings[Math.min(Math.floor(nodeIdx/8), rings.length-1)];
-      const total = Math.min(allItems.length, rings[0].max + rings[1].max);
-      const angle = (nodeIdx / total) * Math.PI * 2 - Math.PI/2;
-      const x = canvas.width/2 + Math.cos(angle) * ring.r;
-      const y = canvas.height/2 + Math.sin(angle) * ring.r;
-      const node = { id: item.id||item.name, name: item.name, type, x, y, r:item.highValue?12:8, col:cfg.col };
-      graphNodes.push(node);
-      graphEdges.push({ from: 0, to: graphNodes.length-1, col: cfg.col, weight: item.highValue?2:1 });
-      nodeIdx++;
+    byType[type].slice(0, 6).forEach(item => {
+      allNodes.push({ item, type, cfg });
     });
+  });
+
+  // Рівномірно по колу — два кільця
+  const total = allNodes.length;
+  const cx = canvas.width/2;
+  const cy = canvas.height/2;
+  allNodes.forEach((n, idx) => {
+    const ring = idx < 8 ? 110 : 185;
+    const angle = (idx / total) * Math.PI * 2 - Math.PI/2;
+    const x = cx + Math.cos(angle) * ring;
+    const y = cy + Math.sin(angle) * ring;
+    const node = {
+      id: n.item.id||n.item.name,
+      name: n.item.name,
+      type: n.type,
+      x, y,
+      r: n.item.highValue ? 14 : 9,
+      col: n.cfg.col
+    };
+    graphNodes.push(node);
+    graphEdges.push({ from: 0, to: graphNodes.length-1, col: n.cfg.col, weight: n.item.highValue?2:1 });
   });
 
   if (animFrame) cancelAnimationFrame(animFrame);
