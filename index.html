@@ -76,6 +76,10 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 .btn-g:hover{color:#fff}
 .btn-ai{padding:1px 7px;border-radius:2px;font-size:0.5rem;cursor:pointer;border:1px solid rgba(100,255,218,0.4);background:rgba(100,255,218,0.08);color:#64ffda;font-family:'IBM Plex Mono',monospace;transition:all 0.15s;font-weight:600}
 .btn-ai:hover{background:rgba(100,255,218,0.15)}
+.btn-sp{padding:1px 7px;border-radius:2px;font-size:0.5rem;cursor:pointer;border:1px solid rgba(247,37,133,0.4);background:rgba(247,37,133,0.08);color:#f72585;font-family:'IBM Plex Mono',monospace;transition:all 0.15s;font-weight:600;text-decoration:none;display:inline-block}
+.btn-sp:hover{background:rgba(247,37,133,0.18)}
+.pc2-sp{padding:1px 5px;border-radius:2px;font-size:0.5rem;cursor:pointer;border:1px solid rgba(247,37,133,0.35);background:rgba(247,37,133,0.07);color:#f72585;font-family:'IBM Plex Mono',monospace;flex-shrink:0;font-weight:600}
+.hr-sp{padding:1px 4px;border-radius:2px;font-size:0.5rem;cursor:pointer;border:1px solid rgba(247,37,133,0.3);background:rgba(247,37,133,0.06);color:#f72585;font-family:'IBM Plex Mono',monospace;flex-shrink:0;font-weight:600}
 .pc-timer{font-size:0.7rem;color:rgba(255,255,255,0.5);margin-left:auto}
 
 /* compact cards */
@@ -573,8 +577,10 @@ function renderRank(){
         +(p.desc?'<div class="pc-desc">'+p.desc+'</div>':'')
         +'<div class="pc-acts"><a class="btn-g" href="'+gUrl+'" target="_blank">🔍</a>'
         +'<button class="btn-ai" data-t="'+p.title.replace(/"/g,'')+'">✦ AI</button>'
+        +'<button class="btn-sp" data-t="'+p.title.replace(/"/g,'')+'">🕸</button>'
         +'<span class="pc-timer">'+ago(p.lastSeen)+'</span></div>';
       d.querySelector('.btn-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
+      d.querySelector('.btn-sp').addEventListener('click',function(e){e.stopPropagation();openSpider(this.dataset.t);});
       sec.appendChild(d);
     } else {
       const d=document.createElement('div');d.className='pc2 '+cls;
@@ -584,8 +590,10 @@ function renderRank(){
         +'<div class="pc2-body"><div class="pc2-title">'+p.title+'</div>'
         +'<div class="pc2-meta">'+(p.articleType||p.lang)+' · '+p.edits+'пр · '+(ageMin<1?'<1':ageMin)+'хв</div></div>'
         +'<div class="pc2-score" style="color:'+col+'">'+sc+'</div>'
-        +'<button class="pc2-ai" data-t="'+p.title.replace(/"/g,'')+'">✦</button>';
+        +'<button class="pc2-ai" data-t="'+p.title.replace(/"/g,'')+'">✦</button>'
+        +'<button class="pc2-sp" data-t="'+p.title.replace(/"/g,'')+'">🕸</button>';
       d.querySelector('.pc2-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
+      d.querySelector('.pc2-sp').addEventListener('click',function(e){e.stopPropagation();openSpider(this.dataset.t);});
       sec.appendChild(d);
     }
   });
@@ -619,6 +627,7 @@ function renderPvRank(){
         +'<div class="pc-acts"><a class="btn-g" href="https://www.google.com/search?q='+encodeURIComponent(p.title+' news')+'" target="_blank">🔍</a>'
         +'<button class="btn-ai" data-t="'+p.title.replace(/"/g,'')+'">✦ AI</button></div>';
       d.querySelector('.btn-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
+      d.querySelector('.btn-sp').addEventListener('click',function(e){e.stopPropagation();openSpider(this.dataset.t);});
       sec.appendChild(d);
     } else {
       const d=document.createElement('div');d.className='pvc2';
@@ -779,8 +788,10 @@ async function loadHof(){
         +'<div class="hr-body"><div class="hr-title"><a href="'+(row.url||'#')+'" target="_blank" style="color:inherit;text-decoration:none" onmouseover="this.style.color=\'#64ffda\'" onmouseout="this.style.color=\'inherit\'">'+row.title+'</a></div>'
         +'<div class="hr-meta" style="font-size:0.68rem;color:rgba(255,255,255,0.6)">'+(row.article_type?'<span style="color:'+typeCol+'">'+row.article_type+'</span> · ':'')+peakTime+'</div></div>'
         +'<div class="hr-score" style="color:'+col+'">'+sc+'</div>'
-        +'<button class="hr-ai" data-t="'+row.title.replace(/"/g,'')+'">✦</button>';
+        +'<button class="hr-ai" data-t="'+row.title.replace(/"/g,'')+'">✦</button>'
+        +'<button class="hr-sp" data-t="'+row.title.replace(/"/g,'')+'">🕸</button>';
       div.querySelector('.hr-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
+      div.querySelector('.hr-sp').addEventListener('click',function(e){e.stopPropagation();openSpider(this.dataset.t);});
       el.appendChild(div);
     });
   }catch(e){}
@@ -804,8 +815,10 @@ async function loadTrend(){
         div.innerHTML='<div class="ti-top-h"><div class="ti-top-name">'+ic+(ic?' ':'')+item.article+'</div>'
           +'<div class="ti-top-pct" style="color:'+col+'">'+(item.delta>0?'+':'')+item.delta+'%</div></div>'
           +'<div class="ti-top-sub"><div class="ti-top-vw">'+fmt(item.views)+' переглядів</div>'
-          +'<button class="ti-ai" data-t="'+art.replace(/"/g,'')+'">✦ AI</button></div>';
+          +'<button class="ti-ai" data-t="'+art.replace(/"/g,'')+'">✦ AI</button>'
+          +'<button class="pc2-sp" data-t="'+art.replace(/"/g,'')+'">🕸</button></div>';
         div.querySelector('.ti-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
+        div.querySelector('.pc2-sp').addEventListener('click',function(e){e.stopPropagation();openSpider(this.dataset.t);});
         div.addEventListener('click',()=>window.open(url,'_blank'));
         el.appendChild(div);
       } else {
@@ -1074,6 +1087,11 @@ async function loadRecentAnom(){
       el.appendChild(div);
     });
   }catch(e){}
+}
+
+// ── SPIDER ──
+function openSpider(title){
+  window.open('/spider?title='+encodeURIComponent(title.replace(/ /g,'_')),'_blank');
 }
 
 // ── AI MODAL ──
