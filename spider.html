@@ -113,6 +113,18 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;min-
 .loading-dot:nth-child(3){animation-delay:0.4s}
 @keyframes pulse{0%,100%{opacity:0.2}50%{opacity:1}}
 .hint-big{text-align:center;color:rgba(255,255,255,0.3);font-size:0.75rem;line-height:2}
+
+/* HISTORY */
+.hist-bar{display:flex;align-items:flex-end;gap:1px;height:60px;padding:0.4rem 0.8rem 0;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0}
+.hist-b{flex:1;min-width:2px;border-radius:1px 1px 0 0;cursor:pointer;transition:opacity 0.1s;position:relative}
+.hist-b:hover{opacity:0.7}
+.hist-info{padding:0.3rem 0.8rem;font-size:0.6rem;color:rgba(255,255,255,0.5);border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;min-height:20px}
+.burst-item{display:flex;align-items:center;gap:0.4rem;padding:0.22rem 0.8rem;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.65rem}
+.burst-time{color:rgba(255,255,255,0.4);flex-shrink:0;width:100px}
+.burst-val{font-family:'Bebas Neue',sans-serif;font-size:0.9rem;flex-shrink:0}
+.hist-btn{padding:4px 12px;border-radius:3px;font-size:0.72rem;cursor:pointer;border:1px solid rgba(72,202,228,0.4);background:rgba(72,202,228,0.08);color:#48cae4;font-family:'IBM Plex Mono',monospace;font-weight:600;transition:all 0.15s}
+.hist-btn:hover{background:rgba(72,202,228,0.18)}
+.hist-btn:disabled{opacity:0.4;cursor:wait}
 </style>
 </head>
 <body>
@@ -164,6 +176,7 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;min-
     </div>
     <div style="display:flex;gap:0.5rem;flex-shrink:0;align-items:center">
       <button class="pai-btn" id="paiBtn" onclick="runPAI()">⚡ PAI</button>
+      <button class="hist-btn" id="histBtn" onclick="runHistory()">📜 HISTORY</button>
       <a id="wikiLink" href="#" target="_blank" class="ex" style="text-decoration:none">📖 Wiki</a>
       <a id="googleLink" href="#" target="_blank" class="ex" style="text-decoration:none">🔍 Google</a>
     </div>
@@ -186,6 +199,7 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;min-
   <div class="panel">
     <div class="ph"><span>📡 сигнали</span><span id="sigTime" style="color:#64ffda">—</span></div>
     <div id="paiPanel"></div>
+    <div id="histPanel"></div>
     <div class="pb" id="signalsPanel">
       <div class="loading"><div class="hint-big">Сигнали після аналізу</div></div>
     </div>
@@ -689,6 +703,96 @@ function goBack() {
 function goBackTo(idx) {
   while (graphStack.length > idx+1) graphStack.pop();
   goBack();
+}
+
+// ── HISTORY ──
+async function runHistory() {
+  if (!currentData?.title) return;
+  const btn = document.getElementById('histBtn');
+  btn.disabled = true; btn.textContent = '📜 ...';
+  const title = currentData.title;
+  const lang  = currentData.graph?.lang || 'en';
+
+  try {
+    const r = await fetch('/api/wiki-history?title='+encodeURIComponent(title)+'&days=30&lang='+lang, {
+      signal: AbortSignal.timeout(20000)
+    });
+    const data = await r.json();
+    if (!data.found) {
+      document.getElementById('histPanel').innerHTML =
+        '<div style="padding:0.5rem 0.8rem;color:#ff4757;font-size:0.7rem">⚠ Статті не знайдено на '+lang+'.wikipedia.org</div>';
+    } else {
+      renderHistory(data);
+    }
+  } catch(e) {
+    document.getElementById('histPanel').innerHTML =
+      '<div style="padding:0.5rem 0.8rem;color:#ff4757;font-size:0.7rem">⚠ '+e.message+'</div>';
+  }
+  btn.disabled = false; btn.textContent = '📜 HISTORY';
+}
+
+function renderHistory(data) {
+  const el = document.getElementById('histPanel');
+  if (!data.summary?.total) {
+    el.innerHTML = '<div style="padding:0.5rem 0.8rem;font-size:0.7rem;color:rgba(255,255,255,0.4)">Правок за 30 днів не знайдено</div>';
+    return;
+  }
+
+  const s = data.summary;
+  const tl = data.timeline || [];
+  const bursts = data.bursts || [];
+
+  // Summary рядок
+  const kwHtml = (s.keywords||[]).map(k => {
+    const col = k==='DEATH'?'#ff4757':k==='CRYPTO'?'#ffc800':k==='DISASTER'?'#ff6b6b':'#64ffda';
+    return '<span style="padding:1px 5px;border-radius:2px;font-size:0.55rem;background:'+col+'22;color:'+col+';border:1px solid '+col+'44">'+k+'</span>';
+  }).join(' ');
+
+  // Bar chart по днях
+  const maxEdits = Math.max(...tl.map(d => d.edits), 1);
+  const barsHtml = tl.map(d => {
+    const h = Math.max(2, Math.round(d.edits / maxEdits * 56));
+    const col = d.spike==='HIGH'?'#ff4757':d.spike==='MED'?'#ffc800':d.spike==='LOW'?'#64ffda':'rgba(255,255,255,0.15)';
+    const dt = d.day.slice(5); // MM-DD
+    return '<div class="hist-b" style="height:'+h+'px;background:'+col+'" title="'+d.day+': '+d.edits+' правок, '+d.editors+' ред" onclick="showDayInfo('+JSON.stringify(d)+')"></div>';
+  }).join('');
+
+  // Peak burst
+  const peakBurst = bursts[0];
+  const peakStr = peakBurst ?
+    peakBurst.hour.slice(5)+' UTC · '+peakBurst.editors+' ред · '+peakBurst.edits+' правок' : '—';
+
+  el.innerHTML =
+    '<div style="padding:0.4rem 0.8rem;border-bottom:1px solid rgba(255,255,255,0.05);font-size:0.62rem;display:flex;gap:0.6rem;align-items:center;flex-wrap:wrap">'
+    +'<span style="color:rgba(255,255,255,0.5)">📜 30 днів:</span>'
+    +'<span style="color:#64ffda">✏️ '+s.total+'</span>'
+    +'<span style="color:#64ffda">👥 '+s.editors+'</span>'
+    +(s.totalDelta>0?'<span style="color:#64ffda">▲'+Math.round(s.totalDelta/1000)+'KB</span>':'')
+    +(s.totalDelta<0?'<span style="color:#ff4757">▼'+Math.abs(Math.round(s.totalDelta/1000))+'KB</span>':'')
+    +kwHtml
+    +'</div>'
+    +'<div class="hist-bar">'+barsHtml+'</div>'
+    +'<div class="hist-info" id="histDayInfo">⚡ пік: '+peakStr+' — клікни на день для деталей</div>'
+    +(bursts.length ? '<div style="padding:0.3rem 0.8rem;font-size:0.58rem;color:rgba(255,255,255,0.4);letter-spacing:0.08em;text-transform:uppercase">⚡ burst windows</div>'
+    +bursts.slice(0,5).map(b => {
+      const col = b.editors>=5?'#ff4757':b.editors>=3?'#ffc800':'#64ffda';
+      return '<div class="burst-item">'
+        +'<div class="burst-time">'+b.hour.replace('T',' ')+' UTC</div>'
+        +'<div class="burst-val" style="color:'+col+'">'+b.editors+'ред</div>'
+        +'<div style="font-size:0.6rem;color:rgba(255,255,255,0.4)">'+b.edits+' правок'
+        +(b.delta>1000?' +'+Math.round(b.delta/1000)+'KB':b.delta<-1000?' '+Math.round(b.delta/1000)+'KB':'')
+        +'</div></div>';
+    }).join('') : '');
+}
+
+function showDayInfo(d) {
+  const el = document.getElementById('histDayInfo');
+  if (!el) return;
+  const col = d.spike==='HIGH'?'#ff4757':d.spike==='MED'?'#ffc800':'#64ffda';
+  el.innerHTML = '<span style="color:'+col+'">'+d.day+'</span>'
+    +' · ✏️ '+d.edits+' · 👥 '+d.editors
+    +(d.delta?(' · '+(d.delta>0?'▲':'▼')+Math.abs(Math.round(d.delta/1000))+'KB'):'')
+    +(d.comments?.length?' · <span style="color:rgba(255,255,255,0.35);font-style:italic">'+d.comments[0]+'</span>':'');
 }
 
 // ── URL PARAM ──
