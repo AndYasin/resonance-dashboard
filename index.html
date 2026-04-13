@@ -979,15 +979,41 @@ async function loadPredictions(){
     const d=await r.json();
     if(!d.items?.length)return;
     // Фільтруємо тільки цікаві — з обсягом або близьким закриттям
+    const now = Date.now();
     const interesting = d.items
-      .filter(p=>p.probability!==null)
-      .filter(p=>{
-        // Близьке закриття (< 30 днів) або великий обсяг
-        const daysLeft = p.closeTime ? (new Date(p.closeTime)-Date.now())/86400000 : 999;
-        return daysLeft < 30 || p.volume > 10000 || p.activity > 1000000;
+      .filter(p => p.probability !== null)
+      .filter(p => {
+        const daysLeft = p.closeTime ? (new Date(p.closeTime) - now) / 86400000 : 999;
+        const prob = p.probability || 0;
+        // Показуємо тільки актуальні:
+        // 1. Закривається < 21 день
+        // 2. Дуже висока впевненість (майже вирішено) < 60 днів
+        // 3. Великий обсяг + не далеке майбутнє
+        return daysLeft < 21
+          || (prob > 0.85 && daysLeft < 60)
+          || (p.volume > 50000 && daysLeft < 90);
       })
-      .sort((a,b)=>b.activity-a.activity)
-      .slice(0,15);
+      // Фільтр мотлоху — прибираємо безглузді ринки
+      .filter(p => {
+        const t = p.title.toLowerCase();
+        return !t.includes('jesus christ')
+            && !t.includes('lebron james')
+            && !t.includes('mrbeast')
+            && !t.includes('kim kardashian')
+            && !t.includes('george clooney')
+            && !t.includes('chelsea clinton')
+            && !t.includes('oprah')
+            && !t.includes('obama win')
+            && !t.includes('hillary clinton win')
+            && !t.includes('aliens exist');
+      })
+      .sort((a, b) => {
+        const da = a.closeTime ? (new Date(a.closeTime) - now) / 86400000 : 999;
+        const db = b.closeTime ? (new Date(b.closeTime) - now) / 86400000 : 999;
+        // Спочатку найближчі до закриття
+        return da - db;
+      })
+      .slice(0, 15);
     const el=document.getElementById('feedPred');if(!el)return;
     document.getElementById('predCnt').textContent=interesting.length;
     el.innerHTML='';
