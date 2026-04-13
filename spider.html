@@ -222,11 +222,20 @@ function investigate(titleOverride) {
   Promise.all([
     fetch('/api/wikidata?title='+encodeURIComponent(title)).then(r=>r.json()).catch(e=>({error:e.message})),
     fetchSignals(title),
-    fetchWikiSignal(title)
-  ]).then(([graph, signals, wikiSig]) => {
-    currentData = { graph, signals, wikiSig, title };
+    fetchWikiSignal(title),
+    fetchKG(title.replace(/_/g,' '))
+  ]).then(([graph, signals, wikiSig, kg]) => {
+    currentData = { graph, signals, wikiSig, kg, title };
     render(currentData);
   });
+}
+
+async function fetchKG(title) {
+  try {
+    const r = await fetch('/api/kg?q='+encodeURIComponent(title), {signal: AbortSignal.timeout(5000)});
+    const d = await r.json();
+    return d.items || [];
+  } catch(e) { return []; }
 }
 
 async function fetchSignals(title) {
@@ -269,7 +278,7 @@ async function fetchWikiSignal(title) {
   } catch(e){ return ''; }
 }
 
-function render({graph, signals, wikiSig, title}) {
+function render({graph, signals, wikiSig, kg, title}) {
   if (graph.error && !graph.qid) {
     document.getElementById('layersPanel').innerHTML = '<div class="loading"><div class="hint-big" style="color:#ff4757">Не знайдено в Wikidata.<br>Спробуй точну назву Wikipedia статті.</div></div>';
     return;
@@ -421,6 +430,15 @@ function renderSignals(signals, graph) {
       +`<div class="sig-label">${row.label}</div>`;
     el.appendChild(div);
   });
+
+  // KG
+  if (kg?.length) {
+    const div=document.createElement('div');
+    div.style.cssText='padding:0.5rem 0.8rem;border-top:1px solid rgba(255,255,255,0.05);margin-top:0.3rem';
+    div.innerHTML='<div style="font-size:0.6rem;color:rgba(255,255,255,0.55);margin-bottom:0.3rem;text-transform:uppercase;letter-spacing:0.08em">🔍 Knowledge Graph</div>'
+      +kg.map(i=>`<div style="display:flex;align-items:center;padding:0.2rem 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer" onclick="window.open('${i.url||''}','_blank')"><span style="font-size:0.72rem;color:rgba(255,255,255,0.88);flex:1">${i.name}</span><span style="font-size:0.6rem;color:rgba(255,255,255,0.45)">${(i.types||[]).slice(0,2).join(' · ')}</span></div>`).join('');
+    el.appendChild(div);
+  }
 
   // Tickers якщо є
   if (graph.tickers?.length) {
