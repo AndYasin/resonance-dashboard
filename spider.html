@@ -8,6 +8,15 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;min-height:100vh;display:flex;flex-direction:column}
 
+/* AUTH */
+#authOverlay{position:fixed;inset:0;background:#07070f;z-index:99999;display:flex;align-items:center;justify-content:center}
+.auth-box{background:#0d0d1a;border:1px solid rgba(100,255,218,0.2);border-radius:4px;padding:2rem;width:280px;text-align:center}
+.auth-title{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:#64ffda;margin-bottom:1rem}
+.auth-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.15);border-radius:3px;padding:0.5rem 0.7rem;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:0.85rem;outline:none;text-align:center;letter-spacing:0.1em}
+.auth-input:focus{border-color:#64ffda}
+.auth-btn{margin-top:0.8rem;width:100%;padding:0.5rem;background:rgba(100,255,218,0.1);border:1px solid rgba(100,255,218,0.4);border-radius:3px;color:#64ffda;font-family:'IBM Plex Mono',monospace;font-size:0.8rem;cursor:pointer}
+.auth-err{font-size:0.65rem;color:#ff4757;margin-top:0.4rem;min-height:1rem}
+
 /* HEADER */
 .hdr{display:flex;align-items:center;justify-content:space-between;padding:0 1.2rem;height:40px;border-bottom:1px solid rgba(255,255,255,0.08);background:#07070f;flex-shrink:0}
 .logo{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:#fff;letter-spacing:0.1em}
@@ -16,7 +25,7 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;min-
 .logo a:hover{opacity:1}
 
 /* SEARCH */
-.search-bar{display:flex;align-items:center;gap:0.5rem;padding:0.8rem 1.2rem;border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0;background:#09091a}
+.search-bar{display:flex;align-items:center;gap:0.5rem;padding:0.8rem 1.2rem;border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0;background:#09091a;flex-wrap:wrap}
 .search-input{flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:3px;padding:0.4rem 0.7rem;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:0.85rem;outline:none;max-width:400px}
 .search-input:focus{border-color:#64ffda}
 .search-btn{padding:0.4rem 1rem;background:rgba(100,255,218,0.1);border:1px solid rgba(100,255,218,0.4);border-radius:3px;color:#64ffda;font-family:'IBM Plex Mono',monospace;font-size:0.8rem;cursor:pointer}
@@ -25,6 +34,9 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;min-
 .ex{padding:2px 8px;border-radius:2px;font-size:0.62rem;cursor:pointer;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.5)}
 .ex:hover{border-color:#64ffda;color:#64ffda}
 
+/* BREADCRUMB */
+#breadcrumb{display:none;padding:0.3rem 1.2rem;background:#09091a;border-bottom:1px solid rgba(255,255,255,0.05);font-size:0.65rem;color:rgba(255,255,255,0.5);align-items:center;gap:0.4rem;flex-wrap:wrap}
+
 /* ENTITY HEADER */
 .entity-hdr{padding:0.8rem 1.2rem;border-bottom:1px solid rgba(255,255,255,0.06);display:none;background:#0a0a1a}
 .entity-name{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:#fff;line-height:1}
@@ -32,99 +44,95 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;min-
 .entity-desc{font-size:0.75rem;color:rgba(255,255,255,0.4);margin-top:0.3rem;font-style:italic}
 .pimino-badge{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1;flex-shrink:0}
 .pimino-label{font-size:0.5rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.4);text-align:center}
-
-/* GRID */
-.body{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:rgba(255,255,255,0.05);flex:1}
-.panel{background:#07070f;display:flex;flex-direction:column;overflow:hidden;min-height:0}
-.ph{display:flex;justify-content:space-between;align-items:center;padding:0 0.8rem;height:26px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.5);background:#09091a}
-.pb{flex:1;overflow-y:auto;overflow-x:hidden;padding:0.5rem 0}
-.pb::-webkit-scrollbar{width:2px}
-.pb::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08)}
-
-/* GRAPH PANEL */
-#graphCanvas{width:100%;flex:1;display:block}
-
-/* LAYERS PANEL */
-.layer{margin:0.3rem 0.5rem;border-radius:3px;overflow:hidden}
-.layer-hdr{display:flex;align-items:center;gap:0.4rem;padding:0.3rem 0.6rem;font-size:0.62rem;font-weight:600;cursor:pointer;border-radius:3px}
-.layer-hdr:hover{opacity:0.8}
-.layer-items{padding:0 0.6rem 0.4rem}
-.layer-item{display:flex;align-items:flex-start;gap:0.4rem;padding:0.22rem 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer}
-.layer-item:hover .li-name{color:#64ffda}
-.li-name{font-size:0.78rem;color:rgba(255,255,255,0.88);flex:1;line-height:1.3}
-.li-desc{font-size:0.6rem;color:rgba(255,255,255,0.4);margin-top:1px}
-.li-badge{font-size:0.7rem;padding:1px 5px;border-radius:2px;flex-shrink:0;margin-top:2px}
-
-/* SIGNALS PANEL */
-.sig-item{display:flex;align-items:center;gap:0.5rem;padding:0.3rem 0.8rem;border-bottom:1px solid rgba(255,255,255,0.04)}
-.sig-src{font-size:0.6rem;width:80px;flex-shrink:0;color:rgba(255,255,255,0.5)}
-.sig-val{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;flex-shrink:0;width:60px;text-align:right}
-.sig-bar{flex:1;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden}
-.sig-fill{height:100%;border-radius:2px;transition:width 0.5s}
-.sig-label{font-size:0.6rem;color:rgba(255,255,255,0.4);width:70px;text-align:right;flex-shrink:0}
-
-/* DOMINO */
-.domino-bar{padding:0.6rem 1.2rem;border-top:1px solid rgba(255,255,255,0.06);background:#09091a;flex-shrink:0;display:none}
-.domino-title{font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:0.4rem}
-.domino-chain{display:flex;align-items:center;gap:0.3rem;flex-wrap:wrap}
-.domino-node{padding:3px 10px;border-radius:2px;font-size:0.68rem;border:1px solid;white-space:nowrap}
-.domino-arrow{color:rgba(255,255,255,0.3);font-size:0.8rem}
-.pai-btn{padding:4px 12px;border-radius:3px;font-size:0.72rem;cursor:pointer;border:1px solid rgba(255,200,0,0.4);background:rgba(255,200,0,0.08);color:#ffc800;font-family:'IBM Plex Mono',monospace;font-weight:600;transition:all 0.15s}
-.pai-btn:hover{background:rgba(255,200,0,0.18)}
-.pai-btn:disabled{opacity:0.4;cursor:wait}
-.pai-block{margin:0.5rem 0.8rem;padding:0.6rem 0.8rem;border-radius:3px;border:1px solid}
-
-/* LOADING */
-.loading{display:flex;align-items:center;justify-content:center;flex:1;flex-direction:column;gap:0.5rem}
-.loading-dot{width:6px;height:6px;border-radius:50%;background:#64ffda;animation:pulse 1s infinite}
-.loading-dot:nth-child(2){animation-delay:0.2s}
-.loading-dot:nth-child(3){animation-delay:0.4s}
-@keyframes pulse{0%,100%{opacity:0.2}50%{opacity:1}}
-.loading-dots{display:flex;gap:4px}
-.hint-big{text-align:center;color:rgba(255,255,255,0.2);font-size:0.75rem;line-height:2}
-
-/* PIMINO METER */
 .pimino-meter{display:flex;align-items:center;gap:0.8rem;margin-top:0.4rem}
 .pm-bar{flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;max-width:200px}
 .pm-fill{height:100%;border-radius:3px;transition:width 0.8s}
 .pm-dims{display:flex;gap:0.8rem;margin-top:0.25rem}
-.pm-dim{font-size:0.7rem}
+.pm-dim{font-size:0.58rem}
 .pm-dim span{color:rgba(255,255,255,0.4)}
 
-/* ── GLOBAL READABILITY RULES ── */
-/* Мінімальний розмір будь-якого тексту */
-* { min-font-size: 0; }
-.hint, .asl-l, .ctx-title, .ph, .lbl, .stimer,
-.pc-timer, .tg, .fi-lang, .fi-m, .si-me,
-.pc2-meta, .hof-sub, .aim-src, .aim-src-time,
-.xs-detail, .hr-meta, .bn-vol, .li-c, .li-n,
-.ti-vw, .pvc2-views, .spd-l {
-  font-size: 0.7rem !important;
-  color: rgba(255,255,255,0.65) !important;
-}
-/* Заголовки секцій — завжди видимі */
-.ph { color: rgba(255,255,255,0.75) !important; font-size: 0.6rem !important; }
-/* Назви в списках — яскраві */
-.pc2-title, .ti-nm, .xs-title, .hr-title,
-.si-nm, .pvc2-title, .bn-sym, .li-name {
-  color: rgba(255,255,255,0.92) !important;
-}
-/* Мета інфо — читабельне */
-.pc2-meta, .hr-meta, .xs-detail, .fi-m {
-  color: rgba(255,255,255,0.65) !important;
-  font-size: 0.68rem !important;
-}
+/* GRID */
+.body{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:rgba(255,255,255,0.05);flex:1;min-height:0}
+.panel{background:#07070f;display:flex;flex-direction:column;overflow:hidden;min-height:0}
+.ph{display:flex;justify-content:space-between;align-items:center;padding:0 0.8rem;height:26px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.65);background:#09091a}
+.pb{flex:1;overflow-y:auto;overflow-x:hidden;padding:0.5rem 0}
+.pb::-webkit-scrollbar{width:2px}
+.pb::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08)}
+
+/* BUSH */
+.bush-node{display:flex;align-items:center;gap:0.5rem;padding:0.22rem 0.8rem;cursor:pointer;transition:background 0.1s;border-radius:2px;margin:1px 0}
+.bush-node:hover{background:rgba(255,255,255,0.03)}
+.bush-node.d1{padding-left:1.6rem}
+.bush-node.d2{padding-left:2.4rem}
+.bush-node.d3{padding-left:3.2rem}
+.bn-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;transition:all 0.3s}
+.bn-dot.active{box-shadow:0 0 6px currentColor}
+@keyframes tremble{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.8);opacity:0.7}}
+.bn-dot.trembling{animation:tremble 0.6s infinite}
+.bn-name{font-size:0.78rem;color:rgba(255,255,255,0.85);flex:1;line-height:1.3}
+.bn-sub{font-size:0.6rem;color:rgba(255,255,255,0.35)}
+.bn-sig{font-size:0.58rem;padding:1px 5px;border-radius:2px;flex-shrink:0}
+.bn-exp{font-size:0.55rem;color:rgba(255,255,255,0.25);flex-shrink:0;width:12px;text-align:center}
+
+/* LAYERS */
+.layer{margin:0.3rem 0.5rem;border-radius:3px;overflow:hidden}
+.layer-hdr{display:flex;align-items:center;gap:0.4rem;padding:0.3rem 0.6rem;font-size:0.65rem;font-weight:600;border-radius:3px}
+.layer-items{padding:0 0.6rem 0.4rem}
+.layer-item{display:flex;align-items:flex-start;gap:0.4rem;padding:0.22rem 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer}
+.layer-item:hover .li-name{color:#64ffda}
+.li-name{font-size:0.78rem;color:rgba(255,255,255,0.88);flex:1;line-height:1.3}
+.li-desc{font-size:0.62rem;color:rgba(255,255,255,0.45);margin-top:1px}
+.li-badge{font-size:0.52rem;padding:1px 5px;border-radius:2px;flex-shrink:0;margin-top:2px}
+
+/* SIGNALS */
+.sig-item{display:flex;align-items:center;gap:0.5rem;padding:0.3rem 0.8rem;border-bottom:1px solid rgba(255,255,255,0.04)}
+.sig-src{font-size:0.65rem;width:90px;flex-shrink:0;color:rgba(255,255,255,0.6)}
+.sig-val{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;flex-shrink:0;width:60px;text-align:right}
+.sig-bar{flex:1;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden}
+.sig-fill{height:100%;border-radius:2px;transition:width 0.5s}
+.sig-label{font-size:0.62rem;color:rgba(255,255,255,0.45);width:80px;text-align:right;flex-shrink:0}
+
+/* PAI */
+.pai-btn{padding:4px 12px;border-radius:3px;font-size:0.72rem;cursor:pointer;border:1px solid rgba(255,200,0,0.4);background:rgba(255,200,0,0.08);color:#ffc800;font-family:'IBM Plex Mono',monospace;font-weight:600;transition:all 0.15s}
+.pai-btn:hover{background:rgba(255,200,0,0.18)}
+.pai-btn:disabled{opacity:0.4;cursor:wait}
+.pai-block{margin:0 0.5rem 0.5rem;padding:0.6rem 0.8rem;border-radius:3px;border:1px solid}
+
+/* DOMINO */
+.domino-bar{padding:0.6rem 1.2rem;border-top:1px solid rgba(255,255,255,0.06);background:#09091a;flex-shrink:0;display:none}
+.domino-title{font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:0.4rem}
+.domino-chain{display:flex;align-items:center;gap:0.3rem;flex-wrap:wrap}
+.domino-node{padding:3px 10px;border-radius:2px;font-size:0.68rem;border:1px solid;white-space:nowrap}
+.domino-arrow{color:rgba(255,255,255,0.3);font-size:0.8rem}
+
+/* LOADING */
+.loading{display:flex;align-items:center;justify-content:center;flex:1;flex-direction:column;gap:0.5rem;padding:2rem}
+.loading-dots{display:flex;gap:4px}
+.loading-dot{width:6px;height:6px;border-radius:50%;background:#64ffda;animation:pulse 1s infinite}
+.loading-dot:nth-child(2){animation-delay:0.2s}
+.loading-dot:nth-child(3){animation-delay:0.4s}
+@keyframes pulse{0%,100%{opacity:0.2}50%{opacity:1}}
+.hint-big{text-align:center;color:rgba(255,255,255,0.3);font-size:0.75rem;line-height:2}
 </style>
 </head>
 <body>
 
+<div id="authOverlay">
+  <div class="auth-box">
+    <div class="auth-title">RESONANCE // SPIDER</div>
+    <input class="auth-input" id="authInput" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkAuth()"/>
+    <button class="auth-btn" onclick="checkAuth()">▶ ENTER</button>
+    <div class="auth-err" id="authErr"></div>
+  </div>
+</div>
+
 <div class="hdr">
   <div class="logo">RESO<em>NANCE</em> // <em>SPIDER</em> <a href="/">← dashboard</a></div>
-  <div style="font-size:0.6rem;color:rgba(255,255,255,0.3)">піміно · граф впливу · доміно</div>
+  <div style="font-size:0.6rem;color:rgba(255,255,255,0.3)">піміно · кущ · тремтіння</div>
 </div>
 
 <div class="search-bar">
-  <input class="search-input" id="searchInput" placeholder="Wikipedia title... (e.g. Péter Magyar, Microsoft, Asha Bhosle)" />
+  <input class="search-input" id="searchInput" placeholder="Wikipedia title..." />
   <button class="search-btn" onclick="investigate()">▶ ANALYZE</button>
   <div class="examples">
     <span class="ex" onclick="setAndRun('Péter_Magyar')">Péter Magyar</span>
@@ -135,10 +143,11 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;min-
   </div>
 </div>
 
-<div id="breadcrumb" style="display:none;padding:0.3rem 1.2rem;background:#09091a;border-bottom:1px solid rgba(255,255,255,0.05);font-size:0.65rem;color:rgba(255,255,255,0.5);display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap"></div>
+<div id="breadcrumb"></div>
+
 <div class="entity-hdr" id="entityHdr">
   <div style="display:flex;justify-content:space-between;align-items:flex-start">
-    <div>
+    <div style="flex:1">
       <div class="entity-name" id="entityName">—</div>
       <div class="entity-meta" id="entityMeta">—</div>
       <div class="entity-desc" id="entityDesc">—</div>
@@ -150,9 +159,7 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;min-
           </div>
           <div class="pm-dims" id="piminoDims"></div>
         </div>
-        <div style="flex:1">
-          <div class="pm-bar"><div class="pm-fill" id="piminoBar" style="width:0%"></div></div>
-        </div>
+        <div style="flex:1"><div class="pm-bar"><div class="pm-fill" id="piminoBar" style="width:0%"></div></div></div>
       </div>
     </div>
     <div style="display:flex;gap:0.5rem;flex-shrink:0;align-items:center">
@@ -163,31 +170,24 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;min-
   </div>
 </div>
 
-<div class="body" id="mainBody">
-  <!-- PANEL 1: GRAPH -->
+<div class="body">
   <div class="panel">
-    <div class="ph"><span>🕸 павутина</span><span id="nodeCount" style="color:#64ffda">0 вузлів</span></div>
-    <canvas id="graphCanvas"></canvas>
+    <div class="ph"><span>🕸 кущ залежностей</span><span id="nodeCount" style="color:#64ffda">—</span></div>
+    <div class="pb" id="bushPanel">
+      <div class="loading"><div class="hint-big">Введи назву і натисни ANALYZE</div></div>
+    </div>
   </div>
-
-  <!-- PANEL 2: LAYERS -->
   <div class="panel">
     <div class="ph"><span>🧅 шари впливу</span><span id="relCount" style="color:#64ffda">0</span></div>
     <div class="pb" id="layersPanel">
-      <div class="loading">
-        <div class="hint-big">Введи назву і натисни ANALYZE<br>для побудови графу впливу</div>
-      </div>
+      <div class="loading"><div class="hint-big">Шари з'являться після аналізу</div></div>
     </div>
   </div>
-
-  <!-- PANEL 3: SIGNALS -->
   <div class="panel">
     <div class="ph"><span>📡 сигнали</span><span id="sigTime" style="color:#64ffda">—</span></div>
     <div id="paiPanel"></div>
     <div class="pb" id="signalsPanel">
-      <div class="loading">
-        <div class="hint-big">Сигнали з'являться після аналізу</div>
-      </div>
+      <div class="loading"><div class="hint-big">Сигнали після аналізу</div></div>
     </div>
   </div>
 </div>
@@ -198,18 +198,49 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;min-
 </div>
 
 <script>
-const VERCEL = '';  // same origin
-const PROXY  = 'https://resonance-proxy-production.up.railway.app';
+// ── CONSTANTS ──
 const SB_URL = 'https://ovedzfpptsnxzxioyzkr.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92ZWR6ZnBwdHNueHp4aW95emtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5NDIzNTIsImV4cCI6MjA5MTUxODM1Mn0.Z4XFvR7I4HcaoOckDSpsZ4_DDZRAlWENr2VQphTdTx0';
+const PROXY  = 'https://resonance-proxy-production.up.railway.app';
 
+// ── AUTH ──
+const SPIDER_PASS = 'resonance2026';
+function checkAuth() {
+  const val = document.getElementById('authInput').value;
+  if (val === SPIDER_PASS) {
+    document.getElementById('authOverlay').style.display = 'none';
+    localStorage.setItem('spider_auth','1');
+  } else {
+    document.getElementById('authErr').textContent = 'невірний пароль';
+    document.getElementById('authInput').value = '';
+  }
+}
+if (localStorage.getItem('spider_auth') === '1') {
+  document.getElementById('authOverlay').style.display = 'none';
+}
+
+// ── STATE ──
 let currentData = null;
-let graphNodes = [];
-let graphEdges = [];
-let animFrame = null;
-let graphStack = []; // стек для drill-down
-let graphDepth = 0;  // поточна глибина
+let graphStack  = [];
+let trembleInterval = null;
 
+// ── LAYER CONFIG ──
+const LAYER_CONFIG = {
+  employer:       { icon:'🏢', label:'Роботодавець', col:'#64ffda',  bg:'rgba(100,255,218,0.08)' },
+  party:          { icon:'🏛', label:'Партія',        col:'#f72585',  bg:'rgba(247,37,133,0.08)' },
+  country:        { icon:'🌍', label:'Країна',         col:'#4285f4',  bg:'rgba(66,133,244,0.08)' },
+  position:       { icon:'👤', label:'Посада',         col:'#ffc800',  bg:'rgba(255,200,0,0.08)' },
+  spouse:         { icon:'💍', label:'Родина',         col:'#ff6b9d',  bg:'rgba(255,107,157,0.08)' },
+  member_of:      { icon:'🔗', label:'Членство',       col:'#48cae4',  bg:'rgba(72,202,228,0.08)' },
+  educated_at:    { icon:'🎓', label:'Освіта',         col:'#a8dadc',  bg:'rgba(168,218,220,0.08)' },
+  participated_in:{ icon:'🗳', label:'Події',          col:'#e76f51',  bg:'rgba(231,111,81,0.08)' },
+  parent_org:     { icon:'🏗', label:'Материнська',   col:'#ffc800',  bg:'rgba(255,200,0,0.08)' },
+  subsidiary:     { icon:'🔀', label:'Дочірні',        col:'#64ffda',  bg:'rgba(100,255,218,0.08)' },
+  location:       { icon:'📍', label:'Локація',        col:'#4285f4',  bg:'rgba(66,133,244,0.08)' },
+  related:        { icon:'◆',  label:"Пов'язані",     col:'rgba(255,255,255,0.5)', bg:'rgba(255,255,255,0.04)' },
+};
+
+// ── SEARCH ──
 function setAndRun(title) {
   document.getElementById('searchInput').value = title.replace(/_/g,' ');
   investigate(title);
@@ -220,44 +251,369 @@ function investigate(titleOverride) {
   if (!raw) return;
   const title = raw.replace(/ /g,'_');
 
-  graphNodes=[]; graphEdges=[];
-  const _cv=document.getElementById('graphCanvas');
-  if(_cv){_cv.getContext('2d').clearRect(0,0,_cv.width,_cv.height);}
-  // Show loading
-  document.getElementById('layersPanel').innerHTML = '<div class="loading"><div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div><div style="font-size:0.65rem;color:rgba(255,255,255,0.3);margin-top:0.5rem">Будуємо граф...</div></div>';
-  document.getElementById('signalsPanel').innerHTML = '<div class="loading"><div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div></div>';
+  // Reset
+  graphStack = [];
+  updateBreadcrumb([]);
+  if (trembleInterval) { clearInterval(trembleInterval); trembleInterval = null; }
 
-  // Fetch graph + signals in parallel
+  // Loading
+  document.getElementById('bushPanel').innerHTML    = '<div class="loading"><div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div></div>';
+  document.getElementById('layersPanel').innerHTML  = '<div class="loading"><div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div></div>';
+  document.getElementById('signalsPanel').innerHTML = '<div class="loading"><div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div></div>';
+  document.getElementById('paiPanel').innerHTML = '';
+
   Promise.all([
-    fetch('/api/wikidata?title='+encodeURIComponent(title)).then(r=>r.json()).catch(e=>({error:e.message})),
+    fetch('/api/wikidata?title='+encodeURIComponent(title)).then(r=>r.json()).catch(()=>({})),
     fetchSignals(title),
-    fetchWikiSignal(title),
+    fetchWikiSummary(title),
     fetchKG(title.replace(/_/g,' '))
-  ]).then(([graph, signals, wikiSig, kg]) => {
-    currentData = { graph, signals, wikiSig, kg, title };
+  ]).then(([graph, signals, summary, kg]) => {
+    currentData = { graph, signals, summary, kg, title };
     render(currentData);
   });
 }
 
-async function fetchKG(title) {
+// ── FETCH HELPERS ──
+async function fetchKG(q) {
   try {
-    const r = await fetch('/api/kg?q='+encodeURIComponent(title), {signal: AbortSignal.timeout(5000)});
+    const r = await fetch('/api/kg?q='+encodeURIComponent(q), {signal:AbortSignal.timeout(5000)});
     const d = await r.json();
     return d.items || [];
   } catch(e) { return []; }
 }
 
+async function fetchWikiSummary(title) {
+  try {
+    const r = await fetch('https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&exsentences=2&explaintext=1&titles='+encodeURIComponent(title.replace(/_/g,' '))+'&format=json&origin=*', {signal:AbortSignal.timeout(6000)});
+    const d = await r.json();
+    return Object.values(d.query?.pages||{})[0]?.extract || '';
+  } catch(e) { return ''; }
+}
+
+async function fetchSignals(title) {
+  const results = {};
+  const name = title.replace(/_/g,' ');
+
+  try {
+    const r = await fetch(SB_URL+'/rest/v1/anomalies?title=eq.'+encodeURIComponent(name)+'&order=score.desc&limit=1&select=*',
+      {headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}, signal:AbortSignal.timeout(5000)});
+    const rows = await r.json();
+    if (rows?.[0]) results.wikipedia = rows[0];
+  } catch(e) {}
+
+  try {
+    const r = await fetch(SB_URL+'/rest/v1/cross_signals?title=eq.'+encodeURIComponent(name)+'&order=score.desc&limit=5',
+      {headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}, signal:AbortSignal.timeout(4000)});
+    const rows = await r.json();
+    if (rows?.length) results.cross = rows;
+  } catch(e) {}
+
+  return results;
+}
+
+// ── RENDER ──
+function render({graph, signals, summary, kg, title}) {
+  if (!graph?.qid && !graph?.label) {
+    document.getElementById('bushPanel').innerHTML = '<div class="loading"><div class="hint-big" style="color:#ff4757">Не знайдено.<br>Спробуй точну Wikipedia назву.</div></div>';
+    return;
+  }
+
+  // Entity header
+  document.getElementById('entityHdr').style.display = 'block';
+  document.getElementById('entityName').textContent = graph.label || title;
+  let meta = (graph.type||'unknown') + (graph.qid ? ' · '+graph.qid : '');
+  if (kg?.[0]?.types?.length) meta += ' · ' + kg[0].types.filter(t=>t!=='Thing').join(' · ');
+  document.getElementById('entityMeta').textContent = meta;
+  document.getElementById('entityDesc').textContent = summary ? summary.slice(0,200)+'…' : (graph.description||'');
+  document.getElementById('wikiLink').href = 'https://en.wikipedia.org/wiki/'+encodeURIComponent(title);
+  document.getElementById('googleLink').href = 'https://www.google.com/search?q='+encodeURIComponent(title.replace(/_/g,' ')+' news '+new Date().getFullYear());
+
+  // Pimino
+  const pimino = calcPimino(graph, signals);
+  const col = pimino.total>=500?'#ff4757':pimino.total>=200?'#ffc800':pimino.total>=50?'#64ffda':'rgba(255,255,255,0.4)';
+  const ps = document.getElementById('piminoScore');
+  ps.textContent = pimino.total; ps.style.color = col;
+  document.getElementById('piminoBar').style.cssText = 'width:'+Math.min(pimino.total/10,100)+'%;background:'+col;
+  document.getElementById('piminoDims').innerHTML =
+    '<div class="pm-dim"><span>широта</span> '+pimino.width+'</div>'+
+    '<div class="pm-dim"><span>глибина</span> '+pimino.depth+'</div>'+
+    '<div class="pm-dim"><span>сигнал</span> '+pimino.signal+'</div>';
+
+  // Panels
+  buildBush(graph);
+  renderLayers(graph);
+  renderSignals(signals, kg);
+  renderDomino(graph, signals, pimino);
+}
+
+function calcPimino(graph, signals) {
+  const rels = graph.relations || {};
+  const layers = Object.keys(rels).length;
+  const width = Math.min(layers * 15, 100);
+  const highVal = Object.values(rels).flat().filter(r=>r.highValue).length;
+  const depth = Math.min(highVal * 20, 150);
+  let signal = 0;
+  if (signals?.wikipedia) signal += Math.min(signals.wikipedia.editors * 15, 100);
+  if (signals?.cross?.length) signal += signals.cross.length * 15;
+  return { total: Math.round(width+depth+signal), width:Math.round(width), depth:Math.round(depth), signal:Math.round(signal) };
+}
+
+// ── BUSH ──
+function buildBush(graph) {
+  const el = document.getElementById('bushPanel');
+  const rels = graph.relations || {};
+  const total = Object.values(rels).flat().length;
+  document.getElementById('nodeCount').textContent = total + ' вузлів';
+
+  if (!total) {
+    el.innerHTML = '<div class="loading"><div class="hint-big">Зв\'язків не знайдено</div></div>';
+    return;
+  }
+
+  el.innerHTML = '';
+
+  // Центр
+  const center = createBushNode(graph.label, graph.type, '#64ffda', 0, true);
+  el.appendChild(center);
+
+  // Вузли глибини 1
+  const order = ['spouse','position','employer','party','country','participated_in','parent_org','subsidiary','member_of','educated_at','related'];
+  const sorted = [...order, ...Object.keys(rels).filter(k=>!order.includes(k))];
+
+  sorted.forEach(key => {
+    if (!rels[key]?.length) return;
+    const cfg = LAYER_CONFIG[key] || LAYER_CONFIG.related;
+    rels[key].forEach(item => {
+      const node = createBushNode(item.name, cfg.label, cfg.col, 1, false, item.id, key);
+      node.addEventListener('click', () => toggleBushChildren(item, key, node, 1, el));
+      el.appendChild(node);
+    });
+  });
+
+  // Запускаємо тремтіння
+  const allNames = Object.values(rels).flat().map(i=>i.name).filter(Boolean);
+  startTrembleMonitor(allNames);
+}
+
+function createBushNode(name, sub, col, depth, isCenter, id, type) {
+  const node = document.createElement('div');
+  node.className = 'bush-node' + (depth>0?' d'+depth:'');
+  if (id) node.dataset.nodeId = id;
+  if (type) node.dataset.nodeType = type;
+
+  const dot = document.createElement('div');
+  dot.className = 'bn-dot' + (isCenter?' active':'');
+  dot.style.cssText = isCenter
+    ? 'background:#64ffda;color:#64ffda;width:12px;height:12px;box-shadow:0 0 8px #64ffda'
+    : 'background:'+col+'88;color:'+col+';border:1px solid '+col+'66';
+  if (id) dot.id = 'dot-'+id;
+  node.appendChild(dot);
+
+  const nameEl = document.createElement('div');
+  nameEl.className = 'bn-name';
+  if (isCenter) { nameEl.style.color='#64ffda'; nameEl.style.fontWeight='600'; }
+  nameEl.textContent = name || '—';
+  node.appendChild(nameEl);
+
+  const subEl = document.createElement('div');
+  subEl.className = 'bn-sub';
+  subEl.textContent = sub || '';
+  node.appendChild(subEl);
+
+  const sigEl = document.createElement('div');
+  sigEl.className = 'bn-sig';
+  if (id) sigEl.id = 'sig-'+id;
+  node.appendChild(sigEl);
+
+  if (!isCenter) {
+    const expEl = document.createElement('div');
+    expEl.className = 'bn-exp';
+    expEl.textContent = '▶';
+    if (id) expEl.id = 'exp-'+id;
+    node.appendChild(expEl);
+  }
+  return node;
+}
+
+async function toggleBushChildren(item, relType, parentEl, depth, container) {
+  const existId = 'bc-'+item.id;
+  const existing = document.getElementById(existId);
+  if (existing) {
+    existing.remove();
+    const expEl = document.getElementById('exp-'+item.id);
+    if (expEl) expEl.textContent = '▶';
+    return;
+  }
+  if (depth >= 3) return;
+
+  const expEl = document.getElementById('exp-'+item.id);
+  if (expEl) expEl.textContent = '…';
+
+  try {
+    const r = await fetch('/api/wikidata?title='+encodeURIComponent((item.name||'').replace(/ /g,'_')), {signal:AbortSignal.timeout(10000)});
+    const data = await r.json();
+    const rels = data.relations || {};
+    if (!Object.keys(rels).length) { if(expEl)expEl.textContent='—'; return; }
+
+    const child = document.createElement('div');
+    child.id = existId;
+    const order = ['spouse','position','employer','party','country','participated_in','member_of','educated_at'];
+    const sorted = [...order, ...Object.keys(rels).filter(k=>!order.includes(k))];
+    sorted.forEach(key => {
+      if (!rels[key]?.length) return;
+      const cfg = LAYER_CONFIG[key] || LAYER_CONFIG.related;
+      rels[key].slice(0,5).forEach(childItem => {
+        const n = createBushNode(childItem.name, cfg.label, cfg.col, depth+1, false, childItem.id, key);
+        if (depth+1 < 3) {
+          n.addEventListener('click', e => { e.stopPropagation(); toggleBushChildren(childItem, key, n, depth+1, container); });
+        }
+        child.appendChild(n);
+      });
+    });
+
+    parentEl.after(child);
+    if (expEl) expEl.textContent = '▼';
+
+    // Перевіряємо тремтіння для нових вузлів
+    const newNames = Object.values(rels).flat().map(i=>i.name).filter(Boolean);
+    checkTremble(newNames);
+
+  } catch(e) { if(expEl)expEl.textContent='!'; }
+}
+
+// ── TREMBLE MONITOR ──
+function startTrembleMonitor(names) {
+  if (trembleInterval) clearInterval(trembleInterval);
+  checkTremble(names);
+  trembleInterval = setInterval(() => checkTremble(names), 30000);
+}
+
+async function checkTremble(names) {
+  if (!names?.length) return;
+  const since = new Date(Date.now()-7200000).toISOString();
+  const checks = names.slice(0,15).map(name =>
+    fetch(SB_URL+'/rest/v1/anomalies?title=eq.'+encodeURIComponent(name)+'&updated_at=gte.'+since+'&select=title,editors,score&limit=1',
+      {headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}, signal:AbortSignal.timeout(4000)})
+    .then(r=>r.json()).then(rows=>({name,row:rows?.[0]})).catch(()=>({name,row:null}))
+  );
+  const results = await Promise.all(checks);
+  results.forEach(({name, row}) => {
+    if (!row) return;
+    // Знаходимо всі вузли з цим іменем
+    document.querySelectorAll('.bush-node').forEach(node => {
+      const nameEl = node.querySelector('.bn-name');
+      if (!nameEl || nameEl.textContent !== name) return;
+      const dot = node.querySelector('.bn-dot');
+      const sigEl = node.querySelector('.bn-sig');
+      if (!dot) return;
+      const c = row.score>=50?'#ff4757':row.score>=25?'#ffc800':'#64ffda';
+      dot.classList.add('active','trembling');
+      dot.style.cssText = 'background:'+c+';color:'+c+';border:1px solid '+c+';box-shadow:0 0 8px '+c;
+      if (sigEl) {
+        sigEl.style.cssText = 'background:'+c+'22;color:'+c+';border:1px solid '+c+'44';
+        sigEl.textContent = row.editors+'ред';
+      }
+    });
+  });
+}
+
+// ── LAYERS ──
+function renderLayers(graph) {
+  const el = document.getElementById('layersPanel');
+  const rels = graph.relations || {};
+  if (!Object.keys(rels).length) { el.innerHTML='<div class="loading"><div class="hint-big">Зв\'язків не знайдено</div></div>'; return; }
+  document.getElementById('relCount').textContent = Object.values(rels).flat().length;
+  el.innerHTML = '';
+  const order = ['spouse','position','employer','party','country','participated_in','parent_org','subsidiary','member_of','educated_at','location','related'];
+  const sorted = [...order, ...Object.keys(rels).filter(k=>!order.includes(k))];
+  sorted.forEach(key => {
+    if (!rels[key]?.length) return;
+    const cfg = LAYER_CONFIG[key] || LAYER_CONFIG.related;
+    const div = document.createElement('div');
+    div.className = 'layer';
+    div.innerHTML = '<div class="layer-hdr" style="background:'+cfg.bg+';color:'+cfg.col+'">'
+      +'<span>'+cfg.icon+'</span><span>'+cfg.label+'</span>'
+      +'<span style="margin-left:auto;font-size:0.6rem;opacity:0.6">'+rels[key].length+'</span></div>'
+      +'<div class="layer-items">'
+      +rels[key].map(item=>'<div class="layer-item" onclick="drillDown(\''+encodeURIComponent(item.name||'')+'\')">'
+        +'<div style="flex:1"><div class="li-name">'+item.name+'</div>'
+        +(item.desc?'<div class="li-desc">'+item.desc.slice(0,80)+'</div>':'')
+        +'</div><span class="li-badge" style="background:'+cfg.bg+';color:'+cfg.col+';border:1px solid '+cfg.col+'33">'+cfg.icon+'</span></div>').join('')
+      +'</div>';
+    el.appendChild(div);
+  });
+}
+
+// ── SIGNALS ──
+function renderSignals(signals, kg) {
+  const el = document.getElementById('signalsPanel');
+  el.innerHTML = '';
+  document.getElementById('sigTime').textContent = new Date().toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
+
+  const rows = [];
+  if (signals?.wikipedia) {
+    const w = signals.wikipedia;
+    rows.push({src:'📖 Wikipedia', val:w.editors+'ред', raw:Math.min(w.editors/10,1), col:'#64ffda', label:w.score+' score'});
+  }
+  if (signals?.cross?.length) {
+    rows.push({src:'⚡ Cross', val:signals.cross.length+'сиг', raw:Math.min(signals.cross.length/5,1), col:'#ffc800', label:signals.cross[0]?.type||''});
+  }
+
+  if (!rows.length && !kg?.length) {
+    el.innerHTML = '<div style="padding:1rem;font-size:0.7rem;color:rgba(255,255,255,0.3);text-align:center">Активних сигналів не знайдено.</div>';
+    return;
+  }
+
+  rows.forEach(row => {
+    const div = document.createElement('div');
+    div.className = 'sig-item';
+    div.innerHTML = '<div class="sig-src">'+row.src+'</div>'
+      +'<div class="sig-val" style="color:'+row.col+'">'+row.val+'</div>'
+      +'<div class="sig-bar"><div class="sig-fill" style="width:'+row.raw*100+'%;background:'+row.col+'"></div></div>'
+      +'<div class="sig-label">'+row.label+'</div>';
+    el.appendChild(div);
+  });
+
+  if (kg?.length) {
+    const div = document.createElement('div');
+    div.style.cssText = 'padding:0.5rem 0.8rem;border-top:1px solid rgba(255,255,255,0.05);margin-top:0.3rem';
+    div.innerHTML = '<div style="font-size:0.6rem;color:rgba(255,255,255,0.55);margin-bottom:0.3rem;text-transform:uppercase;letter-spacing:0.08em">🔍 Knowledge Graph</div>'
+      +kg.slice(0,3).map(i=>'<div style="display:flex;align-items:center;padding:0.2rem 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer" onclick="window.open(\''+( i.url||'')+'\')">'
+        +'<span style="font-size:0.72rem;color:rgba(255,255,255,0.88);flex:1">'+i.name+'</span>'
+        +'<span style="font-size:0.6rem;color:rgba(255,255,255,0.45)">'+(i.types||[]).slice(0,2).join(' · ')+'</span></div>').join('');
+    el.appendChild(div);
+  }
+}
+
+// ── DOMINO ──
+function renderDomino(graph, signals, pimino) {
+  const bar = document.getElementById('dominoBar');
+  if (pimino.total < 20) { bar.style.display='none'; return; }
+  bar.style.display = 'block';
+  const rels = graph.relations || {};
+  const col = pimino.total>=500?'#ff4757':pimino.total>=200?'#ffc800':'#64ffda';
+  const nodes = [{name:graph.label,col}];
+  if (rels.party?.[0])           nodes.push({name:rels.party[0].name,        col:'#f72585'});
+  if (rels.country?.[0])         nodes.push({name:rels.country[0].name,      col:'#4285f4'});
+  if (rels.employer?.[0])        nodes.push({name:rels.employer[0].name,     col:'#64ffda'});
+  if (rels.participated_in?.[0]) nodes.push({name:rels.participated_in[0].name,col:'#e76f51'});
+  if (signals?.wikipedia)        nodes.push({name:signals.wikipedia.editors+'ред Wikipedia',col:'#64ffda'});
+  document.getElementById('dominoChain').innerHTML = nodes.map((n,i)=>
+    (i>0?'<span class="domino-arrow">→</span>':'')
+    +'<span class="domino-node" style="background:'+n.col+'18;color:'+n.col+';border-color:'+n.col+'44">'+n.name+'</span>'
+  ).join('');
+}
+
+// ── PAI ──
 async function runPAI() {
   if (!currentData?.graph) return;
   const btn = document.getElementById('paiBtn');
-  btn.disabled = true;
-  btn.textContent = '⚡ ...';
+  btn.disabled = true; btn.textContent = '⚡ ...';
   const g = currentData.graph;
-
   try {
     const r = await fetch('/api/pai', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
         title: g.label || currentData.title,
         type: g.type,
@@ -269,465 +625,73 @@ async function runPAI() {
     });
     const data = await r.json();
     if (data.pai !== undefined) renderPAI(data);
-    else throw new Error(data.error || 'failed');
+    else throw new Error(data.error||'failed');
   } catch(e) {
-    document.getElementById('paiPanel').innerHTML =
-      '<div style="padding:0.5rem 0.8rem;color:#ff4757;font-size:0.7rem">⚠ PAI error: '+e.message+'</div>';
+    document.getElementById('paiPanel').innerHTML = '<div style="padding:0.5rem 0.8rem;color:#ff4757;font-size:0.7rem">⚠ '+e.message+'</div>';
   }
-  btn.disabled = false;
-  btn.textContent = '⚡ PAI';
+  btn.disabled = false; btn.textContent = '⚡ PAI';
 }
 
-function renderPAI(data) {
-  const { pai, details } = data;
-  const col = pai >= 0.3?'#ff4757':pai>=0.1?'#ffc800':'#64ffda';
-  const predEmoji = {'viral':'🔴','regional':'🟠','local':'🟡','contained':'⚪'}[details.resonance_prediction]||'⚪';
-  const el = document.getElementById('paiPanel');
-  el.innerHTML = '<div class="pai-block" style="border-color:'+col+'33;background:'+col+'08">'
-    +'<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem">'
-    +'<span style="font-size:0.6rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.08em">⚡ Піміно Amplification Index</span>'
-    +'<span style="font-family:Bebas Neue,sans-serif;font-size:1.5rem;color:'+col+'">'+pai+'</span>'
-    +'<span style="margin-left:auto;font-size:0.75rem">'+predEmoji+' '+details.resonance_prediction+'</span>'
-    +'</div>'
-    +(details.brief_reason?'<div style="font-size:0.68rem;color:rgba(255,255,255,0.55);font-style:italic;margin-bottom:0.4rem">'+details.brief_reason+'</div>':'')
-    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:0.3rem;margin-bottom:0.4rem">'
-    +[
-      {k:'identification',l:'Ідентиф.'},
-      {k:'concrete_villain',l:'Злочинець'},
-      {k:'amplifier',l:'Підсилювач'},
-      {k:'evidence',l:'Докази'}
-    ].map(({k,l})=>{
-      const v = details[k]||0;
-      const c = v>=0.7?'#ff4757':v>=0.4?'#ffc800':'rgba(255,255,255,0.4)';
+function renderPAI({pai, details}) {
+  const col = pai>=0.3?'#ff4757':pai>=0.1?'#ffc800':'rgba(255,255,255,0.5)';
+  const pred = {'viral':'🔴 viral','regional':'🟠 regional','local':'🟡 local','contained':'⚪ contained'}[details.resonance_prediction]||'⚪';
+  document.getElementById('paiPanel').innerHTML =
+    '<div class="pai-block" style="border-color:'+col+'33;background:'+col+'06">'
+    +'<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.3rem">'
+    +'<span style="font-size:0.58rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.08em">⚡ PAI</span>'
+    +'<span style="font-family:Bebas Neue,sans-serif;font-size:1.4rem;color:'+col+'">'+pai+'</span>'
+    +'<span style="margin-left:auto;font-size:0.72rem">'+pred+'</span></div>'
+    +(details.brief_reason?'<div style="font-size:0.65rem;color:rgba(255,255,255,0.5);font-style:italic;margin-bottom:0.3rem">'+details.brief_reason+'</div>':'')
+    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:0.3rem;margin-bottom:0.3rem">'
+    +[{k:'identification',l:'Ідент.'},{k:'concrete_villain',l:'Злочин.'},{k:'amplifier',l:'Підсил.'},{k:'evidence',l:'Докази'}]
+    .map(({k,l})=>{
+      const v=details[k]||0; const c=v>=0.7?'#ff4757':v>=0.4?'#ffc800':'rgba(255,255,255,0.4)';
       return '<div style="text-align:center;padding:0.2rem;background:rgba(255,255,255,0.03);border-radius:2px">'
-        +'<div style="font-size:0.58rem;color:rgba(255,255,255,0.45)">'+l+'</div>'
-        +'<div style="font-size:0.9rem;font-family:Bebas Neue,sans-serif;color:'+c+'">'+v+'</div>'
-        +'</div>';
+        +'<div style="font-size:0.55rem;color:rgba(255,255,255,0.4)">'+l+'</div>'
+        +'<div style="font-size:0.85rem;font-family:Bebas Neue,sans-serif;color:'+c+'">'+v+'</div></div>';
     }).join('')
     +'</div>'
     +(details.domino_sectors?.length?'<div style="font-size:0.62rem;color:rgba(255,255,255,0.45)">🎯 '+details.domino_sectors.join(' → ')+'</div>':'')
-    +(details.time_horizon?'<div style="font-size:0.62rem;color:rgba(255,255,255,0.45);margin-top:0.2rem">⏱ горизонт: '+details.time_horizon+'</div>':'')
+    +(details.time_horizon?'<div style="font-size:0.62rem;color:rgba(255,255,255,0.45)">⏱ '+details.time_horizon+'</div>':'')
     +'</div>';
 }
 
-async function fetchSignals(title) {
-  const results = {};
-  // Wikipedia anomaly from Supabase
-  try {
-    const r = await fetch(SB_URL+'/rest/v1/anomalies?title=eq.'+encodeURIComponent(title.replace(/_/g,' '))+'&order=score.desc&limit=1',
-      {headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
-    const rows = await r.json();
-    if (rows?.[0]) results.wikipedia = rows[0];
-  } catch(e){}
-
-  // Google Trends
-  try {
-    const r = await fetch(PROXY+'/trends?q='+encodeURIComponent(title.replace(/_/g,' ')));
-    const d = await r.json();
-    if (d.items?.length) results.trends = d.items;
-  } catch(e){}
-
-  // Cross signals
-  try {
-    const r = await fetch(SB_URL+'/rest/v1/cross_signals?title=eq.'+encodeURIComponent(title.replace(/_/g,' '))+'&order=score.desc&limit=5',
-      {headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
-    const rows = await r.json();
-    if (rows?.length) results.cross = rows;
-  } catch(e){}
-
-  // Pageview spikes — skip if table missing
-  
-
-  return results;
-}
-
-async function fetchWikiSignal(title) {
-  try {
-    const r = await fetch('https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&exsentences=2&explaintext=1&titles='+encodeURIComponent(title.replace(/_/g,' '))+'&format=json&origin=*');
-    const d = await r.json();
-    const pg = Object.values(d.query?.pages||{})[0];
-    return pg?.extract || '';
-  } catch(e){ return ''; }
-}
-
-function render({graph, signals, wikiSig, kg, title}) {
-  if (graph.error && !graph.qid) {
-    document.getElementById('layersPanel').innerHTML = '<div class="loading"><div class="hint-big" style="color:#ff4757">Не знайдено в Wikidata.<br>Спробуй точну назву Wikipedia статті.</div></div>';
-    return;
-  }
-
-  // Entity header
-  const hdr = document.getElementById('entityHdr');
-  hdr.style.display = 'block';
-  document.getElementById('entityName').textContent = graph.label || title;
-  document.getElementById('entityMeta').textContent = (graph.type||'unknown') + (graph.qid ? ' · ' + graph.qid : '');
-  document.getElementById('entityDesc').textContent = wikiSig ? wikiSig.slice(0,180)+'…' : (graph.description||'');
-  document.getElementById('wikiLink').href = 'https://en.wikipedia.org/wiki/'+encodeURIComponent(title);
-  document.getElementById('googleLink').href = 'https://www.google.com/search?q='+encodeURIComponent(title.replace(/_/g,' ')+' news '+new Date().getFullYear());
-
-  // Pimino score
-  const pimino = calcPimino(graph, signals);
-  const piminoEl = document.getElementById('piminoScore');
-  const col = pimino.total >= 500?'#ff4757':pimino.total>=200?'#ffc800':pimino.total>=50?'#64ffda':'rgba(255,255,255,0.4)';
-  piminoEl.textContent = pimino.total;
-  piminoEl.style.color = col;
-  document.getElementById('piminoBar').style.cssText = 'width:'+Math.min(pimino.total/10,100)+'%;background:'+col;
-  document.getElementById('piminoDims').innerHTML =
-    '<div class="pm-dim"><span>широта</span> '+pimino.width+'</div>'+
-    '<div class="pm-dim"><span>глибина</span> '+pimino.depth+'</div>'+
-    '<div class="pm-dim"><span>сигнал</span> '+pimino.signal+'</div>';
-
-  // Layers panel
-  renderLayers(graph);
-
-  // Signals panel
-  renderSignals(signals, graph, kg);
-
-  // Graph canvas — delay so DOM renders first
-  setTimeout(() => buildGraph(graph), 50);
-
-  // Domino chain
-  renderDomino(graph, signals, pimino);
-}
-
-function calcPimino(graph, signals) {
-  const rels = graph.relations || {};
-  const relCount = Object.values(rels).flat().length;
-
-  // Широта — скільки різних шарів зачіпає
-  const layers = Object.keys(rels).length;
-  const width = Math.min(layers * 15, 100);
-
-  // Глибина — важливість зв'язків
-  const highVal = Object.values(rels).flat().filter(r=>r.highValue).length;
-  const depth = Math.min(highVal * 20, 150);
-
-  // Сигнал — з наших джерел
-  let signal = 0;
-  if (signals.wikipedia) signal += Math.min(signals.wikipedia.editors * 15, 100);
-  if (signals.trends?.length) signal += signals.trends.length * 20;
-  if (signals.pageview) signal += Math.min(signals.pageview.ratio * 5, 100);
-  if (signals.cross?.length) signal += signals.cross.length * 15;
-
-  const total = Math.round(width + depth + signal);
-  return { total, width: Math.round(width), depth: Math.round(depth), signal: Math.round(signal) };
-}
-
-const LAYER_CONFIG = {
-  employer:       { icon:'🏢', label:'Роботодавці',    col:'#64ffda',  bg:'rgba(100,255,218,0.08)' },
-  party:          { icon:'🏛', label:'Партії',          col:'#f72585',  bg:'rgba(247,37,133,0.08)' },
-  country:        { icon:'🌍', label:'Країни',          col:'#4285f4',  bg:'rgba(66,133,244,0.08)' },
-  position:       { icon:'👤', label:'Посади',          col:'#ffc800',  bg:'rgba(255,200,0,0.08)' },
-  spouse:         { icon:'💍', label:'Родина',          col:'#ff6b9d',  bg:'rgba(255,107,157,0.08)' },
-  member_of:      { icon:'🔗', label:'Членство',        col:'#48cae4',  bg:'rgba(72,202,228,0.08)' },
-  educated_at:    { icon:'🎓', label:'Освіта',          col:'#a8dadc',  bg:'rgba(168,218,220,0.08)' },
-  participated_in:{ icon:'🗳', label:'Події',           col:'#e76f51',  bg:'rgba(231,111,81,0.08)' },
-  parent_org:     { icon:'🏗', label:'Материнська орг', col:'#ffc800',  bg:'rgba(255,200,0,0.08)' },
-  subsidiary:     { icon:'🔀', label:'Дочірні',         col:'#64ffda',  bg:'rgba(100,255,218,0.08)' },
-  location:       { icon:'📍', label:'Локація',         col:'#4285f4',  bg:'rgba(66,133,244,0.08)' },
-  related:        { icon:'◆',  label:'Пов\'язані',      col:'rgba(255,255,255,0.5)', bg:'rgba(255,255,255,0.04)' },
-};
-
-function renderLayers(graph) {
-  const el = document.getElementById('layersPanel');
-  const rels = graph.relations || {};
-  if (!Object.keys(rels).length) {
-    el.innerHTML = '<div class="loading"><div class="hint-big">Зв\'язків не знайдено</div></div>';
-    return;
-  }
-  document.getElementById('relCount').textContent = Object.values(rels).flat().length;
-  el.innerHTML = '';
-
-  // Сортуємо — спочатку highValue
-  const order = ['spouse','position','employer','party','country','participated_in','parent_org','subsidiary','member_of','educated_at','location','related'];
-  const sorted = [...order, ...Object.keys(rels).filter(k=>!order.includes(k))];
-
-  sorted.forEach(key => {
-    if (!rels[key]?.length) return;
-    const cfg = LAYER_CONFIG[key] || LAYER_CONFIG.related;
-    const items = rels[key];
-    const div = document.createElement('div');
-    div.className = 'layer';
-    div.innerHTML = `<div class="layer-hdr" style="background:${cfg.bg};color:${cfg.col}">`
-      +`<span>${cfg.icon}</span><span>${cfg.label}</span>`
-      +`<span style="margin-left:auto;font-size:0.55rem;opacity:0.6">${items.length}</span></div>`
-      +`<div class="layer-items">`
-      +items.map(item=>`
-        <div class="layer-item" onclick="drillDown('${(item.id||'').replace(/'/g,'')}','${(item.name||'').replace(/'/g,'')}')">
-          <div style="flex:1">
-            <div class="li-name">${item.name||'—'}</div>
-            ${item.desc?`<div class="li-desc">${item.desc.slice(0,80)}</div>`:''}
-          </div>
-          <span class="li-badge" style="background:${cfg.bg};color:${cfg.col};border:1px solid ${cfg.col}33">${cfg.icon}</span>
-        </div>`).join('')
-      +'</div>';
-    el.appendChild(div);
-  });
-}
-
-function renderSignals(signals, graph, kg) {
-  const el = document.getElementById('signalsPanel');
-  el.innerHTML = '';
-  document.getElementById('sigTime').textContent = new Date().toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
-
-  const rows = [];
-
-  if (signals.wikipedia) {
-    const w = signals.wikipedia;
-    rows.push({ src:'📖 Wikipedia', val: w.editors+'ред', raw: Math.min(w.editors/10,1), col:'#64ffda', label: w.score+' score' });
-  }
-  if (signals.pageview) {
-    const p = signals.pageview;
-    rows.push({ src:'👁 Pageviews', val:'×'+p.ratio, raw: Math.min(p.ratio/50,1), col:'#f72585', label: (p.last_views||0).toLocaleString() });
-  }
-  if (signals.trends?.length) {
-    const geos = [...new Set(signals.trends.map(t=>t.geo))];
-    rows.push({ src:'📊 G.Trends', val: geos.length+'🌍', raw: Math.min(geos.length/8,1), col:'#4285f4', label: geos.join(' ') });
-  }
-  if (signals.cross?.length) {
-    rows.push({ src:'⚡ Cross', val: signals.cross.length+'сиг', raw: Math.min(signals.cross.length/5,1), col:'#ffc800', label: signals.cross[0]?.type||'' });
-  }
-
-  if (!rows.length) {
-    el.innerHTML = '<div style="padding:1rem;font-size:0.7rem;color:rgba(255,255,255,0.3);text-align:center">Активних сигналів не знайдено.<br><span style="opacity:0.5">Подія може бути неактивна зараз.</span></div>';
-    return;
-  }
-
-  rows.forEach(row => {
-    const div = document.createElement('div');
-    div.className = 'sig-item';
-    div.innerHTML = `<div class="sig-src">${row.src}</div>`
-      +`<div class="sig-val" style="color:${row.col}">${row.val}</div>`
-      +`<div class="sig-bar"><div class="sig-fill" style="width:${row.raw*100}%;background:${row.col}"></div></div>`
-      +`<div class="sig-label">${row.label}</div>`;
-    el.appendChild(div);
-  });
-
-  // KG
-  if (kg?.length) {
-    const div=document.createElement('div');
-    div.style.cssText='padding:0.5rem 0.8rem;border-top:1px solid rgba(255,255,255,0.05);margin-top:0.3rem';
-    div.innerHTML='<div style="font-size:0.6rem;color:rgba(255,255,255,0.55);margin-bottom:0.3rem;text-transform:uppercase;letter-spacing:0.08em">🔍 Knowledge Graph</div>'
-      +kg.map(i=>`<div style="display:flex;align-items:center;padding:0.2rem 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer" onclick="window.open('${i.url||''}','_blank')"><span style="font-size:0.72rem;color:rgba(255,255,255,0.88);flex:1">${i.name}</span><span style="font-size:0.6rem;color:rgba(255,255,255,0.45)">${(i.types||[]).slice(0,2).join(' · ')}</span></div>`).join('');
-    el.appendChild(div);
-  }
-
-  // Tickers якщо є
-  if (graph.tickers?.length) {
-    const div = document.createElement('div');
-    div.style.cssText = 'padding:0.5rem 0.8rem;border-top:1px solid rgba(255,255,255,0.05);margin-top:0.3rem';
-    div.innerHTML = '<div style="font-size:0.55rem;color:rgba(255,255,255,0.4);margin-bottom:0.3rem;letter-spacing:0.08em;text-transform:uppercase">📈 Біржові тікери</div>'
-      + graph.tickers.map(t=>`<a href="https://finance.yahoo.com/quote/${t}" target="_blank" style="display:inline-block;margin:2px;padding:2px 8px;border-radius:2px;font-size:0.65rem;background:rgba(100,255,218,0.1);color:#64ffda;border:1px solid rgba(100,255,218,0.3);text-decoration:none">${t}</a>`).join('');
-    el.appendChild(div);
-  }
-}
-
-function renderDomino(graph, signals, pimino) {
-  const bar = document.getElementById('dominoBar');
-  const chain = document.getElementById('dominoChain');
-  if (pimino.total < 20) { bar.style.display='none'; return; }
-  bar.style.display = 'block';
-
-  const rels = graph.relations || {};
-  const nodes = [];
-  const col = pimino.total>=500?'#ff4757':pimino.total>=200?'#ffc800':'#64ffda';
-
-  // Будуємо ланцюжок
-  nodes.push({ name: graph.label, col, type: graph.type });
-  if (rels.party?.[0])          nodes.push({ name: rels.party[0].name,    col:'#f72585', type:'party' });
-  if (rels.country?.[0])        nodes.push({ name: rels.country[0].name,  col:'#4285f4', type:'country' });
-  if (rels.employer?.[0])       nodes.push({ name: rels.employer[0].name, col:'#64ffda', type:'company' });
-  if (rels.participated_in?.[0])nodes.push({ name: rels.participated_in[0].name, col:'#e76f51', type:'event' });
-  if (signals.trends?.length)   nodes.push({ name: 'Google Trends '+(signals.trends.length)+'🌍', col:'#4285f4', type:'signal' });
-  if (signals.pageview)         nodes.push({ name: '×'+signals.pageview.ratio+' переглядів', col:'#f72585', type:'signal' });
-
-  chain.innerHTML = nodes.map((n,i) => {
-    const bg = n.col+'18';
-    return (i>0?'<span class="domino-arrow">→</span>':'')
-      +`<span class="domino-node" style="background:${bg};color:${n.col};border-color:${n.col}44">${n.name}</span>`;
-  }).join('');
-}
-
-// ── CANVAS GRAPH ──
-function buildGraph(graph) {
-  const canvas = document.getElementById('graphCanvas');
-  const panel = canvas.parentElement;
-  const w = panel.getBoundingClientRect().width || window.innerWidth * 0.33;
-  const h = Math.min(window.innerHeight - 260, 580);
-  canvas.width  = Math.floor(w);
-  canvas.height = Math.floor(h);
-
-  const rels = graph.relations || {};
-  const allItems = Object.entries(rels).flatMap(([type, items]) =>
-    items.map(item => ({ ...item, relType: type }))
-  );
-
-  // Центральний вузол
-  graphNodes = [{ id: graph.qid||'center', name: graph.label, type:'center', x: canvas.width/2, y: canvas.height/2, r:22, col:'#64ffda' }];
-  graphEdges = [];
-
-  // Розміщуємо вузли по колах
-  const byType = {};
-  allItems.forEach(item => {
-    if (!byType[item.relType]) byType[item.relType] = [];
-    byType[item.relType].push(item);
-  });
-
-  const types = Object.keys(byType);
-  const rings = [
-    { r: 90, max: 8 },
-    { r: 160, max: 16 },
-  ];
-
-  // Збираємо всі вузли спочатку
-  const allNodes = [];
-  types.forEach(type => {
-    const cfg = LAYER_CONFIG[type] || LAYER_CONFIG.related;
-    byType[type].slice(0, 6).forEach(item => {
-      allNodes.push({ item, type, cfg });
-    });
-  });
-
-  // Рівномірно по колу — два кільця
-  const total = allNodes.length;
-  const cx = canvas.width/2;
-  const cy = canvas.height/2;
-  allNodes.forEach((n, idx) => {
-    const ring = idx < 8 ? 110 : 185;
-    const angle = (idx / total) * Math.PI * 2 - Math.PI/2;
-    const x = cx + Math.cos(angle) * ring;
-    const y = cy + Math.sin(angle) * ring;
-    const node = {
-      id: n.item.id||n.item.name,
-      name: n.item.name,
-      type: n.type,
-      x, y,
-      r: n.item.highValue ? 14 : 9,
-      col: n.cfg.col
-    };
-    graphNodes.push(node);
-    graphEdges.push({ from: 0, to: graphNodes.length-1, col: n.cfg.col, weight: n.item.highValue?2:1 });
-  });
-
-  if (animFrame) cancelAnimationFrame(animFrame);
-  drawGraph(canvas);
-}
-
-function drawGraph(canvas) {
-  const ctx = canvas.getContext('2d');
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // Edges
-  graphEdges.forEach(e => {
-    const from = graphNodes[e.from];
-    const to = graphNodes[e.to];
-    ctx.beginPath();
-    ctx.moveTo(from.x, from.y);
-    ctx.lineTo(to.x, to.y);
-    ctx.strokeStyle = to.col + '40';
-    ctx.lineWidth = e.weight;
-    ctx.stroke();
-  });
-
-  // Nodes
-  graphNodes.forEach((n, i) => {
-    ctx.beginPath();
-    ctx.arc(n.x, n.y, n.r, 0, Math.PI*2);
-    ctx.fillStyle = n.col + (i===0?'33':'22');
-    ctx.fill();
-    ctx.strokeStyle = n.col;
-    ctx.lineWidth = i===0?2:1;
-    ctx.stroke();
-
-    // Label
-    const maxLen = i===0?20:12;
-    const label = n.name?.length>maxLen ? n.name.slice(0,maxLen)+'…' : n.name;
-    ctx.fillStyle = i===0?n.col:'rgba(255,255,255,0.75)';
-    ctx.font = (i===0?'600 ':'')+(i===0?11:9)+'px IBM Plex Mono';
-    ctx.textAlign = 'center';
-    ctx.fillText(label||'', n.x, n.y + n.r + 12);
-  });
-
-  document.getElementById('nodeCount').textContent = graphNodes.length + ' вузлів';
-
-  // Canvas click handler
-  canvas.onclick = function(e) {
-    const rect = canvas.getBoundingClientRect();
-    const mx = e.clientX - rect.left;
-    const my = e.clientY - rect.top;
-    // Знаходимо вузол під курсором
-    for (let i = 1; i < graphNodes.length; i++) {
-      const n = graphNodes[i];
-      const dist = Math.sqrt((mx-n.x)**2 + (my-n.y)**2);
-      if (dist <= n.r + 8) {
-        canvas.style.cursor = 'pointer';
-        drillDown(n.id, n.name);
-        return;
-      }
-    }
-  };
-  canvas.onmousemove = function(e) {
-    const rect = canvas.getBoundingClientRect();
-    const mx = e.clientX - rect.left;
-    const my = e.clientY - rect.top;
-    let hit = false;
-    for (let i = 1; i < graphNodes.length; i++) {
-      const n = graphNodes[i];
-      if (Math.sqrt((mx-n.x)**2 + (my-n.y)**2) <= n.r + 8) { hit = true; break; }
-    }
-    canvas.style.cursor = hit ? 'pointer' : 'default';
-  };
-}
-
-function drillDown(qid, name) {
+// ── DRILL DOWN + BREADCRUMB ──
+function drillDown(encodedName) {
+  const name = decodeURIComponent(encodedName);
   if (!name) return;
-  // Зберігаємо поточний стан в стек
-  if (currentData) {
-    graphStack.push({ data: currentData, nodes: [...graphNodes], edges: [...graphEdges] });
-    graphDepth++;
-  }
-  updateBreadcrumb(name);
+  if (currentData) graphStack.push({ label: currentData.graph?.label || currentData.title });
+  updateBreadcrumb(null, name);
   document.getElementById('searchInput').value = name;
   investigate(name.replace(/ /g,'_'));
+}
+
+function updateBreadcrumb(stack, currentName) {
+  const el = document.getElementById('breadcrumb');
+  if (!el) return;
+  const items = graphStack.map((s,i) =>
+    '<span style="cursor:pointer;color:rgba(255,255,255,0.5)" onclick="goBackTo('+i+')">'+s.label+'</span>'
+  );
+  if (currentName) items.push('<span style="color:#64ffda">'+currentName+'</span>');
+  if (items.length <= 1) { el.style.display='none'; return; }
+  el.style.display = 'flex';
+  el.innerHTML = items.join('<span style="color:rgba(255,255,255,0.2)"> › </span>')
+    +'<button onclick="goBack()" style="margin-left:auto;padding:1px 8px;border-radius:2px;font-size:0.6rem;cursor:pointer;border:1px solid rgba(255,255,255,0.2);background:transparent;color:rgba(255,255,255,0.5);font-family:IBM Plex Mono,monospace">← назад</button>';
 }
 
 function goBack() {
   if (!graphStack.length) return;
   const prev = graphStack.pop();
-  graphDepth--;
-  currentData = prev.data;
-  graphNodes = prev.nodes;
-  graphEdges = prev.edges;
-  // Відновлюємо UI
-  render(currentData);
-  updateBreadcrumb(currentData.graph?.label || currentData.title, true);
-}
-
-function updateBreadcrumb(name, isBack=false) {
-  const el = document.getElementById('breadcrumb');
-  if (!el) return;
-  if (graphDepth === 0 && !graphStack.length) { el.style.display='none'; return; }
-  el.style.display = 'flex';
-  const items = graphStack.map((s,i) =>
-    `<span style="cursor:pointer;color:rgba(255,255,255,0.5)" onclick="goBackTo(${i})">${s.data?.graph?.label||s.data?.title||'?'}</span>`
-  );
-  items.push(`<span style="color:#64ffda">${name}</span>`);
-  el.innerHTML = items.join('<span style="color:rgba(255,255,255,0.2)"> › </span>')
-    + (graphStack.length ? '<button onclick="goBack()" style="margin-left:auto;padding:1px 8px;border-radius:2px;font-size:0.6rem;cursor:pointer;border:1px solid rgba(255,255,255,0.2);background:transparent;color:rgba(255,255,255,0.5);font-family:IBM Plex Mono,monospace">← назад</button>' : '');
+  document.getElementById('searchInput').value = prev.label;
+  investigate(prev.label.replace(/ /g,'_'));
 }
 
 function goBackTo(idx) {
-  while (graphStack.length > idx + 1) graphStack.pop();
-  graphDepth = idx + 1;
+  while (graphStack.length > idx+1) graphStack.pop();
   goBack();
 }
 
-// Resize canvas on window resize
-window.addEventListener('resize', () => {
-  if (currentData?.graph) buildGraph(currentData.graph);
-});
-
-// URL param support: /spider?title=...
+// ── URL PARAM ──
 const urlTitle = new URLSearchParams(window.location.search).get('title');
 if (urlTitle) setAndRun(urlTitle);
 </script>
