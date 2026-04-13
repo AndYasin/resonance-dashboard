@@ -191,6 +191,11 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 .xs-poly{background:rgba(6,214,160,0.1);color:#06d6a0;border:1px solid rgba(6,214,160,0.2)}
 .xs-pv{background:rgba(247,37,133,0.1);color:#f72585;border:1px solid rgba(247,37,133,0.2)}
 .xs-pred{background:rgba(6,214,160,0.1);color:#06d6a0;border:1px solid rgba(6,214,160,0.2)}
+.pred-item{display:flex;align-items:center;gap:0.3rem;padding:0.22rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:background 0.1s}
+.pred-item:hover{background:rgba(255,255,255,0.02)}
+.pred-src{font-size:0.5rem;width:20px;flex-shrink:0;text-align:center}
+.pred-title{font-size:0.68rem;color:rgba(255,255,255,0.82);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pred-prob{font-family:'Bebas Neue',sans-serif;font-size:0.95rem;flex-shrink:0;width:40px;text-align:right}
 .xs-body{flex:1;min-width:0}
 .xs-title{font-size:0.78rem;color:rgba(255,255,255,0.88);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .xs-detail{font-size:0.58rem;color:rgba(255,255,255,0.4);margin-top:1px}
@@ -288,7 +293,7 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 <!-- BODY -->
 <div class="body">
 
-  <!-- COL 1: АНОМАЛІЇ — картки різного розміру -->
+  <!-- COL 1: АНОМАЛІЇ -->
   <div class="col">
     <div class="ph">
       <span>⚡ аномалії</span>
@@ -297,32 +302,39 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
     <div class="pb" id="feedSignal"><div class="hint">Очікуємо аномалії...</div></div>
   </div>
 
-  <!-- COL 2: МЕТРИКИ — pageviews, trending, google trends -->
+  <!-- COL 2: ЗАЛ СЛАВИ + TRENDING WIKIPEDIA -->
   <div class="col">
-    <div class="ph"><span>📈 trending вікі</span><span class="ac" id="tTime">...</span></div>
-    <div class="pb" id="feedTrend" style="flex:1.3"><div class="hint">Завантаження...</div></div>
-    <div class="sec">
-      <div class="ph"><span>👁 pageview спайки</span><span class="pk" id="pvCnt">0</span></div>
-      <div class="pb" id="feedPv" style="max-height:160px"><div class="hint">...</div></div>
+    <div class="ph">
+      <span>🏆 зал слави</span>
+      <div style="display:flex;align-items:center;gap:0.4rem">
+        <span class="gd" id="hofCnt">—</span>
+        <select id="hofSort" onchange="loadHof()" style="background:#09091a;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);font-family:IBM Plex Mono,monospace;font-size:0.5rem;padding:1px 3px;border-radius:2px;cursor:pointer">
+          <option value="score">score</option>
+          <option value="time">час</option>
+          <option value="editors">ред</option>
+          <option value="type">тип</option>
+        </select>
+      </div>
     </div>
+    <div class="hint" id="hofSub" style="padding:0.25rem 0.7rem;font-size:0.58rem;color:rgba(255,255,255,0.35);border-bottom:1px solid rgba(255,255,255,0.04);flex-shrink:0">сьогодні · завантаження...</div>
+    <div class="pb" id="feedHof" style="flex:1"><div class="hint">...</div></div>
+    <div class="sec">
+      <div class="ph"><span>📈 trending вікі</span><span class="ac" id="tTime">...</span></div>
+      <div class="pb" id="feedTrend" style="max-height:220px"><div class="hint">Завантаження...</div></div>
+    </div>
+  </div>
+
+  <!-- COL 3: ЕКСПЕРИМЕНТИ — Google Trends + Predictions -->
+  <div class="col">
+    <div class="ph"><span>🧪 сигнали ринку</span><span class="ac" id="predCnt">0</span></div>
+    <div class="pb" id="feedPred" style="flex:1"><div class="hint">...</div></div>
     <div class="sec">
       <div class="ph"><span>📊 google trends</span><span class="ac" id="trTime">...</span></div>
-      <div id="feedTrends" style="max-height:130px;overflow-y:auto"></div>
+      <div id="feedTrends" style="max-height:200px;overflow-y:auto"></div>
     </div>
   </div>
 
-  <!-- COL 3: АРХІВ ДНЯ -->
-  <div class="col">
-    <div class="ph"><span>🏆 зал слави</span><span class="gd" id="hofCnt">—</span></div>
-    <div class="hint" id="hofSub" style="padding:0.3rem 0.7rem;font-size:0.58rem;color:rgba(255,255,255,0.3);border-bottom:1px solid rgba(255,255,255,0.04)">сьогодні · завантаження...</div>
-    <div class="pb" id="feedHof" style="flex:1.2"><div class="hint">...</div></div>
-    <div class="sec">
-      <div class="ph"><span>⏱ sustained</span><span class="gd" id="sCnt">0</span></div>
-      <div id="feedSust"></div>
-    </div>
-  </div>
-
-  <!-- COL 4: СЕРЕДОВИЩЕ — не Wikipedia -->
+  <!-- COL 4: СЕРЕДОВИЩЕ -->
   <div class="col">
     <div class="ph"><span>🌍 середовище</span><span class="ac" id="lt">—</span></div>
     <div class="spd">
@@ -729,12 +741,20 @@ function renderPvRank(){
 // ── RENDER COL 3: ЗАЛ СЛАВИ ──
 async function loadHof(){
   try{
+    const sort=document.getElementById('hofSort')?.value||'score';
+    const orderMap={score:'score.desc',time:'created_at.desc',editors:'editors.desc',type:'article_type.asc'};
+    const order=orderMap[sort]||'score.desc';
     const since=new Date(Date.now()-20*3600000).toISOString();
-    const r=await fetch(SB_URL+'/rest/v1/anomalies?created_at=gte.'+since+'&order=score.desc&limit=50',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+    const r=await fetch(SB_URL+'/rest/v1/anomalies?created_at=gte.'+since+'&order='+order+'&limit=50',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
     const rows=await r.json();if(!Array.isArray(rows))return;
     const today=new Date();today.setHours(0,0,0,0);
     const todayRows=rows.filter(r=>new Date(r.created_at)>=today);
     const seen={};const uniq=todayRows.filter(r=>{if(seen[r.title])return false;seen[r.title]=true;return true;});
+    // Сортування після dedup
+    if(sort==='type') uniq.sort((a,b)=>(a.article_type||'').localeCompare(b.article_type||''));
+    else if(sort==='editors') uniq.sort((a,b)=>(b.editors||0)-(a.editors||0));
+    else if(sort==='time') uniq.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+    else uniq.sort((a,b)=>decayScore(b.score||0,new Date(b.created_at).getTime(),[]) - decayScore(a.score||0,new Date(a.created_at).getTime(),[]));
     document.getElementById('hofSub').textContent='сьогодні · '+uniq.length+' подій';
     document.getElementById('hofCnt').textContent=uniq.length;
     const el=document.getElementById('feedHof');el.innerHTML='';
@@ -849,6 +869,40 @@ async function loadGoogleTrends(){
       row.innerHTML='<div class="tr-geo">'+geo+'</div>'
         +'<div class="tr-title">'+titles.slice(0,2).join(' · ')+'</div>';
       el.appendChild(row);
+    });
+  }catch(e){}
+}
+
+async function loadPredictions(){
+  try{
+    const r=await fetch(PROXY+'/predictions');
+    const d=await r.json();
+    if(!d.items?.length)return;
+    // Фільтруємо тільки цікаві — з обсягом або близьким закриттям
+    const interesting = d.items
+      .filter(p=>p.probability!==null)
+      .filter(p=>{
+        // Близьке закриття (< 30 днів) або великий обсяг
+        const daysLeft = p.closeTime ? (new Date(p.closeTime)-Date.now())/86400000 : 999;
+        return daysLeft < 30 || p.volume > 10000 || p.activity > 1000000;
+      })
+      .sort((a,b)=>b.activity-a.activity)
+      .slice(0,15);
+    const el=document.getElementById('feedPred');if(!el)return;
+    document.getElementById('predCnt').textContent=interesting.length;
+    el.innerHTML='';
+    interesting.forEach(p=>{
+      const prob=Math.round((p.probability||0)*100);
+      const col=prob>=70?'#64ffda':prob>=40?'#ffc800':'#ff4757';
+      const srcIcon={'polymarket':'🔮','manifold':'🌀','predictit':'🇺🇸'}[p.source]||'📊';
+      const daysLeft=p.closeTime?(new Date(p.closeTime)-Date.now())/86400000:999;
+      const div=document.createElement('div');div.className='pred-item';
+      div.addEventListener('click',()=>window.open(p.url,'_blank'));
+      const closeStr=daysLeft<999?'<span style="font-size:0.5rem;color:rgba(255,255,255,0.3);margin-left:2px">'+Math.round(daysLeft)+'д</span>':'';
+      div.innerHTML='<div class="pred-src">'+srcIcon+'</div>'
+        +'<div class="pred-title">'+p.title+'</div>'
+        +'<div class="pred-prob" style="color:'+col+'">'+prob+'%'+closeStr+'</div>';
+      el.appendChild(div);
     });
   }catch(e){}
 }
@@ -1246,6 +1300,7 @@ setInterval(loadGoogleTrends,900000);
 setInterval(loadFng,600000);
 setInterval(loadBinance,180000);
 setInterval(loadCrossSignals,120000);
+setInterval(loadPredictions,600000);
 setInterval(syncCounts,30000);
 setInterval(()=>{Object.values(pinned).forEach(p=>{p.score=calcScore(p);});renderSignal();renderRank();},30000);
 
@@ -1259,6 +1314,7 @@ loadFng();
 loadBinance();
 loadGoogleTrends();
 loadCrossSignals();
+loadPredictions();
 syncCounts();
 document.getElementById('sparkline').innerHTML=new Array(30).fill('<div class="sc_" style="height:2px;background:#1a1a2e"></div>').join('');
 </script>
