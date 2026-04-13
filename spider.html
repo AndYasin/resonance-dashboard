@@ -274,10 +274,11 @@ async function fetchSignals(title) {
 
   // Pageview spikes
   try {
-    const r = await fetch(SB_URL+'/rest/v1/pageview_spikes?title=eq.'+encodeURIComponent(title.replace(/_/g,' '))+'&limit=1',
-      {headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
-    const rows = await r.json();
-    if (rows?.[0]) results.pageview = rows[0];
+    try {
+      const r = await fetchWithTimeout(SB_URL+'/rest/v1/pageview_spikes?title=eq.'+encodeURIComponent(title.replace(/_/g,' '))+'&limit=1',
+        {headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}}, 4000);
+      if (r.ok) { const rows = await r.json(); if (rows?.[0]) results.pageview = rows[0]; }
+    } catch(e) {}
   } catch(e){}
 
   return results;
@@ -292,7 +293,7 @@ async function fetchWikiSignal(title) {
   } catch(e){ return ''; }
 }
 
-function render({graph, signals, wikiSig, title}) {
+function render({graph, signals, wikiSig, kg, title}) {
   if (graph.error && !graph.qid) {
     document.getElementById('layersPanel').innerHTML = '<div class="loading"><div class="hint-big" style="color:#ff4757">Не знайдено в Wikidata.<br>Спробуй точну назву Wikipedia статті.</div></div>';
     return;
