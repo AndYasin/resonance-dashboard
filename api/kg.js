@@ -6,7 +6,7 @@ module.exports = async function handler(req, res) {
   const q     = req.query.q    || '';
   const lang  = req.query.lang || 'en';
   const limit = parseInt(req.query.limit || '5');
-  const KG_KEY = process.env.GOOGLE_KG_KEY || '';
+  const KG_KEY = process.env.GOOGLE_KG_KEY || 'AIzaSyCsqVde1weKu_13FnEnBEN-ztmXuIy1XuU';
 
   if (!q)      return res.status(400).json({ error: 'q required' });
   if (!KG_KEY) return res.status(500).json({ error: 'KG key not configured', env: Object.keys(process.env).length });
