@@ -1,5 +1,8 @@
 {
-  "rewrites": [],
+  "routes": [
+    { "src": "/spider", "dest": "/spider.html" },
+    { "src": "/api/(.*)", "dest": "/api/$1" }
+  ],
   "headers": [
     {
       "source": "/api/(.*)",
