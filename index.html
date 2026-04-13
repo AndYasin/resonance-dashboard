@@ -958,6 +958,7 @@ async function loadSec(){
                       item.form==='8-K'?'sec-event':'sec-other';
       const div=document.createElement('div');div.className='sec-item';
       div.addEventListener('click',()=>window.open(item.url,'_blank'));
+      const gLink='https://www.google.com/search?q='+encodeURIComponent(item.company+' '+item.label)+'&udm=50';
       div.innerHTML='<div class="sec-emoji">'+item.emoji+'</div>'
         +'<div class="sec-body">'
           +'<div class="sec-name">'+(item.ticker?'<b style="color:#64ffda">'+item.ticker+'</b> ':'')+item.company+'</div>'
@@ -965,7 +966,8 @@ async function loadSec(){
           +'<span>'+item.label+'</span>'
           +(item.state?'<span>'+item.state+'</span>':'')
           +'</div>'
-        +'</div>';
+        +'</div>'
+        +'<a href="'+gLink+'" target="_blank" onclick="event.stopPropagation()" style="flex-shrink:0;padding:1px 5px;border-radius:2px;font-size:0.5rem;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.3);text-decoration:none">🔍</a>';
       el.appendChild(div);
     });
   }catch(e){}
@@ -1011,14 +1013,23 @@ async function loadCrossSignals(){
     const r=await fetch(SB_URL+'/rest/v1/cross_signals?created_at=gte.'+since+'&order=score.desc&limit=15',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
     const rows=await r.json();if(!Array.isArray(rows)||!rows.length)return;
     const el=document.getElementById('feedXs');el.innerHTML='';
-    document.getElementById('xsCnt').textContent=rows.length;
+    // xsCnt вже встановлено вище
     const typeMap={'WIKI+GDELT':'xs-wiki','WIKI+TRENDS':'xs-trends','WIKI+POLYMARKET':'xs-poly','WIKI+PAGEVIEW':'xs-pv','WIKI+PREDICT':'xs-pred'};
-    rows.forEach(row=>{
+    // Фільтр шуму
+    const filtered = rows.filter(row => {
+      if (row.type === 'WIKI+PAGEVIEW') {
+        return (row.score||0) >= 100; // тільки дуже сильні pageview спайки
+      }
+      return true;
+    });
+    document.getElementById('xsCnt').textContent=filtered.length;
+    filtered.forEach(row=>{
       const cls=typeMap[row.type]||'xs-wiki';
       const sc=Math.round(row.score||0);
       const div=document.createElement('div');div.className='xs-item';
-      if(row.source_url)div.style.cursor='pointer';
-      if(row.source_url)div.addEventListener('click',()=>window.open(row.source_url,'_blank'));
+      div.style.cursor='pointer';
+      const xsUrl = row.source_url || 'https://www.google.com/search?q='+encodeURIComponent(row.title)+'&udm=50';
+      div.addEventListener('click',()=>window.open(xsUrl,'_blank'));
       div.innerHTML='<span class="xs-type '+cls+'">'+row.type+'</span>'
         +'<div class="xs-body"><div class="xs-title">'+row.title+'</div>'
         +'<div class="xs-detail">'+row.detail+'</div></div>'
@@ -1234,7 +1245,15 @@ async function loadFromSupabase(){
     const r=await fetch(SB_URL+'/rest/v1/anomalies?created_at=gte.'+since+'&order=score.desc&limit=100',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
     const rows=await r.json();console.log('Supabase rows:',Array.isArray(rows)?rows.length:rows);if(!Array.isArray(rows)||!rows.length)return;
     const best={};
-    rows.forEach(row=>{
+    // Фільтр шуму
+    const filtered = rows.filter(row => {
+      if (row.type === 'WIKI+PAGEVIEW') {
+        return (row.score||0) >= 100; // тільки дуже сильні pageview спайки
+      }
+      return true;
+    });
+    document.getElementById('xsCnt').textContent=filtered.length;
+    filtered.forEach(row=>{
       if(Date.now()-new Date(row.created_at).getTime()>7200000)return;
       const key=(row.wiki||row.lang+'wiki')+':'+row.title;
       if(!best[key]||best[key].score<(row.score||0))best[key]=row;
