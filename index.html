@@ -1007,6 +1007,8 @@ function upsertPinned(title,wiki,type,edits,editors,lang,url,meta={}){
     pinned[key].edits=Math.max(pinned[key].edits,edits);
     pinned[key].editors=Math.max(pinned[key].editors,editors);
     pinned[key].lastSeen=now;
+    if(comment){if(!pinned[key].recentComments)pinned[key].recentComments=[];pinned[key].recentComments.push(comment);if(pinned[key].recentComments.length>20)pinned[key].recentComments=pinned[key].recentComments.slice(-20);}
+    if(deltaBytes)pinned[key].deltaBytes=(pinned[key].deltaBytes||0)+deltaBytes;
     if(ir)pinned[key].type='res';
     if(meta.deltaBytes)pinned[key].deltaBytes=meta.deltaBytes;
     if(meta.commentKeywords?.length)pinned[key].commentKeywords=meta.commentKeywords;
@@ -1089,6 +1091,8 @@ async function loadTrend(){
 // ── PROCESS EDIT ──
 function processEdit(data){
   const title=data.title||'',wiki=data.wiki||'enwiki';
+  const comment=data.comment||'';
+  const deltaBytesVal=(data.length?.new||0)-(data.length?.old||0);
   const user=data.user||'',isBot=!!data.bot;
   const lang=(wiki.replace('wiki','')||'en').slice(0,8);
   const url=getUrl(title,wiki);
