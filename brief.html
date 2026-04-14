@@ -150,11 +150,12 @@ function setMode(m) {
 function incSrc() {
   sourceDone++;
   document.getElementById('srcCount').textContent = sourceDone + '/' + TOTAL_SOURCES;
+  // Рендеримо одразу після першого джерела — не чекаємо всіх
+  renderBrief();
+  buildPrompt();
   if (sourceDone >= TOTAL_SOURCES) {
     document.getElementById('statusDot').className = 'dot done';
     document.getElementById('statusText').textContent = 'готово';
-    renderBrief();
-    buildPrompt();
   }
 }
 
