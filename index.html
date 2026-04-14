@@ -1057,9 +1057,9 @@ async function loadCrossSignals(){
     const typeMap={'WIKI+GDELT':'xs-wiki','WIKI+TRENDS':'xs-trends','WIKI+POLYMARKET':'xs-poly','WIKI+PAGEVIEW':'xs-pv','WIKI+PREDICT':'xs-pred'};
     // Фільтр шуму
     const filtered = rows.filter(row => {
-      if (row.type === 'WIKI+PAGEVIEW') {
-        return (row.score||0) >= 100; // тільки дуже сильні pageview спайки
-      }
+      const sc = row.score || 0;
+      if (row.type === 'WIKI+PAGEVIEW') return sc >= 150;
+      if (row.type === 'SEC+WIKI') return sc >= 200; // тільки реальні збіги
       return true;
     });
     document.getElementById('xsCnt').textContent=filtered.length;
@@ -1068,7 +1068,12 @@ async function loadCrossSignals(){
       const sc=Math.round(row.score||0);
       const div=document.createElement('div');div.className='xs-item';
       div.style.cursor='pointer';
-      const xsUrl = row.source_url || 'https://www.google.com/search?q='+encodeURIComponent(row.title)+'&udm=50';
+      let xsUrl;
+      if (row.source_url && !row.source_url.includes('CIK=&')) {
+        xsUrl = row.source_url;
+      } else {
+        xsUrl = 'https://www.google.com/search?q='+encodeURIComponent(row.title+' '+row.type.replace('+',' '))+'&udm=50';
+      }
       div.addEventListener('click',()=>window.open(xsUrl,'_blank'));
       div.innerHTML='<span class="xs-type '+cls+'">'+row.type+'</span>'
         +'<div class="xs-body"><div class="xs-title">'+row.title+'</div>'
@@ -1287,9 +1292,9 @@ async function loadFromSupabase(){
     const best={};
     // Фільтр шуму
     const filtered = rows.filter(row => {
-      if (row.type === 'WIKI+PAGEVIEW') {
-        return (row.score||0) >= 100; // тільки дуже сильні pageview спайки
-      }
+      const sc = row.score || 0;
+      if (row.type === 'WIKI+PAGEVIEW') return sc >= 150;
+      if (row.type === 'SEC+WIKI') return sc >= 200; // тільки реальні збіги
       return true;
     });
     document.getElementById('xsCnt').textContent=filtered.length;
