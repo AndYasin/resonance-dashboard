@@ -192,7 +192,16 @@ async function fetchRetro() {
     const today = new Date().toISOString().slice(0,10);
     const r = await fetch('/api/retro?title=' + encodeURIComponent(TITLE) + '&event=' + today + '&lang=' + LANG + '&days=14');
     const d = await r.json();
-    if (d.found) collectedData.retro = d;
+    if (d.found) {
+      // Будуємо summary з timeline (retro.js не повертає summary)
+      const allComments = (d.timeline || []).flatMap(day => day.comments || []);
+      const maxEditors = (d.timeline || []).reduce((max, day) => Math.max(max, day.editors), 0);
+      const keywords = [...new Set(
+        allComments.flatMap(c => c.toLowerCase().split(/[\s\/\*\[\]\(\)]+/).filter(w => w.length > 4))
+      )].slice(0, 6);
+      d.summary = { editors: maxEditors, keywords };
+      collectedData.retro = d;
+    }
   } catch(e) {}
   incSrc();
 }
