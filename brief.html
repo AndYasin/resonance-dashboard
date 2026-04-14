@@ -260,6 +260,27 @@ async function fetchTrends() {
 }
 
 // ── РЕНДЕРИНГ БРИФІНГУ ──
+function renderGroqSignal(g) {
+  if (!g) return '';
+  const parts = (g.detail || '').split(' · ');
+  const type = parts[0] || '';
+  const strength = parseFloat((parts[1] || '').replace('strength:','')) || 0;
+  const pimino = parseFloat((parts[2] || '').replace('pimino:','')) || 0;
+  const assets = (parts[3] || '').replace('assets:','');
+  const reasoning = parts[4] || '';
+  const dir = parts[5] || '';
+  const dirEmoji = dir.includes('LONG') ? '📈' : dir.includes('SHORT') ? '📉' : dir.includes('STRADDLE') ? '↕️' : '🤖';
+  return '<div class="section impact">'
+    + '<div class="sec-label">🤖 LLM Signal (Groq · Llama 3.3)</div>'
+    + '<div class="sec-content">'
+    + dirEmoji + ' <b style="color:#a855f7">' + type + '</b>'
+    + ' · strength: <b>' + strength + '</b>'
+    + ' · Píміno: <b>' + pimino + '</b>'
+    + (assets ? ' · assets: <b style="color:#64ffda">' + assets + '</b>' : '')
+    + (reasoning ? '<br><span style="color:rgba(255,255,255,0.5)">' + reasoning + '</span>' : '')
+    + '</div></div>';
+}
+
 function renderBrief() {
   const col = document.getElementById('briefCol');
   const w = collectedData.wiki || {};
@@ -340,24 +361,9 @@ function renderBrief() {
       </div>`).join('')}
     </div>` : ''}
 
-    ${collectedData.groq ? `
-    <div class="section impact">
-      <div class="sec-label">🤖 LLM Signal (Groq/Llama)</div>
-      <div class="sec-content">
-        ${(() => {
-          const g = collectedData.groq;
-          const parts = (g.detail || '').split(' · ');
-          const type = parts[0] || '';
-          const strength = parts[1]?.replace('strength:','') || '';
-          const pimino = parts[2]?.replace('pimino:','') || '';
-          const assets = parts[3]?.replace('assets:','') || '';
-          const reasoning = parts[4] || '';
-          return \`<b style="color:#a855f7">\${type}</b> · strength: <b>\${strength}</b> · Píміno: <b>\${pimino}</b>\${assets ? ' · assets: <b style="color:#64ffda">\${assets}</b>' : ''}<br><span style="color:rgba(255,255,255,0.5)">\${reasoning}</span>\`;
-        })()}
-      </div>
-    </div>` : ''}
+    ${collectedData.groq ? renderGroqSignal(collectedData.groq) : ''}
 
-    ${trends.length ? \`
+    ${trends.length ? `
     <div class="section">
       <div class="sec-label">📈 Google Trends (${[...new Set(trends.map(t=>t.geo))].join(', ')})</div>
       <div class="sec-content">Тренд в країнах: <b style="color:#4285f4">${[...new Set(trends.map(t=>t.geo))].join(', ')}</b></div>
