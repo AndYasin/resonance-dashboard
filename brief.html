@@ -139,7 +139,7 @@ document.title = 'BRIEF: ' + TITLE;
 let mode = 'news';
 let collectedData = {};
 let sourceDone = 0;
-const TOTAL_SOURCES = 6;
+const TOTAL_SOURCES = 7;
 
 function setMode(m) {
   mode = m;
@@ -167,6 +167,7 @@ async function collectAll() {
     fetchNews(),
     fetchDDG(),
     fetchTrends(),
+    fetchGroqSignal(),
   ]);
 }
 
@@ -226,6 +227,25 @@ async function fetchDDG() {
     const r = await fetch(PROXY + '/ddg?q=' + encodeURIComponent(TITLE + ' news'));
     const d = await r.json();
     collectedData.ddg = (d.items||[]).slice(0,4);
+  } catch(e) {}
+  incSrc();
+}
+
+async function fetchGroqSignal() {
+  try {
+    const r = await fetch(PROXY + '/cross_signals_recent?title=' + encodeURIComponent(TITLE));
+    // Шукаємо WIKI+LLM сигнал з Supabase через proxy
+    const r2 = await fetch('https://ovedzfpptsnxzxioyzkr.supabase.co/rest/v1/cross_signals?wiki_title=eq.' +
+      encodeURIComponent(TITLE) + '&type=eq.WIKI%2BLLM&order=created_at.desc&limit=1', {
+      headers: {
+        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92ZWR6ZnBwdHNueHp4aW95emtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5NDIzNTIsImV4cCI6MjA5MTUxODM1Mn0.Z4XFvR7I4HcaoOckDSpsZ4_DDZRAlWENr2VQphTdTx0',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92ZWR6ZnBwdHNueHp4aW95emtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5NDIzNTIsImV4cCI6MjA5MTUxODM1Mn0.Z4XFvR7I4HcaoOckDSpsZ4_DDZRAlWENr2VQphTdTx0'
+      }
+    });
+    const rows = await r2.json();
+    if (Array.isArray(rows) && rows.length) {
+      collectedData.groq = rows[0];
+    }
   } catch(e) {}
   incSrc();
 }
@@ -320,7 +340,24 @@ function renderBrief() {
       </div>`).join('')}
     </div>` : ''}
 
-    ${trends.length ? `
+    ${collectedData.groq ? `
+    <div class="section impact">
+      <div class="sec-label">🤖 LLM Signal (Groq/Llama)</div>
+      <div class="sec-content">
+        ${(() => {
+          const g = collectedData.groq;
+          const parts = (g.detail || '').split(' · ');
+          const type = parts[0] || '';
+          const strength = parts[1]?.replace('strength:','') || '';
+          const pimino = parts[2]?.replace('pimino:','') || '';
+          const assets = parts[3]?.replace('assets:','') || '';
+          const reasoning = parts[4] || '';
+          return \`<b style="color:#a855f7">\${type}</b> · strength: <b>\${strength}</b> · Píміno: <b>\${pimino}</b>\${assets ? ' · assets: <b style="color:#64ffda">\${assets}</b>' : ''}<br><span style="color:rgba(255,255,255,0.5)">\${reasoning}</span>\`;
+        })()}
+      </div>
+    </div>` : ''}
+
+    ${trends.length ? \`
     <div class="section">
       <div class="sec-label">📈 Google Trends (${[...new Set(trends.map(t=>t.geo))].join(', ')})</div>
       <div class="sec-content">Тренд в країнах: <b style="color:#4285f4">${[...new Set(trends.map(t=>t.geo))].join(', ')}</b></div>
