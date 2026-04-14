@@ -139,7 +139,7 @@ document.title = 'BRIEF: ' + TITLE;
 let mode = 'news';
 let collectedData = {};
 let sourceDone = 0;
-const TOTAL_SOURCES = 7;
+const TOTAL_SOURCES = 5;
 
 function setMode(m) {
   mode = m;
@@ -165,8 +165,6 @@ async function collectAll() {
     fetchRetro(),
     fetchPredictions(),
     fetchNews(),
-    fetchDDG(),
-    fetchTrends(),
     fetchGroqSignal(),
   ]);
 }
@@ -386,8 +384,6 @@ function renderBrief() {
         ['Ретро (14 днів)', !!retro?.total, '📊'],
         ['Predictions', preds.length > 0, '🎯'],
         ['RSS News', news.length > 0, '📰'],
-        ['DuckDuckGo', ddg.length > 0, '🦆'],
-        ['Google Trends', trends.length > 0, '📈'],
       ].map(([name, ok, ico]) => `
         <div class="src-row">
           <div class="src-dot" style="background:${ok?'#64ffda':'rgba(255,255,255,0.15)'}"></div>
