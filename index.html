@@ -238,6 +238,21 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 .li-f{height:100%;border-radius:2px;transition:width 0.5s}
 .li-n{font-size:0.55rem;color:rgba(255,255,255,0.3);width:24px;text-align:right}
 
+
+/* SLIDES */
+.slide-nav{display:flex;align-items:center;gap:0.3rem;margin-left:auto}
+.slide-btn{padding:2px 10px;border-radius:2px;font-size:0.58rem;cursor:pointer;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.35);font-family:'IBM Plex Mono',monospace;transition:all 0.15s}
+.slide-btn.on{border-color:#64ffda;color:#64ffda;background:rgba(100,255,218,0.07)}
+.slides-wrap{flex:1;overflow:hidden;min-height:0;position:relative}
+.slides-inner{display:flex;width:200%;height:100%;transition:transform 0.3s cubic-bezier(.4,0,.2,1)}
+.slide{width:50%;height:100%;display:grid;gap:1px;background:rgba(255,255,255,0.05);overflow:hidden;min-height:0}
+.slide-1-grid{grid-template-columns:1.4fr 1fr 0.9fr}
+.slide-2-grid{grid-template-columns:1fr 1fr 0.9fr 0.9fr}
+.macro-bar{display:flex;align-items:center;gap:1.2rem;padding:0 0.7rem;height:24px;border-top:1px solid rgba(255,255,255,0.05);flex-shrink:0;font-size:0.58rem;background:#09091a;overflow:hidden}
+.macro-item{display:flex;align-items:center;gap:0.3rem;flex-shrink:0}
+.macro-val{font-family:'Bebas Neue',sans-serif;font-size:0.9rem}
+.macro-lbl{font-size:0.48rem;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.05em}
+
 /* AI MODAL */
 #aiModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:9999;align-items:center;justify-content:center}
 .aim-box{background:#0d0d1a;border:1px solid rgba(100,255,218,0.2);border-radius:3px;width:min(560px,92vw);max-height:82vh;display:flex;flex-direction:column;overflow:hidden}
@@ -320,6 +335,10 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
     <div class="hs"><div class="v" id="hRes" style="color:#f72585">0</div><div class="l">★</div></div>
     <div class="hs"><div class="v" id="hTotal" style="color:rgba(255,255,255,0.4)">0</div><div class="l">всього</div></div>
     <div class="lbl"><div class="ldot wait" id="dot"></div><span id="stxt">connecting</span></div>
+    <div class="slide-nav">
+      <button class="slide-btn on" onclick="goSlide(0)" id="sBtn0">⚡ live</button>
+      <button class="slide-btn" onclick="goSlide(1)" id="sBtn1">📊 context</button>
+    </div>
   </div>
 </div>
 
@@ -342,81 +361,109 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
   <button class="fb" data-tp="БІЗНЕС" onclick="toggleType(this)">💼</button>
 </div>
 
-<!-- BODY -->
-<div class="body">
+<!-- MACRO BAR -->
+<div class="macro-bar" id="macroBar">
+  <div class="macro-item"><span class="macro-lbl">F&G</span><span class="macro-val" id="mFng" style="color:rgba(255,255,255,0.4)">—</span></div>
+  <div style="width:1px;height:14px;background:rgba(255,255,255,0.07)"></div>
+  <div id="mBinance" style="display:flex;gap:0.8rem"></div>
+  <div style="width:1px;height:14px;background:rgba(255,255,255,0.07);margin-left:auto"></div>
+  <div class="macro-item"><span class="macro-lbl">прав/хв</span><span class="macro-val" id="mEpm" style="color:#64ffda">0</span></div>
+  <div class="macro-item"><span class="macro-lbl">аном</span><span class="macro-val" id="mAnom" style="color:#ff4757">0</span></div>
+</div>
 
-  <!-- COL 1: АНОМАЛІЇ -->
-  <div class="col">
-    <div class="ph">
-      <span>⚡ аномалії</span>
-      <span><span class="pk" id="cR">0</span><span style="opacity:0.3">★ </span><span class="gd" id="cM">0</span><span style="opacity:0.3">m</span></span>
-    </div>
-    <div class="pb" id="feedSignal"><div class="hint">Очікуємо аномалії...</div></div>
-  </div>
+<!-- SLIDES WRAPPER -->
+<div class="slides-wrap">
+  <div class="slides-inner" id="slidesInner">
 
-  <!-- COL 2: ЗАЛ СЛАВИ + TRENDING WIKIPEDIA -->
-  <div class="col">
-    <div class="ph">
-      <span>🏆 зал слави</span>
-      <div style="display:flex;align-items:center;gap:0.4rem">
-        <span class="gd" id="hofCnt">—</span>
-        <select id="hofSort" onchange="loadHof()" style="background:#09091a;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);font-family:IBM Plex Mono,monospace;font-size:0.5rem;padding:1px 3px;border-radius:2px;cursor:pointer">
-          <option value="score">score</option>
-          <option value="time">час</option>
-          <option value="editors">ред</option>
-          <option value="type">тип</option>
-        </select>
+    <!-- SLIDE 1: LIVE -->
+    <div class="slide slide-1-grid">
+
+      <!-- COL 1: АНОМАЛІЇ -->
+      <div class="col">
+        <div class="ph">
+          <span>⚡ аномалії</span>
+          <span><span class="pk" id="cR">0</span><span style="opacity:0.3">★ </span><span class="gd" id="cM">0</span><span style="opacity:0.3">m</span></span>
+        </div>
+        <div class="pb" id="feedSignal"><div class="hint">Очікуємо аномалії...</div></div>
       </div>
-    </div>
-    <div class="hint" id="hofSub" style="padding:0.25rem 0.7rem;font-size:0.58rem;color:rgba(255,255,255,0.35);border-bottom:1px solid rgba(255,255,255,0.04);flex-shrink:0">сьогодні · завантаження...</div>
-    <div class="pb" id="feedHof" style="flex:1"><div class="hint">...</div></div>
-    <div class="sec">
-      <div class="ph"><span>📈 trending вікі</span><span class="ac" id="tTime">...</span></div>
-      <div class="pb" id="feedTrend" style="max-height:220px"><div class="hint">Завантаження...</div></div>
-    </div>
-  </div>
 
-  <!-- COL 3: ЕКСПЕРИМЕНТИ — Google Trends + Predictions -->
-  <div class="col">
-    <div class="ph"><span>🧪 сигнали ринку</span><span class="ac" id="predCnt">0</span></div>
-    <div class="pb" id="feedPred" style="flex:1"><div class="hint">...</div></div>
-    <div class="sec" style="flex-shrink:0">
-      <div class="ph"><span>📋 sec filings</span><span class="ac" id="secCnt">0</span></div>
-      <div id="feedSec" style="max-height:140px;overflow-y:auto"><div class="hint">...</div></div>
-    </div>
-    <div class="sec">
-      <div class="ph"><span>📊 google trends</span><span class="ac" id="trTime">...</span></div>
-      <div id="feedTrends" style="max-height:200px;overflow-y:auto"></div>
-    </div>
-  </div>
-
-  <!-- COL 4: СЕРЕДОВИЩЕ -->
-  <div class="col">
-    <div class="ph"><span>🌍 середовище</span><span class="ac" id="lt">—</span></div>
-    <div class="spd">
-      <canvas id="speedo" width="48" height="30" style="flex-shrink:0"></canvas>
-      <div>
-        <div class="spd-v" id="sVal">0</div>
-        <div class="spd-l">прав/хв</div>
-        <div class="spd-t" id="sTrend" style="color:rgba(255,255,255,0.2)">—</div>
+      <!-- COL 2: CROSS SIGNALS + ПОТІК -->
+      <div class="col">
+        <div class="ph"><span>⚡ cross signals</span><span class="ac" id="xsCnt">0</span></div>
+        <div class="pb" id="feedXs" style="flex:1"><div class="hint">...</div></div>
+        <div class="sec" style="flex:1;display:flex;flex-direction:column;min-height:0">
+          <div class="ph"><span>📡 потік</span><span class="ac" id="lt">—</span></div>
+          <div class="pb" id="feedRecent" style="flex:1"></div>
+        </div>
       </div>
-      <div class="spl" id="sparkline"></div>
+
+      <!-- COL 3: PREDICTIONS + SEC -->
+      <div class="col">
+        <div class="ph"><span>🧪 сигнали ринку</span><span class="ac" id="predCnt">0</span></div>
+        <div class="pb" id="feedPred" style="flex:1"><div class="hint">...</div></div>
+        <div class="sec" style="flex-shrink:0">
+          <div class="ph"><span>📋 sec filings</span><span class="ac" id="secCnt">0</span></div>
+          <div id="feedSec" style="max-height:160px;overflow-y:auto"><div class="hint">...</div></div>
+        </div>
+      </div>
+
     </div>
-    <div class="ctx-block" id="fngBlock">
-      <div class="ctx-title">😨 fear &amp; greed</div>
-      <div class="hint" style="padding:0.2rem 0;font-size:0.62rem">завантаження...</div>
-    </div>
-    <div class="ctx-block">
-      <div class="ctx-title">💰 binance топ мувери</div>
-      <div id="feedBinance"></div>
-    </div>
-    <div class="sec" style="flex:1;display:flex;flex-direction:column;min-height:0">
-      <div class="ph"><span>⚡ cross signals</span><span class="ac" id="xsCnt">0</span></div>
-      <div class="pb" id="feedXs" style="flex:1"><div class="hint">...</div></div>
-    </div>
-    <div class="sec" style="flex:1;display:flex;flex-direction:column;min-height:0">
-      <div class="ph"><span>📡 потік</span></div>
-      <div class="pb" id="feedRecent" style="flex:1"></div>
+
+    <!-- SLIDE 2: CONTEXT -->
+    <div class="slide slide-2-grid">
+
+      <!-- COL 1: ЗАЛ СЛАВИ -->
+      <div class="col">
+        <div class="ph">
+          <span>🏆 зал слави</span>
+          <div style="display:flex;align-items:center;gap:0.4rem">
+            <span class="gd" id="hofCnt">—</span>
+            <select id="hofSort" onchange="loadHof()" style="background:#09091a;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);font-family:IBM Plex Mono,monospace;font-size:0.5rem;padding:1px 3px;border-radius:2px;cursor:pointer">
+              <option value="score">score</option>
+              <option value="time">час</option>
+              <option value="editors">ред</option>
+              <option value="type">тип</option>
+            </select>
+          </div>
+        </div>
+        <div class="hint" id="hofSub" style="padding:0.25rem 0.7rem;font-size:0.58rem;color:rgba(255,255,255,0.35);border-bottom:1px solid rgba(255,255,255,0.04);flex-shrink:0">сьогодні · завантаження...</div>
+        <div class="pb" id="feedHof" style="flex:1"><div class="hint">...</div></div>
+      </div>
+
+      <!-- COL 2: TRENDING WIKI -->
+      <div class="col">
+        <div class="ph"><span>📈 trending вікі</span><span class="ac" id="tTime">...</span></div>
+        <div class="pb" id="feedTrend"><div class="hint">Завантаження...</div></div>
+      </div>
+
+      <!-- COL 3: GOOGLE TRENDS -->
+      <div class="col">
+        <div class="ph"><span>📊 google trends</span><span class="ac" id="trTime">...</span></div>
+        <div id="feedTrends" style="overflow-y:auto;flex:1"></div>
+      </div>
+
+      <!-- COL 4: SPEEDO + BINANCE деталі -->
+      <div class="col">
+        <div class="ph"><span>🌍 середовище</span></div>
+        <div class="spd">
+          <canvas id="speedo" width="48" height="30" style="flex-shrink:0"></canvas>
+          <div>
+            <div class="spd-v" id="sVal">0</div>
+            <div class="spd-l">прав/хв</div>
+            <div class="spd-t" id="sTrend" style="color:rgba(255,255,255,0.2)">—</div>
+          </div>
+          <div class="spl" id="sparkline"></div>
+        </div>
+        <div class="ctx-block" id="fngBlock">
+          <div class="ctx-title">😨 fear &amp; greed</div>
+          <div class="hint" style="padding:0.2rem 0;font-size:0.62rem">завантаження...</div>
+        </div>
+        <div class="ctx-block">
+          <div class="ctx-title">💰 binance топ мувери</div>
+          <div id="feedBinance"></div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -1104,6 +1151,9 @@ async function loadFng(){
     if(!d.value)return;
     const col=d.value<=25?'#ff4757':d.value<=45?'#ffc800':d.value<=55?'#64ffda':d.value<=75?'#48cae4':'#06d6a0';
     const el=document.getElementById('fngBlock');
+    // update macro bar
+    document.getElementById('mFng').textContent = d.value + ' ' + (d.value<=25?'Fear':d.value<=55?'Neutral':'Greed');
+    document.getElementById('mFng').style.color = d.value<=25?'#ff4757':d.value<=55?'#ffc800':'#64ffda';
     el.innerHTML='<div class="ctx-title">😨 fear &amp; greed</div>'
       +'<div style="display:flex;align-items:baseline;gap:0.4rem">'
       +'<div class="fng-val" style="color:'+col+'">'+d.value+'</div>'
@@ -1117,6 +1167,8 @@ async function loadBinance(){
     const r=await fetch(PROXY+'/binance');const d=await r.json();
     if(!d.items)return;
     const el=document.getElementById('feedBinance');el.innerHTML='';
+    // macro bar top 3
+    const mb = document.getElementById('mBinance'); if(mb){mb.innerHTML=d.items.slice(0,3).map(t=>{const col=t.change>0?'#64ffda':'#ff4757';return '<div class="macro-item"><span class="macro-lbl">'+t.symbol.replace('USDT','')+'</span><span class="macro-val" style="color:'+col+'">'+( t.change>0?'+':'')+t.change+'%</span></div>';}).join('');}
     d.items.slice(0,6).forEach(t=>{
       const col=t.change>0?'#64ffda':'#ff4757';
       const sym=t.symbol.replace('USDT','');
@@ -1719,6 +1771,37 @@ async function fetchAiCtx(article){
       append(h+'</div>');done('src-gdelt','✓ '+items.length,true);
     }).catch(()=>done('src-gdelt','⚠ помилка',false));
 }
+
+
+// ── SLIDES ──
+let currentSlide = 0;
+function goSlide(n) {
+  currentSlide = n;
+  document.getElementById('slidesInner').style.transform = 'translateX(-' + (n * 50) + '%)';
+  document.getElementById('sBtn0').classList.toggle('on', n === 0);
+  document.getElementById('sBtn1').classList.toggle('on', n === 1);
+  // Завантажуємо context при першому переході
+  if (n === 1) { loadHof(); loadTrendWiki(); loadGoogleTrends(); }
+}
+
+// Свайп підтримка
+(function(){
+  let sx = 0;
+  const el = document.querySelector('.slides-wrap');
+  if (!el) return;
+  el.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, {passive:true});
+  el.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - sx;
+    if (Math.abs(dx) > 50) goSlide(dx < 0 ? 1 : 0);
+  }, {passive:true});
+})();
+
+// Macro bar updater
+function updMacroBar() {
+  document.getElementById('mEpm').textContent = editsTs.filter(t => Date.now()-t < 60000).length;
+  document.getElementById('mAnom').textContent = sbCounts.anom || anomCnt;
+}
+setInterval(updMacroBar, 2000);
 
 // ── CONNECT ──
 function connect(){
