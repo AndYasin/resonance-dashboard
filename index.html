@@ -631,6 +631,101 @@ function updLangs(){
 }
 
 // ── RENDER COL 1: ЖИВИЙ СИГНАЛ ──
+
+// ════════════════════════════════════
+// BACKGROUND INTEL
+// ════════════════════════════════════
+
+const CATEGORIES = {
+  URGENT: { label: '🔴 НЕГАЙНА УВАГА', cls: 'cat-urgent', priority: 4 },
+  IMPACT: { label: '🟡 ЗНАЧНИЙ ВПЛИВ', cls: 'cat-impact', priority: 3 },
+  WATCH:  { label: '🔵 ВАРТО СТЕЖИТИ', cls: 'cat-watch',  priority: 2 },
+  NOISE:  { label: '⚪ ШУМ',           cls: 'cat-noise',  priority: 1 },
+};
+
+function calcCategory(p) {
+  const kw = p.commentKeywords || [];
+  const ed = p.editors || 0;
+  const lc = p.langCount || 0;
+  const sc = p.score || 0;
+  const pvR = p.pvRatio || 0;
+  const atype = (p.articleType || '').toUpperCase();
+  const retroT = p.intel?.retroSignal;
+  const hasPred = p.intel?.predMatch;
+
+  if (kw.includes('CRISIS') || kw.includes('CURRENT') && ed >= 5 ||
+      atype.includes('СМЕРТЬ') && ed >= 3) return 'URGENT';
+
+  if (kw.includes('MILESTONE') || kw.includes('CORPORATE') ||
+      kw.includes('GEOPOLITICAL') && lc >= 15 ||
+      hasPred && sc >= 80 ||
+      retroT !== null && retroT !== undefined && retroT <= -3 && ed >= 3 ||
+      lc >= 30 && ed >= 5) return 'IMPACT';
+
+  if (retroT !== null && retroT !== undefined && retroT <= -1 ||
+      lc >= 15 && ed >= 3 || kw.includes('CRYPTO') ||
+      hasPred || pvR >= 5 || sc >= 60) return 'WATCH';
+
+  return 'NOISE';
+}
+
+function buildIntelTags(p) {
+  const tags = [];
+  const kw = p.commentKeywords || [];
+  const retroT = p.intel?.retroSignal;
+  const hasPred = p.intel?.predMatch;
+  const kwColors = {CRISIS:'#ff4757',MILESTONE:'#ffc800',CORPORATE:'#48cae4',GEOPOLITICAL:'#f72585',CRYPTO:'#06d6a0',REWRITE:'#b5179e',CURRENT:'#ff9f1c'};
+
+  if (retroT !== null && retroT !== undefined) {
+    const c = retroT <= -3 ? '#ff4757' : retroT <= -1 ? '#ffc800' : '#64ffda';
+    tags.push(`<span class="intel-tag" style="color:${c};border-color:${c}44">📊 T${retroT}д</span>`);
+  }
+  kw.filter(k => kwColors[k]).forEach(k =>
+    tags.push(`<span class="intel-tag" style="color:${kwColors[k]};border-color:${kwColors[k]}33">${k}</span>`)
+  );
+  if (hasPred) {
+    const prob = Math.round((p.intel.predProb||0)*100);
+    tags.push(`<span class="intel-tag" style="color:#06d6a0;border-color:#06d6a044">🎯 ${prob}%</span>`);
+  }
+  if ((p.langCount||0) >= 20)
+    tags.push(`<span class="intel-tag" style="color:#64ffda;border-color:#64ffda33">🌍 ${p.langCount}мов</span>`);
+  return tags.join('');
+}
+
+const intelQueue = new Set();
+
+async function runBackgroundIntel(key) {
+  if (intelQueue.has(key)) return;
+  const p = pinned[key]; if (!p) return;
+  if (p.intel?.done) return;
+  intelQueue.add(key);
+  if (!p.intel) p.intel = {};
+
+  const today = new Date().toISOString().slice(0,10);
+
+  // Ретро через /api/retro
+  const retroP = fetch('/api/retro?title='+encodeURIComponent(p.title)+'&event='+today+'&lang='+(p.lang||'en')+'&days=7')
+    .then(r=>r.json())
+    .then(d => { p.intel.retroSignal = d.found && d.firstSignal ? d.firstSignal.t : null; })
+    .catch(() => { p.intel.retroSignal = null; });
+
+  // Prediction match з кешу
+  const predP = Promise.resolve().then(() => {
+    if (!predCache?.items?.length) return;
+    const words = p.title.toLowerCase().split(/\s+/).filter(w=>w.length>4);
+    const m = predCache.items.find(pm => {
+      const t = (pm.title||'').toLowerCase();
+      return words.filter(w=>t.includes(w)).length >= 2 || words.some(w=>w.length>7&&t.includes(w));
+    });
+    if (m) { p.intel.predMatch=true; p.intel.predProb=m.probability; p.intel.predTitle=m.title; p.intel.predUrl=m.url; }
+  });
+
+  await Promise.all([retroP, predP]);
+  p.intel.done = true;
+  intelQueue.delete(key);
+  renderSignal();
+}
+
 function renderSignal(){
   const sec=document.getElementById('feedSignal');if(!sec)return;
   const now=Date.now();
@@ -678,8 +773,14 @@ function renderSignal(){
       // HERO картка
       const d=document.createElement('div');
       d.className='hero '+typeClass;
+      // Background intel
+      runBackgroundIntel(p.key||('enwiki:'+p.title));
+      const catKey = p.intel?.done ? calcCategory(p) : null;
+      const cat = catKey ? CATEGORIES[catKey] : null;
+      const intelTagsHtml = p.intel?.done ? buildIntelTags(p) : '<span class="intel-tag"><span style="display:inline-block;width:4px;height:4px;border-radius:50%;background:#64ffda;animation:blink 1s infinite;margin-right:3px"></span>аналіз...</span>';
       d.innerHTML=
-        '<div class="hero-top">'
+        (cat ? '<div style="margin-bottom:0.25rem"><span class="cat-badge '+cat.cls+'">'+cat.label+'</span></div>' : '')
+        +'<div class="hero-top">'
           +'<div class="hero-kw">'+isNew+kwsHtml+trendHtml+'</div>'
           +'<div class="hero-score-wrap"><div class="hero-score" style="color:'+col+'">'+p.score+'<div class="hero-score-label">score</div></div></div>'
         +'</div>'
@@ -692,6 +793,7 @@ function renderSignal(){
           +(p.langCount>1?'<div class="hstat"><div class="v" style="color:#4285f4">'+p.langCount+'</div><div class="l">мов</div></div>':'')
         +'</div>'
         +(p.deltaBytes?'<div class="hero-delta">'+deltaHtml+'</div>':'')
+        +'<div class="hero-intel" style="display:flex;flex-wrap:wrap;gap:0.2rem;margin:0.2rem 0">'+intelTagsHtml+'</div>'
         +(p.desc?'<div class="hero-desc">'+p.desc.slice(0,140)+'…</div>':'')
         +'<div class="hero-acts">'
           +'<a class="btn-g" href="'+gUrl+'" target="_blank">🔍</a>'
@@ -704,12 +806,15 @@ function renderSignal(){
       sec.appendChild(d);
     } else if(rank<4){
       // MEDIUM картка
+      runBackgroundIntel(p.key||('enwiki:'+p.title));
       const d=document.createElement('div');
       d.className='mc '+typeClass;
       d.addEventListener('click',()=>window.open(p.url,'_blank'));
+      const mcCat = p.intel?.done ? calcCategory(p) : null;
+      const mcDot = mcCat==='URGENT'?'🔴 ':mcCat==='IMPACT'?'🟡 ':mcCat==='WATCH'?'🔵 ':'';
       d.innerHTML=
         '<div class="mc-top">'
-          +'<div class="mc-title">'+p.title+'</div>'
+          +'<div class="mc-title">'+mcDot+p.title+'</div>'
           +'<div class="mc-score" style="color:'+col+'">'+p.score+'</div>'
         +'</div>'
         +'<div class="mc-meta">'
@@ -1148,6 +1253,7 @@ function upsertPinned(title,wiki,type,edits,editors,lang,url,meta={}){
     if(meta.section)pinned[key].section=meta.section;
   }
   renderSignal();renderRank();
+  setTimeout(()=>runBackgroundIntel(key),1500);
   setTimeout(()=>enrich(title,lang,key),600);
 }
 
