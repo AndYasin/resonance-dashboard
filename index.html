@@ -454,6 +454,7 @@ let editsTs=[],articles={},langs={},anomWin={},sustained={};
 let editAct=new Array(30).fill(0),hourAct=new Array(24).fill(0);
 let lastBin=Math.floor(Date.now()/2000);
 let prevEpm=0,trendData=[],es,sessStart=Date.now(),lastMsg=Date.now();
+let predCache={items:[]};// global prediction cache
 let langF='all',typeF=new Set();
 const pinned={},pvPinned={},sbCounts={anom:0,mul:0,res:0,sng:0};
 
@@ -711,16 +712,18 @@ async function runBackgroundIntel(key) {
 
   // Prediction match з кешу
   const predP = Promise.resolve().then(() => {
-    if (!predCache?.items?.length) return;
+    if (!predCache?.items?.length) { return; }
+    try {
     const words = p.title.toLowerCase().split(/\s+/).filter(w=>w.length>4);
     const m = predCache.items.find(pm => {
       const t = (pm.title||'').toLowerCase();
       return words.filter(w=>t.includes(w)).length >= 2 || words.some(w=>w.length>7&&t.includes(w));
     });
     if (m) { p.intel.predMatch=true; p.intel.predProb=m.probability; p.intel.predTitle=m.title; p.intel.predUrl=m.url; }
+    } catch(e) {}
   });
 
-  await Promise.all([retroP, predP]);
+  try { await Promise.all([retroP, predP]); } catch(e) {}
   p.intel.done = true;
   intelQueue.delete(key);
   renderSignal();
@@ -1099,6 +1102,7 @@ async function loadPredictions(){
     if(!d.items?.length)return;
     // Фільтруємо тільки цікаві — з обсягом або близьким закриттям
     const now = Date.now();
+    predCache = d; // зберігаємо глобально для intel
     const interesting = d.items
       .filter(p => p.probability !== null)
       .filter(p => {
