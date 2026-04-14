@@ -425,11 +425,11 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
           <svg id="graphSvg"></svg>
           <div class="graph-hint">клік → Brief</div>
           <div class="graph-legend">
-            <span>● urgent</span>
-            <span>● impact</span>
-            <span>● watch</span>
-            <span>-- overlap</span>
-            <span>— graph</span>
+            <span style="color:#ff4757">● L3 act</span>
+            <span style="color:#ffc800">● L2 dir</span>
+            <span style="color:rgba(100,100,120,0.9)">● L1 sig</span>
+            <span style="color:#ff8c00">-- overlap</span>
+            <span style="color:#c77dff">— graph</span>
           </div>
         </div>
         <div class="sec" style="flex-shrink:0;max-height:140px;display:flex;flex-direction:column">
@@ -1881,10 +1881,14 @@ function buildGraphData() {
   sorted.forEach(p => {
     if (false) return; // placeholder
     const cat = calcCategory(p);
-    const col = cat==='URGENT'?'#ff4757':cat==='IMPACT'?'#ffc800':cat==='WATCH'?'#64ffda':'rgba(255,255,255,0.2)';
-    const r = Math.max(10, Math.min(20, 8 + (p.score||0) / 15));
     const cv = calcConvergence(p);
-    nodes.push({ id: p.title, label: p.title.slice(0,18), col, r, score: p.score||0, p, actionable: cv.actionable });
+    // Три стани: convergence визначає рівень
+    const col = cv.count >= 5 ? '#ff4757'   // Рівень 3: червоний — actionable
+              : cv.count >= 3 ? '#ffc800'   // Рівень 2: жовтий — напрямок є
+              : cv.count >= 1 ? 'rgba(100,100,120,0.8)' // Рівень 1: сірий — тремтіння
+              : 'rgba(60,60,80,0.6)';        // нульовий
+    const r = Math.max(10, Math.min(20, 8 + (p.score||0) / 15));
+    nodes.push({ id: p.title, label: p.title.slice(0,18), col, r, score: p.score||0, p, actionable: cv.actionable, cvCount: cv.count });
     nodeMap[p.title.toLowerCase()] = p.title;
   });
 
@@ -1985,12 +1989,21 @@ function renderGraph() {
     .style('stroke-width', d => d.actionable ? 2 : 1);
 
   // Pulse ring для actionable
-  node.filter(d => d.actionable).append('circle')
-    .attr('r', d => d.r + 4)
+  // Рівень 3 — пульс
+  node.filter(d => d.col === '#ff4757').append('circle')
+    .attr('r', d => d.r + 5)
     .style('fill', 'none')
-    .style('stroke', d => d.col)
+    .style('stroke', '#ff4757')
+    .style('stroke-width', 1)
+    .style('opacity', 0.4);
+
+  // Рівень 2 — статичне кільце
+  node.filter(d => d.col === '#ffc800').append('circle')
+    .attr('r', d => d.r + 3)
+    .style('fill', 'none')
+    .style('stroke', '#ffc800')
     .style('stroke-width', 0.5)
-    .style('opacity', 0.3);
+    .style('opacity', 0.25);
 
   node.append('text')
     .attr('dy', d => d.r + 10)
@@ -2002,11 +2015,19 @@ function renderGraph() {
   // Score в центрі вузла
   node.append('text')
     .attr('text-anchor', 'middle')
-    .attr('dy', '0.35em')
-    .style('font-size', d => Math.max(9, Math.min(13, d.r * 0.9)) + 'px')
+    .attr('dy', '-0.1em')
+    .style('font-size', d => Math.max(8, Math.min(11, d.r * 0.8)) + 'px')
     .style('fill', d => d.col)
     .style('font-family', 'Bebas Neue,sans-serif')
     .text(d => d.score > 0 ? d.score : '');
+
+  // Convergence під score
+  node.append('text')
+    .attr('text-anchor', 'middle')
+    .attr('dy', '0.9em')
+    .style('font-size', '7px')
+    .style('fill', d => d.cvCount >= 3 ? d.col : 'rgba(255,255,255,0.3)')
+    .text(d => d.cvCount > 0 ? d.cvCount+'/7' : '');
 
   // Simulation
   graphSim = d3.forceSimulation(nodes)
