@@ -279,6 +279,8 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 .retro-sig-sub{font-size:0.6rem;color:rgba(255,255,255,0.4);margin-top:2px}
 .btn-retro{padding:1px 7px;border-radius:2px;font-size:0.5rem;cursor:pointer;border:1px solid rgba(247,37,133,0.4);background:rgba(247,37,133,0.08);color:#f72585;font-family:'IBM Plex Mono',monospace;transition:all 0.15s;font-weight:600}
 .btn-retro:hover{background:rgba(247,37,133,0.18)}
+.btn-brief{padding:2px 8px;border-radius:2px;font-size:0.55rem;cursor:pointer;border:1px solid rgba(255,200,0,0.4);background:rgba(255,200,0,0.08);color:#ffc800;font-family:'IBM Plex Mono',monospace;transition:all 0.15s;font-weight:600}
+.btn-brief:hover{background:rgba(255,200,0,0.18)}
 
 /* INTEL CATEGORIES */
 .cat-badge{display:inline-flex;align-items:center;gap:0.25rem;padding:2px 8px;border-radius:2px;font-size:0.58rem;font-weight:600;letter-spacing:0.05em;margin-bottom:0.3rem}
@@ -802,10 +804,12 @@ function renderSignal(){
           +'<a class="btn-g" href="'+gUrl+'" target="_blank">🔍</a>'
           +'<button class="btn-ai" data-t="'+p.title.replace(/"/g,'')+'">✦ AI</button>'
           +'<button class="btn-sp" data-t="'+p.title.replace(/"/g,'')+'">🕸</button>'
+          +'<button class="btn-brief" data-t="'+p.title.replace(/"/g,'')+'" data-l="'+(p.lang||'en')+'" data-s="'+p.score+'" data-tp="'+(p.type||'')+'">📋</button>'
           +(Date.now()-p.lastSeen<120000?'<span style="width:5px;height:5px;border-radius:50%;background:#64ffda;display:inline-block;animation:blink 1s infinite;margin-right:0.3rem"></span>':'')+'<span class="hero-timer">з '+new Date(p.firstSeen).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'})+'</span>'
         +'</div>';
       d.querySelector('.btn-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
       d.querySelector('.btn-sp').addEventListener('click',function(e){e.stopPropagation();openSpider(this.dataset.t);});
+      d.querySelector('.btn-brief').addEventListener('click',function(e){e.stopPropagation();openBrief(this.dataset.t,this.dataset.l,this.dataset.s,this.dataset.tp);});
       sec.appendChild(d);
     } else if(rank<4){
       // MEDIUM картка
@@ -1460,6 +1464,14 @@ function openSpider(title){
 }
 
 // ── RETRO MODAL ──
+function openBrief(title, lang, score, type) {
+  const url = '/brief.html?title=' + encodeURIComponent(title)
+    + '&lang=' + (lang||'en')
+    + '&score=' + (score||0)
+    + '&type=' + (type||'');
+  window.open(url, '_blank', 'width=1100,height=800,left=100,top=50');
+}
+
 function openRetroModal(title, lang) {
   const modal = document.getElementById('retroModal');
   modal.style.display = 'flex';
