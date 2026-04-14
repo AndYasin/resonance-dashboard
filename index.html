@@ -281,6 +281,11 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 .btn-retro:hover{background:rgba(247,37,133,0.18)}
 .btn-brief{padding:2px 8px;border-radius:2px;font-size:0.55rem;cursor:pointer;border:1px solid rgba(255,200,0,0.4);background:rgba(255,200,0,0.08);color:#ffc800;font-family:'IBM Plex Mono',monospace;transition:all 0.15s;font-weight:600}
 .btn-brief:hover{background:rgba(255,200,0,0.18)}
+.sc-brief{padding:1px 5px;border-radius:2px;font-size:0.52rem;cursor:pointer;border:1px solid rgba(255,200,0,0.35);background:rgba(255,200,0,0.07);color:#ffc800;font-family:'IBM Plex Mono',monospace;transition:all 0.15s}
+.sc-brief:hover{background:rgba(255,200,0,0.18)}
+.hof-brief{padding:1px 4px;border-radius:2px;font-size:0.5rem;cursor:pointer;border:1px solid rgba(255,200,0,0.3);background:rgba(255,200,0,0.06);color:#ffc800;font-family:'IBM Plex Mono',monospace}
+.tr-ai{padding:1px 4px;border-radius:2px;font-size:0.5rem;cursor:pointer;border:1px solid rgba(100,255,218,0.3);background:rgba(100,255,218,0.06);color:#64ffda;font-family:'IBM Plex Mono',monospace}
+.tr-brief{padding:1px 4px;border-radius:2px;font-size:0.5rem;cursor:pointer;border:1px solid rgba(255,200,0,0.3);background:rgba(255,200,0,0.06);color:#ffc800;font-family:'IBM Plex Mono',monospace}
 
 /* INTEL CATEGORIES */
 .cat-badge{display:inline-flex;align-items:center;gap:0.25rem;padding:2px 8px;border-radius:2px;font-size:0.58rem;font-weight:600;letter-spacing:0.05em;margin-bottom:0.3rem}
@@ -889,9 +894,11 @@ function renderSignal(){
         +'👥'+p.editors+' '+new Date(p.lastSeen).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'})+'</div>'
         +'<div class="sc-score" style="color:'+col+'">'+p.score+(p.rq&&p.rq>p.score?'<span style="font-size:0.5rem;color:#ffc800;margin-left:3px">'+p.rq+'★</span>':'')+'</div>'
         +'<button class="sc-ai" data-t="'+p.title.replace(/"/g,'')+'">✦</button>'
-        +'<button class="sc-sp" data-t="'+p.title.replace(/"/g,'')+'">🕸</button>';
+        +'<button class="sc-sp" data-t="'+p.title.replace(/"/g,'')+'">🕸</button>'
+        +'<button class="sc-brief" data-t="'+p.title.replace(/"/g,'')+'" data-l="'+(p.lang||'en')+'" data-s="'+p.score+'">📋</button>';
       d.querySelector('.sc-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
       d.querySelector('.sc-sp').addEventListener('click',function(e){e.stopPropagation();openSpider(this.dataset.t);});
+      d.querySelector('.sc-brief').addEventListener('click',function(e){e.stopPropagation();openBrief(this.dataset.t,this.dataset.l,this.dataset.s);});
       sec.appendChild(d);
     }
   });
@@ -1016,9 +1023,18 @@ async function loadHof(){
           +'<div class="hof-title">'+row.title+'</div>'
           +'<div class="hof-meta">'+kwHtml+'<span style="color:rgba(255,255,255,0.4)">'+time+'</span>'+(row.article_type?'<span style="color:rgba(255,255,255,0.35)"> · '+row.article_type+'</span>':'')+'</div>'
         +'</div>'
+        +'<div style="text-align:right">'
         +'<div class="hof-score" style="color:'+col+'">'+sc+'</div>'
+        // RQ з pinned якщо є
+        +(() => {
+          const pk = Object.values(pinned).find(p=>p.title===row.title);
+          return pk?.rq && pk.rq > sc ? '<div style="font-size:0.5rem;color:#ffc800">'+pk.rq+'★</div>' : '';
+        })()
+        +'</div>'
+        +'<a class="btn-g" href="https://www.google.com/search?q='+encodeURIComponent(row.title+' news')+'&udm=50" target="_blank" onclick="event.stopPropagation()" style="padding:1px 4px">🔍</a>'
         +'<button class="rank-ai" data-t="'+row.title.replace(/"/g,'')+'">✦</button>'
-        +'<button class="rank-sp" data-t="'+row.title.replace(/"/g,'')+'">🕸</button>';
+        +'<button class="rank-sp" data-t="'+row.title.replace(/"/g,'')+'">🕸</button>'
+        +'<button class="hof-brief" data-t="'+row.title.replace(/"/g,'')+'" data-s="'+sc+'">📋</button>';
       d.querySelector('.rank-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
       d.querySelector('.rank-sp').addEventListener('click',function(e){e.stopPropagation();openSpider(this.dataset.t);});
       el.appendChild(d);
@@ -1360,7 +1376,11 @@ async function loadTrendWiki(){
       d2.innerHTML='<div style="font-size:0.76rem;color:rgba(255,255,255,0.88);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+ic+(ic?' ':'')+nm+'</div>'
         +'<div style="font-size:0.6rem;color:rgba(255,255,255,0.3);flex-shrink:0">'+fmt(item.views)+'</div>'
         +'<div style="font-family:Bebas Neue,sans-serif;font-size:0.9rem;color:'+col+';flex-shrink:0;width:44px;text-align:right">'+(item.delta>0?'+':'')+item.delta+'%</div>'
-        ;
+        +'<a href="https://www.google.com/search?q='+encodeURIComponent(item.article+' news')+'&udm=50" target="_blank" onclick="event.stopPropagation()" style="flex-shrink:0;padding:1px 4px;border-radius:2px;font-size:0.5rem;border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.3);text-decoration:none">🔍</a>'
+        +'<button class="tr-ai" data-t="'+item.article.replace(/"/g,'')+'">✦</button>'
+        +'<button class="tr-brief" data-t="'+item.article.replace(/"/g,'')+'">📋</button>';
+      d2.querySelector('.tr-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
+      d2.querySelector('.tr-brief').addEventListener('click',function(e){e.stopPropagation();openBrief(this.dataset.t,'en',0);});
       el.appendChild(d2);
     });
   }catch(e){}
