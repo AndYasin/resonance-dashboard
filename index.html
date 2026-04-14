@@ -193,6 +193,7 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 .xs-pred{background:rgba(6,214,160,0.1);color:#06d6a0;border:1px solid rgba(6,214,160,0.2)}
 .xs-llm{background:rgba(147,51,234,0.12);color:#a855f7;border:1px solid rgba(147,51,234,0.25)}
 .xs-overlap{background:rgba(255,140,0,0.12);color:#ff8c00;border:1px solid rgba(255,140,0,0.3)}
+.xs-graph{background:rgba(114,9,183,0.12);color:#c77dff;border:1px solid rgba(114,9,183,0.3)}
 .pred-item{display:flex;align-items:center;gap:0.3rem;padding:0.22rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:background 0.1s}
 .pred-item:hover{background:rgba(255,255,255,0.02)}
 .pred-src{font-size:0.5rem;width:20px;flex-shrink:0;text-align:center}
@@ -1252,7 +1253,7 @@ async function loadCrossSignals(){
     const rows=await r.json();if(!Array.isArray(rows)||!rows.length)return;
     const el=document.getElementById('feedXs');el.innerHTML='';
     // xsCnt вже встановлено вище
-    const typeMap={'WIKI+GDELT':'xs-wiki','WIKI+TRENDS':'xs-trends','WIKI+POLYMARKET':'xs-poly','WIKI+PAGEVIEW':'xs-pv','WIKI+PREDICT':'xs-pred','WIKI+LLM':'xs-llm','EDITOR+OVERLAP':'xs-overlap'};
+    const typeMap={'WIKI+GDELT':'xs-wiki','WIKI+TRENDS':'xs-trends','WIKI+POLYMARKET':'xs-poly','WIKI+PAGEVIEW':'xs-pv','WIKI+PREDICT':'xs-pred','WIKI+LLM':'xs-llm','EDITOR+OVERLAP':'xs-overlap','WIKI+GRAPH':'xs-graph'};
     // Фільтр шуму
     const filtered = rows.filter(row => {
       const sc = row.score || 0;
