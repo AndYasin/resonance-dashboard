@@ -239,6 +239,20 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 .li-n{font-size:0.55rem;color:rgba(255,255,255,0.3);width:24px;text-align:right}
 
 
+
+/* GRAPH */
+.graph-col{position:relative;overflow:hidden;background:#07070f}
+#graphSvg{width:100%;height:100%;display:block}
+.g-node{cursor:pointer}
+.g-node circle{transition:r 0.3s,stroke-width 0.2s}
+.g-node:hover circle{stroke-width:2px}
+.g-node text{pointer-events:none;font-family:'IBM Plex Mono',monospace;font-size:9px;fill:rgba(255,255,255,0.7)}
+.g-link{stroke:rgba(255,255,255,0.12);stroke-width:1;fill:none}
+.g-link.overlap{stroke:#ff8c00;stroke-width:1.5;stroke-dasharray:4,2}
+.g-link.graph_{stroke:#c77dff;stroke-width:1}
+.graph-hint{position:absolute;top:0.5rem;left:0.7rem;font-size:0.52rem;color:rgba(255,255,255,0.2);pointer-events:none}
+.graph-legend{position:absolute;bottom:0.5rem;left:0.7rem;display:flex;gap:0.6rem;font-size:0.5rem;color:rgba(255,255,255,0.3);flex-wrap:wrap}
+
 /* SLIDES */
 .slide-nav{display:flex;align-items:center;gap:0.3rem;margin-left:auto}
 .slide-btn{padding:2px 10px;border-radius:2px;font-size:0.58rem;cursor:pointer;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.35);font-family:'IBM Plex Mono',monospace;transition:all 0.15s}
@@ -387,13 +401,23 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
         <div class="pb" id="feedSignal"><div class="hint">Очікуємо аномалії...</div></div>
       </div>
 
-      <!-- COL 2: CROSS SIGNALS + ПОТІК -->
-      <div class="col">
-        <div class="ph"><span>⚡ cross signals</span><span class="ac" id="xsCnt">0</span></div>
-        <div class="pb" id="feedXs" style="flex:1"><div class="hint">...</div></div>
-        <div class="sec" style="flex:1;display:flex;flex-direction:column;min-height:0">
+      <!-- COL 2: ГРАФ + ПОТІК -->
+      <div class="col" style="display:flex;flex-direction:column">
+        <div class="ph"><span>🕸 граф</span><span class="ac" id="xsCnt">0</span></div>
+        <div class="graph-col" style="flex:1;min-height:0" id="graphContainer">
+          <svg id="graphSvg"></svg>
+          <div class="graph-hint">клік → Brief</div>
+          <div class="graph-legend">
+            <span>● urgent</span>
+            <span>● impact</span>
+            <span>● watch</span>
+            <span>-- overlap</span>
+            <span>— graph</span>
+          </div>
+        </div>
+        <div class="sec" style="flex-shrink:0;max-height:140px;display:flex;flex-direction:column">
           <div class="ph"><span>📡 потік</span><span class="ac" id="lt">—</span></div>
-          <div class="pb" id="feedRecent" style="flex:1"></div>
+          <div class="pb" id="feedRecent" style="flex:1;overflow-y:auto"></div>
         </div>
       </div>
 
@@ -1303,6 +1327,7 @@ async function loadCrossSignals(){
     const since=new Date(Date.now()-6*3600000).toISOString();
     const r=await fetch(SB_URL+'/rest/v1/cross_signals?created_at=gte.'+since+'&order=score.desc&limit=15',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
     const rows=await r.json();if(!Array.isArray(rows)||!rows.length)return;
+    window.xsCache = rows; renderGraph();
     const el=document.getElementById('feedXs');el.innerHTML='';
     // xsCnt вже встановлено вище
     const typeMap={'WIKI+GDELT':'xs-wiki','WIKI+TRENDS':'xs-trends','WIKI+POLYMARKET':'xs-poly','WIKI+PAGEVIEW':'xs-pv','WIKI+PREDICT':'xs-pred','WIKI+LLM':'xs-llm','EDITOR+OVERLAP':'xs-overlap','WIKI+GRAPH':'xs-graph'};
@@ -1803,6 +1828,159 @@ function updMacroBar() {
 }
 setInterval(updMacroBar, 2000);
 
+
+// ── GRAPH ──
+let graphSim = null;
+let graphNodes = [];
+let graphLinks = [];
+let graphInited = false;
+
+function initGraph() {
+  const container = document.getElementById('graphContainer');
+  const svg = document.getElementById('graphSvg');
+  if (!container || !svg) return;
+  graphInited = true;
+}
+
+function buildGraphData() {
+  // Nodes з pinned
+  const nodes = [];
+  const nodeMap = {};
+  Object.values(pinned).forEach(p => {
+    if (Date.now() - p.lastSeen > 3600000) return;
+    const cat = calcCategory(p);
+    const col = cat==='URGENT'?'#ff4757':cat==='IMPACT'?'#ffc800':cat==='WATCH'?'#64ffda':'rgba(255,255,255,0.2)';
+    const r = Math.max(6, Math.min(22, (p.score||0) / 10));
+    const cv = calcConvergence(p);
+    nodes.push({ id: p.title, label: p.title.slice(0,18), col, r, score: p.score||0, p, actionable: cv.actionable });
+    nodeMap[p.title.toLowerCase()] = p.title;
+  });
+
+  // Links з cross_signals в пам'яті (xsCache)
+  const links = [];
+  const seen = new Set();
+  if (window.xsCache) {
+    window.xsCache.forEach(row => {
+      if (row.type !== 'EDITOR+OVERLAP' && row.type !== 'WIKI+GRAPH') return;
+      const parts = row.title.split(' ↔ ');
+      if (parts.length < 2) return;
+      const a = parts[0].trim();
+      const b = parts[1].trim();
+      const aId = nodeMap[a.toLowerCase()];
+      const bId = nodeMap[b.toLowerCase()];
+      if (!aId || !bId) return;
+      const lkey = [aId,bId].sort().join('|');
+      if (seen.has(lkey)) return;
+      seen.add(lkey);
+      links.push({ source: aId, target: bId, type: row.type==='EDITOR+OVERLAP'?'overlap':'graph_' });
+    });
+  }
+  return { nodes, links };
+}
+
+function renderGraph() {
+  if (typeof d3 === 'undefined') return;
+  const container = document.getElementById('graphContainer');
+  const svgEl = document.getElementById('graphSvg');
+  if (!container || !svgEl) return;
+
+  const W = container.clientWidth || 300;
+  const H = container.clientHeight || 300;
+  if (W < 50 || H < 50) return;
+
+  const { nodes, links } = buildGraphData();
+  if (!nodes.length) {
+    svgEl.innerHTML = '<text x="50%" y="50%" text-anchor="middle" style="font-size:0.6rem;fill:rgba(255,255,255,0.2);font-family:IBM Plex Mono,monospace">очікуємо аномалії...</text>';
+    return;
+  }
+
+  svgEl.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+  // Stop old sim
+  if (graphSim) graphSim.stop();
+
+  const svg = d3.select(svgEl);
+  svg.selectAll('*').remove();
+
+  // Defs — arrow
+  const defs = svg.append('defs');
+  defs.append('marker').attr('id','arr').attr('viewBox','0 -3 6 6').attr('refX',12).attr('markerWidth',6).attr('markerHeight',6).attr('orient','auto')
+    .append('path').attr('d','M0,-3L6,0L0,3').attr('fill','rgba(255,255,255,0.15)');
+
+  const g = svg.append('g');
+
+  // Zoom
+  svg.call(d3.zoom().scaleExtent([0.3,3]).on('zoom', e => g.attr('transform', e.transform)));
+
+  // Links
+  const link = g.append('g').selectAll('line').data(links).enter().append('line')
+    .attr('class', d => 'g-link ' + d.type)
+    .style('stroke', d => d.type==='overlap'?'#ff8c00':'#c77dff')
+    .style('stroke-width', d => d.type==='overlap'?1.5:1)
+    .style('stroke-dasharray', d => d.type==='overlap'?'4,2':'none')
+    .style('opacity', 0.6);
+
+  // Nodes
+  const node = g.append('g').selectAll('.g-node').data(nodes).enter().append('g')
+    .attr('class', 'g-node')
+    .call(d3.drag()
+      .on('start', (e,d) => { if(!e.active) graphSim.alphaTarget(0.3).restart(); d.fx=d.x; d.fy=d.y; })
+      .on('drag',  (e,d) => { d.fx=e.x; d.fy=e.y; })
+      .on('end',   (e,d) => { if(!e.active) graphSim.alphaTarget(0); d.fx=null; d.fy=null; })
+    )
+    .on('click', (e,d) => { e.stopPropagation(); openBrief(d.p.title, d.p.lang||'en', d.p.score, d.p.type||''); });
+
+  node.append('circle')
+    .attr('r', d => d.r)
+    .style('fill', 'rgba(0,0,0,0.5)')
+    .style('stroke', d => d.col)
+    .style('stroke-width', d => d.actionable ? 2 : 1);
+
+  // Pulse ring для actionable
+  node.filter(d => d.actionable).append('circle')
+    .attr('r', d => d.r + 4)
+    .style('fill', 'none')
+    .style('stroke', d => d.col)
+    .style('stroke-width', 0.5)
+    .style('opacity', 0.3);
+
+  node.append('text')
+    .attr('dy', d => d.r + 10)
+    .attr('text-anchor', 'middle')
+    .style('font-size', '8px')
+    .style('fill', 'rgba(255,255,255,0.6)')
+    .text(d => d.label);
+
+  // Score в центрі вузла
+  node.append('text')
+    .attr('text-anchor', 'middle')
+    .attr('dy', '0.35em')
+    .style('font-size', d => Math.max(7, Math.min(11, d.r * 0.7)) + 'px')
+    .style('fill', d => d.col)
+    .style('font-family', 'Bebas Neue,sans-serif')
+    .text(d => d.score > 0 ? d.score : '');
+
+  // Simulation
+  graphSim = d3.forceSimulation(nodes)
+    .force('link', d3.forceLink(links).id(d => d.id).distance(80).strength(0.5))
+    .force('charge', d3.forceManyBody().strength(-120))
+    .force('center', d3.forceCenter(W/2, H/2))
+    .force('collision', d3.forceCollide(d => d.r + 12))
+    .on('tick', () => {
+      link.attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+          .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+      node.attr('transform', d => 'translate(' + d.x + ',' + d.y + ')');
+    });
+
+  document.getElementById('xsCnt').textContent = nodes.length;
+}
+
+// xsCache — зберігаємо cross signals для графу
+window.xsCache = [];
+
+// Оновлюємо граф кожні 30 сек
+setInterval(() => { if (currentSlide === 0) renderGraph(); }, 30000);
+
 // ── CONNECT ──
 function connect(){
   document.getElementById('dot').className='ldot wait';document.getElementById('stxt').textContent='connecting';
@@ -1845,5 +2023,6 @@ loadSec();
 syncCounts();
 document.getElementById('sparkline').innerHTML=new Array(30).fill('<div class="sc_" style="height:2px;background:#1a1a2e"></div>').join('');
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 </body>
 </html>
