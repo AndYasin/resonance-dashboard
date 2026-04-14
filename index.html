@@ -1863,23 +1863,39 @@ function buildGraphData() {
     nodeMap[p.title.toLowerCase()] = p.title;
   });
 
-  // Links з cross_signals в пам'яті (xsCache)
+  // Links + ghost nodes з cross_signals
   const links = [];
   const seen = new Set();
+  function ensureNode(title) {
+    if (nodeMap[title.toLowerCase()]) return nodeMap[title.toLowerCase()];
+    const ghostId = title;
+    nodes.push({ id: ghostId, label: title.slice(0,16), col: 'rgba(199,125,255,0.45)', r: 7, score: 0,
+      p: { title, lang:'en', score:0, type:'', url:'https://en.wikipedia.org/wiki/'+encodeURIComponent(title.replace(/ /g,'_')) },
+      actionable: false, ghost: true });
+    nodeMap[title.toLowerCase()] = ghostId;
+    return ghostId;
+  }
   if (window.xsCache) {
     window.xsCache.forEach(row => {
-      if (row.type !== 'EDITOR+OVERLAP' && row.type !== 'WIKI+GRAPH') return;
-      const parts = row.title.split(' ↔ ');
-      if (parts.length < 2) return;
-      const a = parts[0].trim();
-      const b = parts[1].trim();
-      const aId = nodeMap[a.toLowerCase()];
-      const bId = nodeMap[b.toLowerCase()];
-      if (!aId || !bId) return;
-      const lkey = [aId,bId].sort().join('|');
-      if (seen.has(lkey)) return;
-      seen.add(lkey);
-      links.push({ source: aId, target: bId, type: row.type==='EDITOR+OVERLAP'?'overlap':'graph_' });
+      if (row.type === 'EDITOR+OVERLAP') {
+        const parts = row.title.split(' ↔ ');
+        if (parts.length < 2) return;
+        const aId = ensureNode(parts[0].trim());
+        const bId = ensureNode(parts[1].trim());
+        const lkey = [aId,bId].sort().join('|');
+        if (seen.has(lkey)) return;
+        seen.add(lkey); links.push({ source: aId, target: bId, type: 'overlap' });
+      } else if (row.type === 'WIKI+GRAPH') {
+        const m = row.detail.match(/активні вузли: ([^·]+)/);
+        if (!m) return;
+        const mainId = ensureNode(row.title);
+        m[1].split(',').map(s=>s.trim()).filter(Boolean).forEach(rel => {
+          const relId = ensureNode(rel);
+          const lkey = [mainId,relId].sort().join('|');
+          if (seen.has(lkey)) return;
+          seen.add(lkey); links.push({ source: mainId, target: relId, type: 'graph_' });
+        });
+      }
     });
   }
   return { nodes, links };
