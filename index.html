@@ -653,6 +653,22 @@ const CATEGORIES = {
 };
 
 
+
+// ── CONVERGENCE SCORE — скільки незалежних джерел підтверджують подію ──
+function calcConvergence(p) {
+  const signals = [];
+  if ((p.editors||0) >= 5)                                    signals.push('👥 редактори');
+  if ((p.langCount||0) >= 20)                                 signals.push('🌍 мови');
+  if (p.intel?.retroSignal !== null && p.intel?.retroSignal !== undefined && p.intel.retroSignal <= -3) signals.push('📊 ретро');
+  if (p.intel?.predMatch)                                     signals.push('🎯 prediction');
+  if ((p.trendPct||0) >= 100)                                 signals.push('📈 trends');
+  if ((p.pvRatio||0) >= 5)                                    signals.push('👁 pageview');
+  if (p.type === 'res')                                       signals.push('★ резонанс');
+  const total = 7;
+  const count = signals.length;
+  return { count, total, signals, actionable: count >= 3 };
+}
+
 // ── RQ (Resonance Quotient) — накопичувальний індекс ──
 function calcRQ(p) {
   const current = p.rq || 0;
@@ -832,6 +848,7 @@ function renderSignal(){
           +'<div class="hero-kw">'+isNew+kwsHtml+trendHtml+'</div>'
           +'<div class="hero-score-wrap">'
           +'<div class="hero-score" style="color:'+col+'">'+p.score+'<div class="hero-score-label">score</div></div>'
+          +(() => { const cv = calcConvergence(p); const cvCol = cv.actionable ? '#64ffda' : cv.count >= 2 ? '#ffc800' : 'rgba(255,255,255,0.25)'; return '<div style="text-align:center;margin-left:0.4rem"><div style="font-family:Bebas Neue,sans-serif;font-size:1rem;color:'+cvCol+'">'+cv.count+'/'+cv.total+'</div><div style="font-size:0.44rem;color:'+cvCol+'55;letter-spacing:0.05em">CONV</div>'+(cv.actionable?'<div style="font-size:0.42rem;color:#64ffda;letter-spacing:0.04em">⚡ ACT</div>':'')+'</div>'; })()
           +(p.rq && p.rq > p.score ? '<div style="text-align:center;margin-left:0.5rem"><div style="font-family:Bebas Neue,sans-serif;font-size:1rem;color:#ffc800">'+p.rq+'</div><div style="font-size:0.44rem;color:rgba(255,200,0,0.5);letter-spacing:0.05em">RQ</div></div>' : '')
           +'</div>'
         +'</div>'
@@ -869,6 +886,7 @@ function renderSignal(){
         '<div class="mc-top">'
           +'<div class="mc-title">'+mcDot+p.title+'</div>'
           +'<div class="mc-score" style="color:'+col+'">'+p.score+'</div>'
+          +(() => { const cv = calcConvergence(p); return cv.count >= 2 ? '<div style="font-size:0.52rem;color:'+(cv.actionable?'#64ffda':'#ffc800')+';margin-left:0.25rem;font-family:Bebas Neue,sans-serif">'+cv.count+'/'+cv.total+'</div>' : ''; })()
         +'</div>'
         +'<div class="mc-meta">'
           +'<span>✏️'+p.edits+'</span><span>👥'+p.editors+'</span>'
@@ -894,6 +912,7 @@ function renderSignal(){
         +'<div class="sc-meta">'+( p.isMinor?'<span style="color:rgba(255,255,255,0.25)">minor</span> ':'')
         +'👥'+p.editors+' '+new Date(p.lastSeen).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'})+'</div>'
         +'<div class="sc-score" style="color:'+col+'">'+p.score+(p.rq&&p.rq>p.score?'<span style="font-size:0.5rem;color:#ffc800;margin-left:3px">'+p.rq+'★</span>':'')+'</div>'
+        +(() => { const cv = calcConvergence(p); return cv.actionable ? '<div style="font-size:0.5rem;color:#64ffda;font-family:Bebas Neue,sans-serif;width:22px;text-align:center">'+cv.count+'/7</div>' : ''; })()
         +'<button class="sc-ai" data-t="'+p.title.replace(/"/g,'')+'">✦</button>'
         +'<button class="sc-sp" data-t="'+p.title.replace(/"/g,'')+'">🕸</button>'
         +'<button class="sc-brief" data-t="'+p.title.replace(/"/g,'')+'" data-l="'+(p.lang||'en')+'" data-s="'+p.score+'">📋</button>';
