@@ -525,6 +525,7 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script>
 const PROXY='https://resonance-proxy-production.up.railway.app';
 const SB_URL='https://ovedzfpptsnxzxioyzkr.supabase.co';
@@ -1426,6 +1427,7 @@ function upsertPinned(title,wiki,type,edits,editors,lang,url,meta={}){
     if(meta.section)pinned[key].section=meta.section;
   }
   renderSignal();renderRank();
+  if(currentSlide===0) setTimeout(renderGraph,500);
   setTimeout(()=>runBackgroundIntel(key),1500);
   setTimeout(()=>enrich(title,lang,key),600);
 }
@@ -2019,10 +2021,11 @@ loadBinance();
 loadGoogleTrends();
 loadCrossSignals();
 loadPredictions();
+// Граф — з затримкою щоб D3 і дані встигли
+setTimeout(renderGraph, 2000);
 loadSec();
 syncCounts();
 document.getElementById('sparkline').innerHTML=new Array(30).fill('<div class="sc_" style="height:2px;background:#1a1a2e"></div>').join('');
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 </body>
 </html>
