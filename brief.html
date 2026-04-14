@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<title>RESONANCE // BRIEF</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;600&family=Bebas+Neue&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;min-height:100vh}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;height:36px;border-bottom:1px solid rgba(255,255,255,0.07);background:#07070f;position:sticky;top:0;z-index:100}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:0.1em;color:#fff}
+.logo em{color:#64ffda;font-style:normal}
+.status{font-size:0.6rem;color:rgba(255,255,255,0.3);display:flex;align-items:center;gap:0.5rem}
+.dot{width:5px;height:5px;border-radius:50%;background:#ffc800;animation:blink 1s infinite}
+.dot.done{background:#64ffda;animation:none}
+.dot.err{background:#ff4757;animation:none}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+
+.main{display:grid;grid-template-columns:1fr 380px;gap:0;min-height:calc(100vh - 36px)}
+
+/* LEFT — брифінг */
+.brief-col{padding:1.5rem;border-right:1px solid rgba(255,255,255,0.06);overflow-y:auto}
+.brief-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:#fff;letter-spacing:0.05em;margin-bottom:0.3rem}
+.brief-sub{font-size:0.62rem;color:rgba(255,255,255,0.3);margin-bottom:1.5rem;display:flex;gap:1rem;flex-wrap:wrap}
+.brief-sub span{display:flex;align-items:center;gap:0.25rem}
+
+.section{margin-bottom:1.2rem;border-left:2px solid rgba(255,255,255,0.08);padding-left:0.8rem}
+.section.urgent{border-color:#ff4757}
+.section.impact{border-color:#ffc800}
+.section.watch{border-color:#64ffda}
+.sec-label{font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:0.4rem}
+.sec-content{font-size:0.72rem;line-height:1.7;color:rgba(255,255,255,0.8)}
+.sec-content a{color:#64ffda;text-decoration:none}
+.sec-content a:hover{text-decoration:underline}
+
+/* Tags */
+.tags{display:flex;flex-wrap:wrap;gap:0.25rem;margin-bottom:0.5rem}
+.tag{padding:2px 8px;border-radius:2px;font-size:0.55rem}
+.tag-crisis{background:rgba(255,71,87,0.15);color:#ff4757;border:1px solid rgba(255,71,87,0.3)}
+.tag-milestone{background:rgba(255,200,0,0.12);color:#ffc800;border:1px solid rgba(255,200,0,0.3)}
+.tag-corporate{background:rgba(72,202,228,0.1);color:#48cae4;border:1px solid rgba(72,202,228,0.25)}
+.tag-geo{background:rgba(247,37,133,0.1);color:#f72585;border:1px solid rgba(247,37,133,0.25)}
+.tag-crypto{background:rgba(6,214,160,0.1);color:#06d6a0;border:1px solid rgba(6,214,160,0.25)}
+.tag-default{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.1)}
+
+/* Retro chart */
+.retro-bars{display:flex;align-items:flex-end;gap:2px;height:40px;margin:0.4rem 0}
+.r-bar{flex:1;min-width:3px;border-radius:1px 1px 0 0}
+
+/* Prediction item */
+.pred-row{display:flex;align-items:center;gap:0.5rem;padding:0.3rem 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.65rem}
+.pred-prob{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;flex-shrink:0;width:42px}
+.pred-title{flex:1;color:rgba(255,255,255,0.75)}
+.pred-src{font-size:0.5rem;color:rgba(255,255,255,0.25);flex-shrink:0}
+
+/* Source status */
+.src-row{display:flex;align-items:center;gap:0.4rem;padding:0.2rem 0;font-size:0.6rem}
+.src-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.src-name{width:100px;flex-shrink:0;color:rgba(255,255,255,0.4)}
+.src-status{flex:1;color:rgba(255,255,255,0.6)}
+.src-time{font-size:0.5rem;color:rgba(255,255,255,0.2);flex-shrink:0}
+
+/* RIGHT — промпт */
+.prompt-col{display:flex;flex-direction:column;background:#09091a}
+.prompt-hdr{padding:0.8rem 1rem;border-bottom:1px solid rgba(255,255,255,0.07);flex-shrink:0}
+.prompt-hdr-title{font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:0.4rem}
+.mode-btns{display:flex;gap:0.3rem;flex-wrap:wrap}
+.mode-btn{padding:3px 10px;border-radius:2px;font-size:0.58rem;cursor:pointer;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.35);font-family:'IBM Plex Mono',monospace;transition:all 0.15s}
+.mode-btn:hover{color:rgba(255,255,255,0.7)}
+.mode-btn.on{border-color:#64ffda;color:#64ffda;background:rgba(100,255,218,0.07)}
+
+.prompt-box{flex:1;display:flex;flex-direction:column;padding:0.8rem 1rem;min-height:0}
+.prompt-label{font-size:0.52rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.2);margin-bottom:0.4rem}
+textarea#promptText{flex:1;background:#0d0d1a;border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.85);font-family:'IBM Plex Mono',monospace;font-size:0.65rem;line-height:1.6;padding:0.7rem;border-radius:3px;resize:none;outline:none;min-height:300px}
+textarea#promptText:focus{border-color:rgba(100,255,218,0.25)}
+
+.copy-btn{margin-top:0.6rem;padding:8px;border-radius:3px;font-size:0.7rem;cursor:pointer;border:none;background:#64ffda;color:#07070f;font-family:'IBM Plex Mono',monospace;font-weight:600;width:100%;transition:all 0.15s;flex-shrink:0}
+.copy-btn:hover{background:#4adfc4}
+.copy-btn.copied{background:#ffc800;color:#07070f}
+
+.open-claude-btn{margin-top:0.4rem;padding:7px;border-radius:3px;font-size:0.65rem;cursor:pointer;border:1px solid rgba(100,255,218,0.3);background:transparent;color:#64ffda;font-family:'IBM Plex Mono',monospace;width:100%;transition:all 0.15s;text-align:center;text-decoration:none;display:block}
+.open-claude-btn:hover{background:rgba(100,255,218,0.07)}
+
+.loading-sec{display:flex;align-items:center;gap:0.4rem;font-size:0.62rem;color:rgba(255,255,255,0.3);padding:0.3rem 0}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="logo">RESO<em>NANCE</em> <span style="font-family:'IBM Plex Mono',monospace;font-size:0.5rem;opacity:0.3">// intelligence brief</span></div>
+  <div class="status">
+    <div class="dot" id="statusDot"></div>
+    <span id="statusText">збираю дані...</span>
+    <span id="srcCount" style="color:rgba(255,255,255,0.2)">0/6</span>
+  </div>
+</div>
+
+<div class="main">
+  <!-- LEFT: BRIEF -->
+  <div class="brief-col" id="briefCol">
+    <div style="color:rgba(255,255,255,0.2);font-size:0.7rem;padding:2rem;text-align:center">
+      <div style="font-size:1.5rem;margin-bottom:0.5rem">⏳</div>
+      Збираю дані...
+    </div>
+  </div>
+
+  <!-- RIGHT: PROMPT -->
+  <div class="prompt-col">
+    <div class="prompt-hdr">
+      <div class="prompt-hdr-title">Режим аналізу Claude</div>
+      <div class="mode-btns">
+        <button class="mode-btn on" onclick="setMode('news')" data-m="news">📰 Новини</button>
+        <button class="mode-btn" onclick="setMode('market')" data-m="market">📊 Ринки</button>
+        <button class="mode-btn" onclick="setMode('risk')" data-m="risk">⚠️ Ризики</button>
+        <button class="mode-btn" onclick="setMode('predict')" data-m="predict">🎯 Прогноз</button>
+        <button class="mode-btn" onclick="setMode('deep')" data-m="deep">🔬 Глибокий</button>
+      </div>
+    </div>
+    <div class="prompt-box">
+      <div class="prompt-label">Готовий промпт для Claude</div>
+      <textarea id="promptText" placeholder="Збираю дані..."></textarea>
+      <button class="copy-btn" id="copyBtn" onclick="copyPrompt()">📋 Копіювати промпт</button>
+      <a href="https://claude.ai" target="_blank" class="open-claude-btn">↗ Відкрити Claude</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const PROXY = 'https://resonance-proxy-production.up.railway.app';
+const params = new URLSearchParams(location.search);
+const TITLE = params.get('title') || '';
+const LANG  = params.get('lang')  || 'en';
+const SCORE = params.get('score') || '';
+const TYPE  = params.get('type')  || '';
+const WIKI_URL = 'https://' + LANG + '.wikipedia.org/wiki/' + encodeURIComponent(TITLE.replace(/ /g,'_'));
+
+document.title = 'BRIEF: ' + TITLE;
+
+let mode = 'news';
+let collectedData = {};
+let sourceDone = 0;
+const TOTAL_SOURCES = 6;
+
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('on', b.dataset.m === m));
+  buildPrompt();
+}
+
+function incSrc() {
+  sourceDone++;
+  document.getElementById('srcCount').textContent = sourceDone + '/' + TOTAL_SOURCES;
+  if (sourceDone >= TOTAL_SOURCES) {
+    document.getElementById('statusDot').className = 'dot done';
+    document.getElementById('statusText').textContent = 'готово';
+    renderBrief();
+    buildPrompt();
+  }
+}
+
+// ── ЗБИРАЄМО ДАНІ ──
+async function collectAll() {
+  await Promise.all([
+    fetchWiki(),
+    fetchRetro(),
+    fetchPredictions(),
+    fetchNews(),
+    fetchDDG(),
+    fetchTrends(),
+  ]);
+}
+
+async function fetchWiki() {
+  try {
+    const r = await fetch('https://' + LANG + '.wikipedia.org/w/api.php?action=query&prop=extracts|categories|langlinks&titles=' + encodeURIComponent(TITLE) + '&exintro=1&exsentences=5&explaintext=1&cllimit=20&clshow=!hidden&lllimit=500&format=json&origin=*');
+    const d = await r.json();
+    const pg = Object.values(d.query?.pages||{})[0];
+    if (pg) {
+      collectedData.wiki = {
+        extract: pg.extract?.slice(0, 600) || '',
+        langCount: (pg.langlinks||[]).length + 1,
+        categories: (pg.categories||[]).map(c=>c.title.replace('Category:','')).slice(0,8)
+      };
+    }
+  } catch(e) {}
+  incSrc();
+}
+
+async function fetchRetro() {
+  try {
+    const today = new Date().toISOString().slice(0,10);
+    const r = await fetch('/api/retro?title=' + encodeURIComponent(TITLE) + '&event=' + today + '&lang=' + LANG + '&days=14');
+    const d = await r.json();
+    if (d.found) collectedData.retro = d;
+  } catch(e) {}
+  incSrc();
+}
+
+async function fetchPredictions() {
+  try {
+    const r = await fetch(PROXY + '/predictions');
+    const d = await r.json();
+    if (d.items?.length) {
+      const words = TITLE.toLowerCase().split(/\s+/).filter(w=>w.length>4);
+      const matches = d.items.filter(p => {
+        const t = (p.title||'').toLowerCase();
+        return words.filter(w=>t.includes(w)).length >= 2 || words.some(w=>w.length>7&&t.includes(w));
+      }).slice(0,5);
+      collectedData.predictions = matches;
+    }
+  } catch(e) {}
+  incSrc();
+}
+
+async function fetchNews() {
+  try {
+    const r = await fetch(PROXY + '/rss?q=' + encodeURIComponent(TITLE));
+    const d = await r.json();
+    collectedData.news = (d.items||[]).slice(0,5);
+  } catch(e) {}
+  incSrc();
+}
+
+async function fetchDDG() {
+  try {
+    const r = await fetch(PROXY + '/ddg?q=' + encodeURIComponent(TITLE + ' news'));
+    const d = await r.json();
+    collectedData.ddg = (d.items||[]).slice(0,4);
+  } catch(e) {}
+  incSrc();
+}
+
+async function fetchTrends() {
+  try {
+    const r = await fetch(PROXY + '/trends?q=' + encodeURIComponent(TITLE));
+    const d = await r.json();
+    collectedData.trends = d.items||[];
+  } catch(e) {}
+  incSrc();
+}
+
+// ── РЕНДЕРИНГ БРИФІНГУ ──
+function renderBrief() {
+  const col = document.getElementById('briefCol');
+  const w = collectedData.wiki || {};
+  const retro = collectedData.retro;
+  const preds = collectedData.predictions || [];
+  const news = collectedData.news || [];
+  const ddg = collectedData.ddg || [];
+  const trends = collectedData.trends || [];
+
+  // Категорія і колір
+  const catColor = TYPE.includes('res') || SCORE > 200 ? '#f72585' : SCORE > 80 ? '#ffc800' : '#64ffda';
+
+  // Ретро сигнал
+  const fs = retro?.firstSignal;
+  const retroStr = fs ? `T${fs.t}д (${fs.signal})` : 'не визначено';
+  const retroColor = fs ? (fs.t <= -3 ? '#ff4757' : fs.t <= -1 ? '#ffc800' : '#64ffda') : 'rgba(255,255,255,0.3)';
+
+  // Bars для ретро
+  let retroBars = '';
+  if (retro?.timeline?.length) {
+    const maxE = Math.max(...retro.timeline.map(d=>d.edits), 1);
+    retroBars = retro.timeline.map(d => {
+      const h = Math.max(2, Math.round(d.edits/maxE*38));
+      const c = d.t===0?'#fff':d.signal==='STRONG'?'#ff4757':d.signal==='MED'?'#ffc800':d.signal==='LOW'?'#64ffda':'rgba(255,255,255,0.1)';
+      return `<div class="r-bar" style="height:${h}px;background:${c}" title="${d.day}: ${d.edits}пр ${d.editors}ред"></div>`;
+    }).join('');
+  }
+
+  // News items
+  const allNews = [...news, ...ddg].filter((v,i,a)=>a.findIndex(x=>x.title===v.title)===i).slice(0,6);
+
+  col.innerHTML = `
+    <div class="brief-title">${TITLE}</div>
+    <div class="brief-sub">
+      <span>📖 <a href="${WIKI_URL}" target="_blank" style="color:#64ffda">${LANG}.wikipedia</a></span>
+      ${w.langCount ? `<span>🌍 ${w.langCount} мов</span>` : ''}
+      ${SCORE ? `<span style="color:${catColor}">⚡ score ${SCORE}</span>` : ''}
+      ${fs ? `<span style="color:${retroColor}">📊 сигнал ${retroStr}</span>` : ''}
+    </div>
+
+    ${w.extract ? `
+    <div class="section">
+      <div class="sec-label">📖 Wikipedia</div>
+      <div class="sec-content">${w.extract}…</div>
+      ${w.categories?.length ? `<div class="tags" style="margin-top:0.4rem">${w.categories.map(c=>`<span class="tag tag-default">${c}</span>`).join('')}</div>` : ''}
+    </div>` : ''}
+
+    ${retro?.total ? `
+    <div class="section ${fs?.t<=-3?'urgent':fs?.t<=-1?'watch':''}">
+      <div class="sec-label">📊 Wikipedia активність (14 днів · ${retro.total} правок · ${retro.summary?.editors||0} ред)</div>
+      <div class="retro-bars">${retroBars}</div>
+      <div class="sec-content" style="font-size:0.62rem">
+        ${fs ? `Перший сигнал: <b style="color:${retroColor}">T${fs.t} днів</b> до сьогодні · рівень: ${fs.signal}` : 'Активність в межах норми'}
+        ${retro.summary?.keywords?.length ? ` · ключові слова: <b>${retro.summary.keywords.join(', ')}</b>` : ''}
+      </div>
+    </div>` : ''}
+
+    ${preds.length ? `
+    <div class="section impact">
+      <div class="sec-label">🎯 Prediction Markets (${preds.length} збігів)</div>
+      ${preds.map(p => {
+        const prob = Math.round((p.probability||0)*100);
+        const col = prob>=70?'#64ffda':prob>=40?'#ffc800':'#ff4757';
+        return `<div class="pred-row">
+          <div class="pred-prob" style="color:${col}">${prob}%</div>
+          <div class="pred-title"><a href="${p.url}" target="_blank">${p.title}</a></div>
+          <div class="pred-src">${p.source}</div>
+        </div>`;
+      }).join('')}
+    </div>` : ''}
+
+    ${allNews.length ? `
+    <div class="section">
+      <div class="sec-label">📰 Новини (${allNews.length} джерел)</div>
+      ${allNews.map(n=>`<div style="padding:0.25rem 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+        <a href="${n.url}" target="_blank" class="sec-content" style="font-size:0.68rem;display:block">${n.title}</a>
+        <div style="font-size:0.52rem;color:rgba(255,255,255,0.25);margin-top:2px">${n.source||''}</div>
+      </div>`).join('')}
+    </div>` : ''}
+
+    ${trends.length ? `
+    <div class="section">
+      <div class="sec-label">📈 Google Trends (${[...new Set(trends.map(t=>t.geo))].join(', ')})</div>
+      <div class="sec-content">Тренд в країнах: <b style="color:#4285f4">${[...new Set(trends.map(t=>t.geo))].join(', ')}</b></div>
+    </div>` : ''}
+
+    <!-- Source status -->
+    <div class="section" style="margin-top:1.5rem">
+      <div class="sec-label">Джерела</div>
+      ${[
+        ['Wikipedia', !!w.extract, '📖'],
+        ['Ретро (14 днів)', !!retro?.total, '📊'],
+        ['Predictions', preds.length > 0, '🎯'],
+        ['RSS News', news.length > 0, '📰'],
+        ['DuckDuckGo', ddg.length > 0, '🦆'],
+        ['Google Trends', trends.length > 0, '📈'],
+      ].map(([name, ok, ico]) => `
+        <div class="src-row">
+          <div class="src-dot" style="background:${ok?'#64ffda':'rgba(255,255,255,0.15)'}"></div>
+          <div class="src-name">${ico} ${name}</div>
+          <div class="src-status">${ok?'✓':'—'}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+// ── БУДУЄМО ПРОМПТ ──
+const PROMPTS = {
+  news: (t, w, r, p, n) => `Ти — аналітик розвідки. Тобі надано структурований брифінг по темі "${t}".
+
+## БРИФІНГ
+
+### Wikipedia
+${w.extract || 'немає даних'}
+Мовне охоплення: ${w.langCount || '?'} Wikipedia
+
+### Wikipedia активність (14 днів)
+${r ? `Всього правок: ${r.total}, редакторів: ${r.summary?.editors}
+Перший сигнал до сьогодні: ${r.firstSignal ? 'T' + r.firstSignal.t + ' днів (' + r.firstSignal.signal + ')' : 'немає'}
+${r.summary?.keywords?.length ? 'Ключові слова в коментарях: ' + r.summary.keywords.join(', ') : ''}` : 'немає даних'}
+
+### Prediction Markets
+${p?.length ? p.map(x=>`- ${x.title}: ${Math.round((x.probability||0)*100)}% (${x.source})`).join('\n') : 'збігів не знайдено'}
+
+### Новини
+${n?.length ? n.map(x=>`- ${x.title} (${x.source})`).join('\n') : 'немає новин'}
+
+## ЗАВДАННЯ
+1. Що саме відбувається з "${t}" прямо зараз?
+2. Чому Wikipedia так активно редагується?
+3. Які наслідки цієї події в короткостроковій перспективі (48 годин)?
+4. На які суміжні теми/активи звернути увагу?
+Відповідай конкретно, без загальних фраз. Максимум 300 слів.`,
+
+  market: (t, w, r, p, n) => `Ти — фінансовий аналітик. Тема сигналу: "${t}"
+
+## КОНТЕКСТ
+${w.extract?.slice(0,300) || ''}
+
+Wikipedia burst: ${r?.firstSignal ? 'T' + r.firstSignal.t + ' днів' : 'сьогодні'}, ${r?.total || 0} правок
+
+Prediction markets:
+${p?.length ? p.map(x=>`- ${x.title}: ${Math.round((x.probability||0)*100)}%`).join('\n') : 'немає'}
+
+## ПИТАННЯ
+1. Які фінансові активи (акції, валюти, commodities) пов'язані з "${t}"?
+2. Який вектор руху очікується найближчі 24-72 години?
+3. Де ключові рівні підтримки/опору або event risk?
+4. Яка торгова ідея з цього сигналу?`,
+
+  risk: (t, w, r, p, n) => `Ти — аналітик ризиків. Тема: "${t}"
+
+## ДАНІ
+Wikipedia (${w.langCount || '?'} мов): ${w.extract?.slice(0,250) || ''}
+Активність: ${r?.total || 0} правок, перший сигнал T${r?.firstSignal?.t || 0}
+Prediction markets: ${p?.map(x=>x.title.slice(0,50)+': '+Math.round((x.probability||0)*100)+'%').join(' | ') || 'немає'}
+
+## ЗАВДАННЯ
+Оціни ризики по шкалі HIGH/MED/LOW:
+1. Ризик ескалації події
+2. Фінансовий ризик (ринки, компанії)
+3. Геополітичний ризик
+4. Репутаційний ризик
+Для кожного — 1-2 речення обґрунтування.`,
+
+  predict: (t, w, r, p, n) => `Ти — аналітик-прогнозист. Тема: "${t}"
+
+## ВХІДНІ ДАНІ
+- Wikipedia burst: ${r?.total || 0} правок за 14 днів, перший сигнал T${r?.firstSignal?.t || 0}
+- Мовне охоплення: ${w.langCount || '?'} Вікіпедій
+- Prediction markets: ${p?.map(x=>Math.round((x.probability||0)*100)+'% '+x.title.slice(0,40)).join('; ') || 'немає'}
+- Контекст: ${w.extract?.slice(0,200) || ''}
+
+## ЗАВДАННЯ
+Дай 3 сценарії розвитку подій:
+1. 🟢 Базовий (найімовірніший)
+2. 🟡 Альтернативний
+3. 🔴 Екстремальний
+Для кожного: ймовірність (%), часовий горизонт, ключовий тригер.`,
+
+  deep: (t, w, r, p, n) => `Ти — аналітик розвідки з доступом до Wikipedia сигналів реального часу.
+
+## ПОВНИЙ БРИФІНГ: "${t}"
+
+### 1. ЕНЦИКЛОПЕДИЧНИЙ КОНТЕКСТ
+${w.extract || 'немає'}
+Мовне охоплення: ${w.langCount || '?'} мов Wikipedia
+Категорії: ${w.categories?.join(', ') || 'невідомо'}
+
+### 2. WIKIPEDIA СИГНАЛ
+Активність за 14 днів: ${r?.total || 0} правок · ${r?.summary?.editors || 0} редакторів
+Перший аномальний сигнал: ${r?.firstSignal ? 'T' + r.firstSignal.t + ' днів, рівень ' + r.firstSignal.signal : 'відсутній'}
+${r?.summary?.keywords?.length ? 'Теми з коментарів: ' + r.summary.keywords.join(', ') : ''}
+${r?.topHours?.[0] ? 'Пік активності: ' + r.topHours[0].hour + ' UTC (' + r.topHours[0].editors + ' ред)' : ''}
+
+### 3. PREDICTION MARKETS
+${p?.length ? p.map(x=>`- [${Math.round((x.probability||0)*100)}%] ${x.title} (${x.source})`).join('\n') : 'збігів не знайдено'}
+
+### 4. МЕДІА-ПОКРИТТЯ
+${[...(n||[])].slice(0,5).map(x=>`- ${x.title} (${x.source})`).join('\n') || 'немає'}
+
+---
+Проведи ПОВНИЙ розвідувальний аналіз:
+1. **ЩО** відбувається (факти без спекуляцій)
+2. **ЧОМУ** Wikipedia фіксує це зараз (мотивація редакторів)
+3. **ХТО** зацікавлений у розвитку/стримуванні події
+4. **КОЛИ** очікувати розвитку подій (тайм-лайн)
+5. **КУДИ** дивитися далі (суміжні сигнали, активи, персони)
+6. **ВИСНОВОК** у 2-3 реченнях для прийняття рішення`
+};
+
+function buildPrompt() {
+  const w = collectedData.wiki || {};
+  const r = collectedData.retro;
+  const p = collectedData.predictions || [];
+  const n = [...(collectedData.news||[]), ...(collectedData.ddg||[])].slice(0,5);
+  const fn = PROMPTS[mode] || PROMPTS.news;
+  document.getElementById('promptText').value = fn(TITLE, w, r, p, n);
+}
+
+function copyPrompt() {
+  const txt = document.getElementById('promptText').value;
+  navigator.clipboard.writeText(txt).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = '✓ Скопійовано!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '📋 Копіювати промпт'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// Показуємо заголовок одразу
+if (TITLE) {
+  document.getElementById('briefCol').innerHTML = `
+    <div class="brief-title">${TITLE}</div>
+    <div class="brief-sub"><span>Збираю дані з 6 джерел...</span></div>
+    ${[['📖 Wikipedia',''],['📊 Ретро',''],['🎯 Predictions',''],['📰 RSS News',''],['🦆 DuckDuckGo',''],['📈 Trends','']].map(([n]) =>
+      `<div class="loading-sec"><div class="dot"></div>${n}</div>`
+    ).join('')}
+  `;
+  buildPrompt();
+  collectAll();
+} else {
+  document.getElementById('briefCol').innerHTML = '<div style="padding:2rem;color:#ff4757">Помилка: title не вказано</div>';
+}
+</script>
+</body>
+</html>
