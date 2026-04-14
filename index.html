@@ -646,6 +646,30 @@ const CATEGORIES = {
   NOISE:  { label: '⚪ ШУМ',           cls: 'cat-noise',  priority: 1 },
 };
 
+
+// ── RQ (Resonance Quotient) — накопичувальний індекс ──
+function calcRQ(p) {
+  const current = p.rq || 0;
+  const sc = p.score || 0;
+
+  // Бонуси
+  let bonus = 0;
+  const cat = p.intel?.category;
+  if (cat === 'URGENT') bonus += 40;
+  else if (cat === 'IMPACT') bonus += 25;
+  else if (cat === 'WATCH') bonus += 10;
+
+  if (p.intel?.predMatch) bonus += 20;
+  if (p.intel?.retroSignal !== null && p.intel?.retroSignal <= -3) bonus += 15;
+  else if (p.intel?.retroSignal <= -1) bonus += 8;
+  if ((p.langCount||0) >= 20) bonus += 10;
+  if (p.type === 'res') bonus += 15;
+
+  const newRQ = sc + bonus;
+  // RQ тільки росте
+  return Math.max(current, newRQ);
+}
+
 function calcCategory(p) {
   const kw = p.commentKeywords || [];
   const ed = p.editors || 0;
@@ -727,6 +751,9 @@ async function runBackgroundIntel(key) {
 
   try { await Promise.all([retroP, predP]); } catch(e) {}
   p.intel.done = true;
+  // Оновлюємо RQ після intel
+  const newRQ = calcRQ(p);
+  p.rq = Math.max(p.rq||0, newRQ);
   intelQueue.delete(key);
   renderSignal();
 }
@@ -756,6 +783,16 @@ function renderSignal(){
     m.editors=m.allEditors;m.edits=m.allEdits;
     m.langCount=m.wikis?m.wikis.size:m.langCount;
     m.score=decayScore(calcScore(m), m.firstSeen, m.commentKeywords||[]);
+    // RQ оновлюємо тільки якщо новий більший
+    const newRQ = calcRQ(m);
+    // Зберігаємо в оригінальний pinned
+    const origKey = m.key || (m.wiki+':'+m.title);
+    if (pinned[origKey]) {
+      pinned[origKey].rq = Math.max(pinned[origKey].rq||0, newRQ);
+      m.rq = pinned[origKey].rq;
+    } else {
+      m.rq = Math.max(m.rq||0, newRQ);
+    }
   });
 
   const sorted=Object.values(byTitle).sort((a,b)=>b.score-a.score);
@@ -787,7 +824,10 @@ function renderSignal(){
         (cat ? '<div style="margin-bottom:0.25rem"><span class="cat-badge '+cat.cls+'">'+cat.label+'</span></div>' : '')
         +'<div class="hero-top">'
           +'<div class="hero-kw">'+isNew+kwsHtml+trendHtml+'</div>'
-          +'<div class="hero-score-wrap"><div class="hero-score" style="color:'+col+'">'+p.score+'<div class="hero-score-label">score</div></div></div>'
+          +'<div class="hero-score-wrap">'
+          +'<div class="hero-score" style="color:'+col+'">'+p.score+'<div class="hero-score-label">score</div></div>'
+          +(p.rq && p.rq > p.score ? '<div style="text-align:center;margin-left:0.5rem"><div style="font-family:Bebas Neue,sans-serif;font-size:1rem;color:#ffc800">'+p.rq+'</div><div style="font-size:0.44rem;color:rgba(255,200,0,0.5);letter-spacing:0.05em">RQ</div></div>' : '')
+          +'</div>'
         +'</div>'
         +'<div class="hero-title"><a href="'+p.url+'" target="_blank">'+p.title+'</a></div>'
         +'<div class="hero-prog"><div class="hero-prog-f" style="width:'+Math.min(p.score,100)+'%;background:'+col+'"></div></div>'
@@ -830,9 +870,11 @@ function renderSignal(){
           +'<div class="mc-kws">'+isNew+kwsHtml+'</div>'
           +'<button class="sc-ai" data-t="'+p.title.replace(/"/g,'')+'" style="margin-left:auto">✦</button>'
           +'<button class="sc-sp" data-t="'+p.title.replace(/"/g,'')+'">🕸</button>'
+          +'<button class="sc-brief" data-t="'+p.title.replace(/"/g,'')+'" data-l="'+(p.lang||'en')+'" data-s="'+p.score+'">📋</button>'
         +'</div>';
       d.querySelector('.sc-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
       d.querySelector('.sc-sp').addEventListener('click',function(e){e.stopPropagation();openSpider(this.dataset.t);});
+      d.querySelector('.sc-brief').addEventListener('click',function(e){e.stopPropagation();openBrief(this.dataset.t,this.dataset.l,this.dataset.s);});
       sec.appendChild(d);
     } else {
       // SMALL рядок
@@ -845,7 +887,7 @@ function renderSignal(){
         +(p.isMinor?'<div class="sc-dot" style="background:rgba(255,255,255,0.15)"></div>':'<div class="sc-dot" style="background:'+dotCol+'"></div>')
         +'<div class="sc-meta">'+( p.isMinor?'<span style="color:rgba(255,255,255,0.25)">minor</span> ':'')
         +'👥'+p.editors+' '+new Date(p.lastSeen).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'})+'</div>'
-        +'<div class="sc-score" style="color:'+col+'">'+p.score+'</div>'
+        +'<div class="sc-score" style="color:'+col+'">'+p.score+(p.rq&&p.rq>p.score?'<span style="font-size:0.5rem;color:#ffc800;margin-left:3px">'+p.rq+'★</span>':'')+'</div>'
         +'<button class="sc-ai" data-t="'+p.title.replace(/"/g,'')+'">✦</button>'
         +'<button class="sc-sp" data-t="'+p.title.replace(/"/g,'')+'">🕸</button>';
       d.querySelector('.sc-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
