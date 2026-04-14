@@ -1848,11 +1848,16 @@ function buildGraphData() {
   // Nodes з pinned
   const nodes = [];
   const nodeMap = {};
-  Object.values(pinned).forEach(p => {
-    if (Date.now() - p.lastSeen > 3600000) return;
+  const sorted = Object.values(pinned)
+    .filter(p => Date.now() - p.lastSeen < 3600000)
+    .filter(p => (p.score||0) >= 35 || calcConvergence(p).actionable)
+    .sort((a,b) => (b.score||0)-(a.score||0))
+    .slice(0, 20);
+  sorted.forEach(p => {
+    if (false) return; // placeholder
     const cat = calcCategory(p);
     const col = cat==='URGENT'?'#ff4757':cat==='IMPACT'?'#ffc800':cat==='WATCH'?'#64ffda':'rgba(255,255,255,0.2)';
-    const r = Math.max(6, Math.min(22, (p.score||0) / 10));
+    const r = Math.max(10, Math.min(20, 8 + (p.score||0) / 15));
     const cv = calcConvergence(p);
     nodes.push({ id: p.title, label: p.title.slice(0,18), col, r, score: p.score||0, p, actionable: cv.actionable });
     nodeMap[p.title.toLowerCase()] = p.title;
@@ -1949,25 +1954,25 @@ function renderGraph() {
   node.append('text')
     .attr('dy', d => d.r + 10)
     .attr('text-anchor', 'middle')
-    .style('font-size', '8px')
-    .style('fill', 'rgba(255,255,255,0.6)')
+    .style('font-size', '11px')
+    .style('fill', 'rgba(255,255,255,0.75)')
     .text(d => d.label);
 
   // Score в центрі вузла
   node.append('text')
     .attr('text-anchor', 'middle')
     .attr('dy', '0.35em')
-    .style('font-size', d => Math.max(7, Math.min(11, d.r * 0.7)) + 'px')
+    .style('font-size', d => Math.max(9, Math.min(13, d.r * 0.9)) + 'px')
     .style('fill', d => d.col)
     .style('font-family', 'Bebas Neue,sans-serif')
     .text(d => d.score > 0 ? d.score : '');
 
   // Simulation
   graphSim = d3.forceSimulation(nodes)
-    .force('link', d3.forceLink(links).id(d => d.id).distance(80).strength(0.5))
-    .force('charge', d3.forceManyBody().strength(-120))
+    .force('link', d3.forceLink(links).id(d => d.id).distance(45).strength(0.8))
+    .force('charge', d3.forceManyBody().strength(-60))
     .force('center', d3.forceCenter(W/2, H/2))
-    .force('collision', d3.forceCollide(d => d.r + 12))
+    .force('collision', d3.forceCollide(d => d.r + 6))
     .on('tick', () => {
       link.attr('x1', d => d.source.x).attr('y1', d => d.source.y)
           .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
