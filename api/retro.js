@@ -46,11 +46,11 @@ module.exports = async function handler(req, res) {
       const dt = new Date(rev.timestamp);
       const day  = dt.toISOString().slice(0, 10);
       const hour = dt.toISOString().slice(0, 13);
-      if (!byDay[day])  byDay[day]  = { edits: 0, editors: new Set(), comments: [] };
+      if (!byDay[day])  byDay[day]  = { edits: 0, editors: new Set(), comments: [], userList: [] };
       if (!byHour[hour]) byHour[hour] = { edits: 0, editors: new Set() };
       byDay[day].edits++;
       byHour[hour].edits++;
-      if (rev.user) { byDay[day].editors.add(rev.user); byHour[hour].editors.add(rev.user); }
+      if (rev.user) { byDay[day].editors.add(rev.user); byDay[day].userList.push(rev.user); byHour[hour].editors.add(rev.user); }
       if (rev.comment) byDay[day].comments.push(rev.comment.slice(0, 60));
     }
 
@@ -59,7 +59,18 @@ module.exports = async function handler(req, res) {
       const diffDays = Math.round((new Date(day) - eventDt) / 86400000);
       const editors = d.editors.size;
       const signal = editors >= 10 ? 'STRONG' : editors >= 5 ? 'MED' : editors >= 3 ? 'LOW' : 'none';
-      return { day, t: diffDays, edits: d.edits, editors, signal, comments: [...new Set(d.comments)].slice(0,3) };
+      // Унікальні редактори з кількістю правок
+      const userCounts = {};
+      d.userList.forEach(u => { userCounts[u] = (userCounts[u]||0)+1; });
+      const users = Object.entries(userCounts)
+        .sort((a,b)=>b[1]-a[1])
+        .slice(0,8)
+        .map(([user,count]) => ({ user, count, isIP: /^\d+\.\d+/.test(user) || user.startsWith('~') }));
+      // Рідкісні редактори — ті хто редагував тільки 1-2 рази за весь period
+      const rareUsers = users.filter(u => u.count <= 2 && !u.isIP);
+      return { day, t: diffDays, edits: d.edits, editors, signal, 
+               comments: [...new Set(d.comments)].slice(0,3),
+               users, rareUsers };
     });
 
     // Перший сигнал до події
@@ -75,11 +86,27 @@ module.exports = async function handler(req, res) {
       .sort((a,b) => b.editors - a.editors)
       .slice(0, 5);
 
+    // Агрегуємо редакторів по всьому периоду для Oracle detection
+    const allUserCounts = {};
+    revisions.forEach(rev => {
+      if (rev.user) allUserCounts[rev.user] = (allUserCounts[rev.user]||0)+1;
+    });
+    const allUsers = Object.entries(allUserCounts)
+      .sort((a,b)=>b[1]-a[1])
+      .map(([user,count]) => ({ 
+        user, count, 
+        isIP: /^\d+\.\d+/.test(user) || user.startsWith('~'),
+        isBot: /bot$/i.test(user),
+        isRare: count <= 2 && !/^\d+\.\d+/.test(user) && !user.startsWith('~') && !/bot$/i.test(user)
+      }));
+    const rareEditors = allUsers.filter(u => u.isRare);
+    const botEditors = allUsers.filter(u => u.isBot);
+
     res.status(200).json({
       found: true, title, lang, eventDate,
       total: revisions.length,
       firstSignal: firstSignal ? { day: firstSignal.day, t: firstSignal.t, editors: firstSignal.editors, signal: firstSignal.signal } : null,
-      timeline, topHours
+      timeline, topHours, allUsers: allUsers.slice(0,20), rareEditors, botEditors
     });
 
   } catch(e) {
