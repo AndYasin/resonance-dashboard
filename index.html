@@ -243,6 +243,28 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 
 
 
+
+/* TRADE JOURNAL */
+.tj-item{padding:0.35rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer;transition:background 0.1s}
+.tj-item:hover{background:rgba(255,255,255,0.02)}
+.tj-top{display:flex;align-items:center;gap:0.4rem;margin-bottom:0.1rem}
+.tj-title{font-size:0.75rem;color:rgba(255,255,255,0.88);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tj-dir{font-size:0.6rem;padding:1px 5px;border-radius:2px;flex-shrink:0;font-weight:600}
+.tj-long{background:rgba(100,255,218,0.1);color:#64ffda;border:1px solid rgba(100,255,218,0.2)}
+.tj-short{background:rgba(255,71,87,0.1);color:#ff4757;border:1px solid rgba(255,71,87,0.2)}
+.tj-straddle{background:rgba(255,200,0,0.1);color:#ffc800;border:1px solid rgba(255,200,0,0.2)}
+.tj-result{font-family:'Bebas Neue',sans-serif;font-size:1rem;flex-shrink:0}
+.tj-meta{font-size:0.55rem;color:rgba(255,255,255,0.35);display:flex;gap:0.4rem}
+.tj-add{width:100%;padding:6px;border-radius:2px;font-size:0.62rem;cursor:pointer;border:1px solid rgba(100,255,218,0.3);background:rgba(100,255,218,0.05);color:#64ffda;font-family:'IBM Plex Mono',monospace;transition:all 0.15s;margin-top:0.3rem}
+.tj-add:hover{background:rgba(100,255,218,0.12)}
+.tj-form{padding:0.5rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.05);display:none}
+.tj-form.open{display:block}
+.tj-row{display:flex;gap:0.3rem;margin-bottom:0.3rem;flex-wrap:wrap}
+.tj-input{flex:1;min-width:80px;padding:3px 6px;border-radius:2px;font-size:0.6rem;background:#0d0d1a;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);font-family:'IBM Plex Mono',monospace;outline:none}
+.tj-input:focus{border-color:rgba(100,255,218,0.3)}
+.tj-select{flex:1;min-width:70px;padding:3px 6px;border-radius:2px;font-size:0.6rem;background:#0d0d1a;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);font-family:'IBM Plex Mono',monospace;outline:none}
+.tj-save{padding:4px 10px;border-radius:2px;font-size:0.6rem;cursor:pointer;border:none;background:#64ffda;color:#07070f;font-family:'IBM Plex Mono',monospace;font-weight:600}
+
 /* DAILY DIGEST */
 .daily-card{padding:0.4rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer;transition:background 0.1s}
 .daily-card:hover{background:rgba(255,255,255,0.02)}
@@ -280,7 +302,7 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 .slides-inner{display:flex;width:200%;height:100%;transition:transform 0.3s cubic-bezier(.4,0,.2,1)}
 .slide{width:50%;height:100%;display:grid;gap:1px;background:rgba(255,255,255,0.05);overflow:hidden;min-height:0}
 .slide-1-grid{grid-template-columns:1.4fr 1fr 0.9fr}
-.slide-2-grid{grid-template-columns:1fr 1fr 0.9fr 0.9fr 0.9fr}
+.slide-2-grid{grid-template-columns:1fr 1fr 0.8fr 0.8fr 0.8fr 0.9fr}
 .macro-bar{display:flex;align-items:center;gap:1.2rem;padding:0 0.7rem;height:24px;border-top:1px solid rgba(255,255,255,0.05);flex-shrink:0;font-size:0.58rem;background:#09091a;overflow:hidden}
 .macro-item{display:flex;align-items:center;gap:0.3rem;flex-shrink:0}
 .macro-val{font-family:'Bebas Neue',sans-serif;font-size:0.9rem}
@@ -516,6 +538,39 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
         <div class="sec" style="flex:1;display:flex;flex-direction:column;min-height:0">
           <div class="ph"><span>⚡ cross signals</span><span class="ac" id="xsCnt">0</span></div>
           <div class="pb" id="feedXs" style="flex:1"><div class="hint">...</div></div>
+        </div>
+      </div>
+
+      <!-- COL 5: TRADE JOURNAL -->
+      <div class="col">
+        <div class="ph"><span>📒 trade journal</span><span class="ac" id="tjCnt">0</span></div>
+        <div class="pb" style="flex:1;overflow-y:auto">
+          <!-- ADD FORM -->
+          <div class="tj-form" id="tjForm">
+            <div class="tj-row">
+              <input class="tj-input" id="tjTitle" placeholder="назва сигналу" style="flex:2">
+              <select class="tj-select" id="tjDir">
+                <option value="LONG">LONG</option>
+                <option value="SHORT">SHORT</option>
+                <option value="STRADDLE">STRADDLE</option>
+                <option value="WATCH">WATCH</option>
+              </select>
+            </div>
+            <div class="tj-row">
+              <input class="tj-input" id="tjAsset" placeholder="актив (BTC, AAPL...)">
+              <input class="tj-input" id="tjEntry" placeholder="ціна входу" type="number">
+              <input class="tj-input" id="tjPattern" placeholder="паттерн (BRANCH...)">
+            </div>
+            <div class="tj-row">
+              <input class="tj-input" id="tjNotes" placeholder="нотатки" style="flex:3">
+              <button class="tj-save" onclick="saveJournalEntry()">+ Зберегти</button>
+            </div>
+          </div>
+          <!-- LIST -->
+          <div id="feedJournal"></div>
+          <div style="padding:0.4rem 0.7rem">
+            <button class="tj-add" onclick="toggleJournalForm()">+ Новий запис</button>
+          </div>
         </div>
       </div>
 
@@ -1845,7 +1900,7 @@ function goSlide(n) {
   document.getElementById('sBtn0').classList.toggle('on', n === 0);
   document.getElementById('sBtn1').classList.toggle('on', n === 1);
   // Завантажуємо context при першому переході
-  if (n === 1) { loadHof(); loadTrendWiki(); loadGoogleTrends(); loadDaily(); }
+  if (n === 1) { loadHof(); loadTrendWiki(); loadGoogleTrends(); loadDaily(); loadJournal(); }
 }
 
 // Свайп підтримка
@@ -2107,6 +2162,117 @@ async function buildDaily() {
 }
 
 setInterval(loadDaily, 3600000); // оновлюємо кожну годину
+
+
+// ── TRADE JOURNAL ──
+async function loadJournal() {
+  try {
+    const r = await fetch(SB_URL+'/rest/v1/trade_journal?order=created_at.desc&limit=20',
+      {headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+    const rows = await r.json();
+    if (!Array.isArray(rows)) return;
+    document.getElementById('tjCnt').textContent = rows.filter(r=>r.status==='open').length + ' відкр';
+    const el = document.getElementById('feedJournal');
+    if (!rows.length) { el.innerHTML = '<div class="hint">Немає записів</div>'; return; }
+    el.innerHTML = '';
+
+    // Статистика
+    const closed = rows.filter(r=>r.status==='closed'&&r.result_pct!==null);
+    if (closed.length) {
+      const wins = closed.filter(r=>r.result_pct>0).length;
+      const avgR = closed.reduce((s,r)=>s+(r.result_pct||0),0)/closed.length;
+      const statDiv = document.createElement('div');
+      statDiv.style.cssText='padding:0.3rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;gap:0.8rem;font-size:0.58rem';
+      statDiv.innerHTML='<span style="color:#64ffda">W:'+wins+'/'+closed.length+'</span>'
+        +'<span style="color:'+(avgR>0?'#64ffda':'#ff4757')+'">avg: '+(avgR>0?'+':'')+avgR.toFixed(1)+'%</span>';
+      el.appendChild(statDiv);
+    }
+
+    rows.forEach(row => {
+      const isOpen = row.status === 'open';
+      const result = row.result_pct;
+      const resultCol = result === null ? 'rgba(255,255,255,0.3)' : result > 0 ? '#64ffda' : '#ff4757';
+      const dirCls = row.direction==='LONG'?'tj-long':row.direction==='SHORT'?'tj-short':'tj-straddle';
+      const d = document.createElement('div');
+      d.className = 'tj-item';
+      d.innerHTML =
+        '<div class="tj-top">'
+          +'<div class="tj-title">'+(row.asset?'<b style="color:#64ffda">'+row.asset+'</b> ':'')+row.signal_title+'</div>'
+          +'<span class="tj-dir '+dirCls+'">'+row.direction+'</span>'
+          +(result!==null?'<div class="tj-result" style="color:'+resultCol+'">'+(result>0?'+':'')+result+'%</div>':'<div class="tj-result" style="color:rgba(255,255,255,0.2)">—</div>')
+        +'</div>'
+        +'<div class="tj-meta">'
+          +(row.pattern?'<span>'+row.pattern+'</span>':'')
+          +'<span>'+new Date(row.created_at).toLocaleDateString('uk-UA')+'</span>'
+          +(isOpen?'<span style="color:#ffc800">● відкрита</span>':'<span style="color:rgba(255,255,255,0.2)">закрита</span>')
+          +(row.notes?'<span style="color:rgba(255,255,255,0.3)">'+row.notes.slice(0,30)+'</span>':'')
+        +'</div>';
+      // Клік — закрити позицію
+      if (isOpen) {
+        d.addEventListener('click', () => closeJournalEntry(row.id));
+        d.title = 'Клік щоб закрити позицію';
+      }
+      el.appendChild(d);
+    });
+  } catch(e) { console.log('Journal error:', e.message); }
+}
+
+function toggleJournalForm() {
+  const f = document.getElementById('tjForm');
+  f.classList.toggle('open');
+}
+
+async function saveJournalEntry() {
+  const title = document.getElementById('tjTitle').value.trim();
+  if (!title) return;
+  const entry = {
+    signal_title: title,
+    direction: document.getElementById('tjDir').value,
+    asset: document.getElementById('tjAsset').value.trim() || null,
+    entry_price: parseFloat(document.getElementById('tjEntry').value) || null,
+    pattern: document.getElementById('tjPattern').value.trim() || null,
+    notes: document.getElementById('tjNotes').value.trim() || null,
+    entry_date: new Date().toISOString().slice(0,10),
+    status: 'open'
+  };
+  try {
+    await fetch(SB_URL+'/rest/v1/trade_journal',{
+      method:'POST',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+      body: JSON.stringify(entry)
+    });
+    document.getElementById('tjTitle').value='';
+    document.getElementById('tjAsset').value='';
+    document.getElementById('tjEntry').value='';
+    document.getElementById('tjPattern').value='';
+    document.getElementById('tjNotes').value='';
+    document.getElementById('tjForm').classList.remove('open');
+    loadJournal();
+  } catch(e) {}
+}
+
+async function closeJournalEntry(id) {
+  const exitPrice = prompt('Ціна виходу:');
+  if (!exitPrice) return;
+  const exit = parseFloat(exitPrice);
+  // Беремо entry_price для розрахунку result
+  const r = await fetch(SB_URL+'/rest/v1/trade_journal?id=eq.'+id,
+    {headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+  const rows = await r.json();
+  const row = rows[0];
+  let result_pct = null;
+  if (row?.entry_price && exit) {
+    result_pct = +((exit - row.entry_price) / row.entry_price * 100 * (row.direction==='SHORT'?-1:1)).toFixed(2);
+  }
+  await fetch(SB_URL+'/rest/v1/trade_journal?id=eq.'+id,{
+    method:'PATCH',
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    body: JSON.stringify({status:'closed',exit_price:exit,exit_date:new Date().toISOString().slice(0,10),result_pct})
+  });
+  loadJournal();
+}
+
+setInterval(loadJournal, 300000);
 
 // ── CONNECT ──
 function connect(){
