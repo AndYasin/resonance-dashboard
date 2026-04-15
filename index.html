@@ -2208,6 +2208,17 @@ async function loadJournal() {
           +(row.notes?'<span style="color:rgba(255,255,255,0.3)">'+row.notes.slice(0,30)+'</span>':'')
         +'</div>';
       // Клік — закрити позицію
+      // Кнопка Brief
+      const briefBtn = document.createElement('button');
+      briefBtn.textContent = '📋';
+      briefBtn.style.cssText = 'padding:1px 5px;border-radius:2px;font-size:0.52rem;cursor:pointer;border:1px solid rgba(255,200,0,0.3);background:rgba(255,200,0,0.06);color:#ffc800;font-family:IBM Plex Mono,monospace;position:absolute;top:0.35rem;right:0.4rem';
+      briefBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openBrief(row.signal_title, 'en', 0, '');
+      });
+      d.style.position = 'relative';
+      d.appendChild(briefBtn);
+
       if (isOpen) {
         d.addEventListener('click', () => closeJournalEntry(row.id));
         d.title = 'Клік щоб закрити позицію';
