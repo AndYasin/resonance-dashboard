@@ -371,6 +371,20 @@ function renderBrief() {
 
     ${collectedData.groq ? renderGroqSignal(collectedData.groq) : ''}
 
+    ${collectedData.groq?.detail ? (() => {
+      const parts = (collectedData.groq.detail||'').split(' · ');
+      const assetsPart = parts.find(p => p.startsWith('assets:'));
+      const assets = assetsPart ? assetsPart.replace('assets:','').split(',').filter(Boolean) : [];
+      if (!assets.length) return '';
+      return `<div class="section impact">
+        <div class="sec-label">💹 Mapped Assets</div>
+        <div style="display:flex;gap:0.4rem;flex-wrap:wrap">${assets.map(a =>
+          `<a href="https://finance.yahoo.com/quote/${encodeURIComponent(a)}" target="_blank"
+            style="padding:3px 10px;border-radius:2px;font-size:0.65rem;background:rgba(100,255,218,0.08);color:#64ffda;border:1px solid rgba(100,255,218,0.2);text-decoration:none;font-weight:600">${a}</a>`
+        ).join('')}</div>
+      </div>`;
+    })() : ''}
+
     ${trends.length ? `
     <div class="section">
       <div class="sec-label">📈 Google Trends (${[...new Set(trends.map(t=>t.geo))].join(', ')})</div>
