@@ -2,552 +2,2334 @@
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
-<title>RESONANCE // BRIEF</title>
+<meta http-equiv="Cache-Control" content="no-cache">
+<title>RESONANCE</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;600&family=Bebas+Neue&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;min-height:100vh}
-.hdr{display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;height:36px;border-bottom:1px solid rgba(255,255,255,0.07);background:#07070f;position:sticky;top:0;z-index:100}
-.logo{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:0.1em;color:#fff}
+html{font-size:16px}
+body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+
+/* HEADER */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:0 1rem;height:36px;border-bottom:1px solid rgba(255,255,255,0.07);background:#07070f;flex-shrink:0}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:0.1em;color:#fff}
 .logo em{color:#64ffda;font-style:normal}
-.status{font-size:0.6rem;color:rgba(255,255,255,0.3);display:flex;align-items:center;gap:0.5rem}
-.dot{width:5px;height:5px;border-radius:50%;background:#ffc800;animation:blink 1s infinite}
-.dot.done{background:#64ffda;animation:none}
-.dot.err{background:#ff4757;animation:none}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+.logo small{font-size:0.5rem;opacity:0.25;font-family:'IBM Plex Mono',monospace;margin-left:0.5rem}
+.hstats{display:flex;align-items:center;gap:1.2rem}
+.hs .v{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:#fff;line-height:1}
+.hs .l{font-size:0.52rem;letter-spacing:0.07em;text-transform:uppercase;color:rgba(255,255,255,0.3)}
+.ldot{width:6px;height:6px;border-radius:50%;background:#64ffda;animation:blink 2s infinite}
+.ldot.off{background:#ff4757;animation:none}
+.ldot.wait{background:#ffc800;animation:none}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.15}}
+.lbl{display:flex;align-items:center;gap:0.3rem;font-size:0.6rem}
+.stimer{font-size:0.52rem;color:rgba(255,255,255,0.2)}
 
-.main{display:grid;grid-template-columns:1fr 380px;gap:0;min-height:calc(100vh - 36px)}
+/* FILTER BAR */
+.fbar{display:flex;align-items:center;gap:0.3rem;padding:0 1rem;height:24px;border-bottom:1px solid rgba(255,255,255,0.05);background:#07070f;flex-shrink:0}
+.fbl{font-size:0.52rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-right:0.2rem}
+.fb{padding:0 7px;height:16px;border-radius:2px;font-size:0.56rem;cursor:pointer;border:1px solid rgba(255,255,255,0.08);background:transparent;color:rgba(255,255,255,0.4);font-family:'IBM Plex Mono',monospace;transition:all 0.15s}
+.fb:hover{color:rgba(255,255,255,0.7)}
+.fb.on{border-color:#64ffda;color:#64ffda;background:rgba(100,255,218,0.07)}
+.fsep{width:1px;height:14px;background:rgba(255,255,255,0.07);margin:0 0.15rem}
 
-/* LEFT — брифінг */
-.brief-col{padding:1.5rem;border-right:1px solid rgba(255,255,255,0.06);overflow-y:auto}
-.brief-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:#fff;letter-spacing:0.05em;margin-bottom:0.3rem}
-.brief-sub{font-size:0.62rem;color:rgba(255,255,255,0.3);margin-bottom:1.5rem;display:flex;gap:1rem;flex-wrap:wrap}
-.brief-sub span{display:flex;align-items:center;gap:0.25rem}
+/* GRID */
+.body{display:grid;grid-template-columns:1.4fr 1fr 0.9fr 0.9fr;gap:1px;background:rgba(255,255,255,0.05);flex:1;overflow:hidden;min-height:0}
+.col{background:#07070f;display:flex;flex-direction:column;overflow:hidden;min-height:0}
+.ph{display:flex;justify-content:space-between;align-items:center;padding:0 0.7rem;height:26px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;font-size:0.58rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.6);background:#09091a}
+.ph .ac{color:#64ffda}.ph .rd{color:#ff4757}.ph .gd{color:#ffc800}.ph .pk{color:#f72585}.ph .pu{color:#7209b7}
+.pb{flex:1;overflow-y:auto;overflow-x:hidden;min-height:0}
+.pb::-webkit-scrollbar{width:2px}
+.pb::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1)}
+.sec{border-top:1px solid rgba(255,255,255,0.05);flex-shrink:0}
+.hint{padding:0.8rem 0.7rem;font-size:0.62rem;color:rgba(255,255,255,0.25);line-height:1.6}
 
-.section{margin-bottom:1.2rem;border-left:2px solid rgba(255,255,255,0.08);padding-left:0.8rem}
-.section.urgent{border-color:#ff4757}
-.section.impact{border-color:#ffc800}
-.section.watch{border-color:#64ffda}
-.sec-label{font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:0.4rem}
-.sec-content{font-size:0.72rem;line-height:1.7;color:rgba(255,255,255,0.8)}
-.sec-content a{color:#64ffda;text-decoration:none}
-.sec-content a:hover{text-decoration:underline}
+/* ═══════════════════════════════════
+   КОЛОНКА 1 — ЖИВИЙ СИГНАЛ
+   Газетна верстка: топ картка велика,
+   наступні менші
+═══════════════════════════════════ */
 
-/* Tags */
-.tags{display:flex;flex-wrap:wrap;gap:0.25rem;margin-bottom:0.5rem}
-.tag{padding:2px 8px;border-radius:2px;font-size:0.55rem}
-.tag-crisis{background:rgba(255,71,87,0.15);color:#ff4757;border:1px solid rgba(255,71,87,0.3)}
-.tag-milestone{background:rgba(255,200,0,0.12);color:#ffc800;border:1px solid rgba(255,200,0,0.3)}
-.tag-corporate{background:rgba(72,202,228,0.1);color:#48cae4;border:1px solid rgba(72,202,228,0.25)}
-.tag-geo{background:rgba(247,37,133,0.1);color:#f72585;border:1px solid rgba(247,37,133,0.25)}
-.tag-crypto{background:rgba(6,214,160,0.1);color:#06d6a0;border:1px solid rgba(6,214,160,0.25)}
-.tag-default{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.1)}
+/* HERO картка — топ 1 */
+.hero{margin:0.5rem 0.5rem;padding:0.7rem 0.8rem;border-radius:3px;animation:cin 0.4s ease}
+.hero.type-death{border:2px solid #ff4757;background:rgba(255,71,87,0.08)}
+.hero.type-res{border:2px solid #f72585;background:rgba(247,37,133,0.07)}
+.hero.type-new{border:2px solid #7209b7;background:rgba(114,9,183,0.08)}
+.hero.type-geo{border:2px solid #f72585;background:rgba(247,37,133,0.06)}
+.hero.type-default{border:1px solid rgba(255,200,0,0.3);background:rgba(255,200,0,0.04)}
 
-/* Retro chart */
-.retro-bars{display:flex;align-items:flex-end;gap:2px;height:40px;margin:0.4rem 0}
-.r-bar{flex:1;min-width:3px;border-radius:1px 1px 0 0}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.3rem}
+.hero-kw{display:flex;gap:0.2rem;flex-wrap:wrap}
+.kw{padding:2px 7px;border-radius:2px;font-size:0.6rem;font-weight:700;letter-spacing:0.05em}
+.kw-death{background:rgba(255,71,87,0.2);color:#ff4757;border:1px solid rgba(255,71,87,0.4)}
+.kw-disaster{background:rgba(255,71,87,0.15);color:#ff6b6b;border:1px solid rgba(255,71,87,0.3)}
+.kw-scandal{background:rgba(255,165,0,0.15);color:#ffa500;border:1px solid rgba(255,165,0,0.3)}
+.kw-bankrupt{background:rgba(255,165,0,0.12);color:#ffb347;border:1px solid rgba(255,165,0,0.25)}
+.kw-appointed{background:rgba(100,255,218,0.1);color:#64ffda;border:1px solid rgba(100,255,218,0.25)}
+.kw-new{background:rgba(114,9,183,0.15);color:#b388ff;border:1px solid rgba(114,9,183,0.3)}
+.kw-war{background:rgba(255,71,87,0.1);color:#ff8888;border:1px solid rgba(255,71,87,0.2)}
+.kw-trend{background:rgba(66,133,244,0.1);color:#4285f4;border:1px solid rgba(66,133,244,0.2)}
 
-/* Prediction item */
-.pred-row{display:flex;align-items:center;gap:0.5rem;padding:0.3rem 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.65rem}
-.pred-prob{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;flex-shrink:0;width:42px}
-.pred-title{flex:1;color:rgba(255,255,255,0.75)}
-.pred-src{font-size:0.5rem;color:rgba(255,255,255,0.25);flex-shrink:0}
+.hero-score-wrap{text-align:right;flex-shrink:0}
+.hero-score{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;line-height:1}
+.hero-score-label{font-size:0.5rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.3)}
 
-/* Source status */
-.src-row{display:flex;align-items:center;gap:0.4rem;padding:0.2rem 0;font-size:0.6rem}
-.src-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
-.src-name{width:100px;flex-shrink:0;color:rgba(255,255,255,0.4)}
-.src-status{flex:1;color:rgba(255,255,255,0.6)}
-.src-time{font-size:0.5rem;color:rgba(255,255,255,0.2);flex-shrink:0}
+.hero-title{font-size:1.1rem;color:#fff;font-weight:600;line-height:1.25;margin-bottom:0.2rem}
+.hero-title a{color:inherit;text-decoration:none}
+.hero-title a:hover{color:#64ffda}
 
-/* RIGHT — промпт */
-.prompt-col{display:flex;flex-direction:column;background:#09091a}
-.prompt-hdr{padding:0.8rem 1rem;border-bottom:1px solid rgba(255,255,255,0.07);flex-shrink:0}
-.prompt-hdr-title{font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:0.4rem}
-.mode-btns{display:flex;gap:0.3rem;flex-wrap:wrap}
-.mode-btn{padding:3px 10px;border-radius:2px;font-size:0.58rem;cursor:pointer;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.35);font-family:'IBM Plex Mono',monospace;transition:all 0.15s}
-.mode-btn:hover{color:rgba(255,255,255,0.7)}
-.mode-btn.on{border-color:#64ffda;color:#64ffda;background:rgba(100,255,218,0.07)}
+.hero-prog{height:3px;background:rgba(255,255,255,0.07);border-radius:2px;overflow:hidden;margin-bottom:0.3rem}
+.hero-prog-f{height:100%;border-radius:2px;transition:width 0.6s}
 
-.prompt-box{flex:1;display:flex;flex-direction:column;padding:0.8rem 1rem;min-height:0}
-.prompt-label{font-size:0.52rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.2);margin-bottom:0.4rem}
-textarea#promptText{flex:1;background:#0d0d1a;border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.85);font-family:'IBM Plex Mono',monospace;font-size:0.65rem;line-height:1.6;padding:0.7rem;border-radius:3px;resize:none;outline:none;min-height:300px}
-textarea#promptText:focus{border-color:rgba(100,255,218,0.25)}
+.hero-stats{display:flex;gap:0.8rem;margin-bottom:0.25rem;align-items:flex-end}
+.hstat .v{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;line-height:1}
+.hstat .l{font-size:0.48rem;letter-spacing:0.06em;text-transform:uppercase;color:rgba(255,255,255,0.35)}
 
-.copy-btn{margin-top:0.6rem;padding:8px;border-radius:3px;font-size:0.7rem;cursor:pointer;border:none;background:#64ffda;color:#07070f;font-family:'IBM Plex Mono',monospace;font-weight:600;width:100%;transition:all 0.15s;flex-shrink:0}
-.copy-btn:hover{background:#4adfc4}
-.copy-btn.copied{background:#ffc800;color:#07070f}
+.hero-delta{font-size:0.65rem;margin-bottom:0.2rem}
+.hero-desc{font-size:0.65rem;color:rgba(255,255,255,0.45);line-height:1.5;font-style:italic;border-left:2px solid rgba(255,255,255,0.1);padding-left:0.5rem;margin-bottom:0.25rem}
+.hero-acts{display:flex;gap:0.3rem;align-items:center}
+.btn-g{padding:2px 8px;border-radius:2px;font-size:0.55rem;cursor:pointer;border:1px solid rgba(255,255,255,0.15);background:transparent;color:rgba(255,255,255,0.5);font-family:'IBM Plex Mono',monospace;text-decoration:none;display:inline-block;transition:all 0.15s}
+.btn-g:hover{color:#fff;border-color:rgba(255,255,255,0.4)}
+.btn-ai{padding:2px 8px;border-radius:2px;font-size:0.55rem;cursor:pointer;border:1px solid rgba(100,255,218,0.4);background:rgba(100,255,218,0.08);color:#64ffda;font-family:'IBM Plex Mono',monospace;transition:all 0.15s;font-weight:600}
+.btn-ai:hover{background:rgba(100,255,218,0.18)}
+.btn-sp{padding:2px 8px;border-radius:2px;font-size:0.55rem;cursor:pointer;border:1px solid rgba(247,37,133,0.4);background:rgba(247,37,133,0.08);color:#f72585;font-family:'IBM Plex Mono',monospace;transition:all 0.15s;font-weight:600}
+.btn-sp:hover{background:rgba(247,37,133,0.18)}
+.hero-timer{font-size:0.5rem;color:rgba(255,255,255,0.2);margin-left:auto}
 
-.open-claude-btn{margin-top:0.4rem;padding:7px;border-radius:3px;font-size:0.65rem;cursor:pointer;border:1px solid rgba(100,255,218,0.3);background:transparent;color:#64ffda;font-family:'IBM Plex Mono',monospace;width:100%;transition:all 0.15s;text-align:center;text-decoration:none;display:block}
-.open-claude-btn:hover{background:rgba(100,255,218,0.07)}
+/* MEDIUM картка — позиції 2-4 */
+.mc{margin:0.3rem 0.5rem;padding:0.4rem 0.6rem;border-radius:2px;animation:cin 0.3s ease;cursor:pointer}
+.mc:hover{background:rgba(255,255,255,0.02)}
+.mc.type-death{border-left:3px solid #ff4757;background:rgba(255,71,87,0.04)}
+.mc.type-res{border-left:3px solid #f72585;background:rgba(247,37,133,0.04)}
+.mc.type-new{border-left:3px solid #7209b7;background:rgba(114,9,183,0.04)}
+.mc.type-default{border-left:2px solid rgba(255,200,0,0.3);background:transparent}
+.mc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.1rem}
+.mc-title{font-size:0.88rem;color:rgba(255,255,255,0.92);font-weight:600;flex:1;padding-right:0.4rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mc-score{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;flex-shrink:0}
+.mc-meta{display:flex;gap:0.4rem;align-items:center;font-size:0.6rem;color:rgba(255,255,255,0.5)}
+.mc-kws{display:flex;gap:0.15rem}
 
-.loading-sec{display:flex;align-items:center;gap:0.4rem;font-size:0.62rem;color:rgba(255,255,255,0.3);padding:0.3rem 0}
+/* SMALL картка — позиції 5+ */
+.sc{display:flex;align-items:center;gap:0.3rem;padding:0.22rem 0.6rem;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background 0.1s}
+.sc:hover{background:rgba(255,255,255,0.02)}
+.sc-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.sc-title{font-size:0.78rem;color:rgba(255,255,255,0.88);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc-meta{font-size:0.58rem;color:rgba(255,255,255,0.4);flex-shrink:0}
+.sc-score{font-family:'Bebas Neue',sans-serif;font-size:0.95rem;flex-shrink:0;width:28px;text-align:right}
+.sc-ai{padding:1px 5px;border-radius:2px;font-size:0.52rem;cursor:pointer;border:1px solid rgba(100,255,218,0.3);background:rgba(100,255,218,0.06);color:#64ffda;font-family:'IBM Plex Mono',monospace;flex-shrink:0}
+.sc-sp{padding:1px 5px;border-radius:2px;font-size:0.52rem;cursor:pointer;border:1px solid rgba(247,37,133,0.3);background:rgba(247,37,133,0.06);color:#f72585;font-family:'IBM Plex Mono',monospace;flex-shrink:0}
+
+@keyframes cin{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══════════════════════════════════
+   КОЛОНКА 2 — РЕЙТИНГИ
+═══════════════════════════════════ */
+.rank-item{display:flex;align-items:center;gap:0.4rem;padding:0.28rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background 0.1s}
+.rank-item:hover{background:rgba(255,255,255,0.02)}
+.rank-n{font-family:'Bebas Neue',sans-serif;font-size:0.9rem;width:18px;text-align:center;flex-shrink:0;color:rgba(255,255,255,0.25)}
+.rank-body{flex:1;min-width:0}
+.rank-title{font-size:0.78rem;color:rgba(255,255,255,0.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank-meta{font-size:0.58rem;color:rgba(255,255,255,0.45);margin-top:1px}
+.rank-score{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;flex-shrink:0}
+.rank-ai{padding:1px 4px;border-radius:2px;font-size:0.5rem;cursor:pointer;border:1px solid rgba(100,255,218,0.3);background:rgba(100,255,218,0.06);color:#64ffda;font-family:'IBM Plex Mono',monospace;flex-shrink:0}
+.rank-sp{padding:1px 4px;border-radius:2px;font-size:0.5rem;cursor:pointer;border:1px solid rgba(247,37,133,0.3);background:rgba(247,37,133,0.06);color:#f72585;font-family:'IBM Plex Mono',monospace;flex-shrink:0}
+
+/* Pageview */
+.pv-item{display:flex;align-items:center;gap:0.4rem;padding:0.26rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background 0.1s}
+.pv-item:hover{background:rgba(255,255,255,0.02)}
+.pv-title{font-size:0.78rem;color:rgba(255,255,255,0.9);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pv-views{font-size:0.58rem;color:rgba(255,255,255,0.35);flex-shrink:0}
+.pv-ratio{font-family:'Bebas Neue',sans-serif;font-size:1.05rem;color:#f72585;flex-shrink:0}
+
+/* ═══════════════════════════════════
+   КОЛОНКА 3 — ЗАЛ СЛАВИ
+═══════════════════════════════════ */
+.hof-item{display:flex;align-items:center;gap:0.4rem;padding:0.28rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background 0.1s}
+.hof-item:hover{background:rgba(255,255,255,0.02)}
+.hof-rank{font-size:0.65rem;flex-shrink:0;width:18px;text-align:center}
+.hof-rank.gold{color:#ffc800}.hof-rank.silver{color:rgba(255,255,255,0.5)}.hof-rank.bronze{color:#cd7f32}
+.hof-body{flex:1;min-width:0}
+.hof-title{font-size:0.8rem;color:rgba(255,255,255,0.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hof-meta{font-size:0.58rem;color:rgba(255,255,255,0.45);margin-top:1px;display:flex;gap:0.3rem;align-items:center}
+.hof-score{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;flex-shrink:0}
+.hof-kw{font-size:0.52rem;padding:1px 4px;border-radius:2px}
+
+/* Sustained */
+.sus-item{display:flex;align-items:center;gap:0.4rem;padding:0.26rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background 0.1s}
+.sus-item:hover{background:rgba(255,255,255,0.02)}
+.sus-body{flex:1;min-width:0}
+.sus-title{font-size:0.78rem;color:rgba(255,255,255,0.88)}
+.sus-meta{font-size:0.58rem;color:rgba(255,255,255,0.45);margin-top:1px}
+.sus-sc{font-family:'Bebas Neue',sans-serif;font-size:1.0rem;flex-shrink:0}
+.sus-bar{width:24px;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;flex-shrink:0}
+.sus-fill{height:100%;border-radius:2px}
+
+/* ═══════════════════════════════════
+   КОЛОНКА 4 — КОНТЕКСТ (не Wikipedia)
+═══════════════════════════════════ */
+.ctx-block{padding:0.5rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0}
+.ctx-title{font-size:0.55rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:0.3rem}
+.fng-val{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1}
+.fng-label{font-size:0.65rem;margin-top:2px}
+.fng-bar{height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;margin-top:0.3rem}
+.fng-fill{height:100%;border-radius:2px;transition:width 0.5s}
+
+.bn-item{display:flex;align-items:center;gap:0.3rem;padding:0.22rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03)}
+.bn-sym{font-size:0.72rem;color:rgba(255,255,255,0.75);flex-shrink:0;width:55px}
+.bn-pct{font-family:'Bebas Neue',sans-serif;font-size:0.95rem;flex-shrink:0;width:50px;text-align:right}
+.bn-vol{font-size:0.55rem;color:rgba(255,255,255,0.3);flex-shrink:0}
+
+.tr-item{display:flex;align-items:center;gap:0.3rem;padding:0.22rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03);font-size:0.65rem}
+.tr-geo{color:#4285f4;flex-shrink:0;width:22px}
+.tr-title{color:rgba(255,255,255,0.7);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.xs-item{display:flex;align-items:flex-start;gap:0.3rem;padding:0.26rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background 0.1s}
+.xs-item:hover{background:rgba(255,255,255,0.02)}
+.xs-type{font-size:0.48rem;padding:1px 4px;border-radius:2px;flex-shrink:0;margin-top:2px}
+.xs-wiki{background:rgba(100,255,218,0.1);color:#64ffda;border:1px solid rgba(100,255,218,0.2)}
+.xs-trends{background:rgba(66,133,244,0.1);color:#4285f4;border:1px solid rgba(66,133,244,0.2)}
+.xs-poly{background:rgba(6,214,160,0.1);color:#06d6a0;border:1px solid rgba(6,214,160,0.2)}
+.xs-pv{background:rgba(247,37,133,0.1);color:#f72585;border:1px solid rgba(247,37,133,0.2)}
+.xs-pred{background:rgba(6,214,160,0.1);color:#06d6a0;border:1px solid rgba(6,214,160,0.2)}
+.xs-llm{background:rgba(147,51,234,0.12);color:#a855f7;border:1px solid rgba(147,51,234,0.25)}
+.xs-overlap{background:rgba(255,140,0,0.12);color:#ff8c00;border:1px solid rgba(255,140,0,0.3)}
+.xs-graph{background:rgba(114,9,183,0.12);color:#c77dff;border:1px solid rgba(114,9,183,0.3)}
+.xs-history{background:rgba(6,214,160,0.1);color:#06d6a0;border:1px solid rgba(6,214,160,0.25)}
+.xs-oracle{background:rgba(255,200,0,0.1);color:#ffc800;border:1px solid rgba(255,200,0,0.25)}
+.xs-tracked{background:rgba(247,37,133,0.12);color:#f72585;border:1px solid rgba(247,37,133,0.3);font-weight:600}
+.pred-item{display:flex;align-items:center;gap:0.3rem;padding:0.22rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:background 0.1s}
+.pred-item:hover{background:rgba(255,255,255,0.02)}
+.pred-src{font-size:0.5rem;width:20px;flex-shrink:0;text-align:center}
+.pred-title{font-size:0.68rem;color:rgba(255,255,255,0.82);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pred-prob{font-family:'Bebas Neue',sans-serif;font-size:0.95rem;flex-shrink:0;width:40px;text-align:right}
+.xs-body{flex:1;min-width:0}
+.xs-title{font-size:0.78rem;color:rgba(255,255,255,0.88);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.xs-detail{font-size:0.58rem;color:rgba(255,255,255,0.4);margin-top:1px}
+.xs-score{font-family:'Bebas Neue',sans-serif;font-size:0.95rem;flex-shrink:0;color:#64ffda}
+
+/* LIVE FEED (col 4 bottom) */
+.fi{padding:0.22rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:background 0.1s}
+.fi:hover{background:rgba(255,255,255,0.02)}
+.fi.spike{border-left:2px solid #64ffda}.fi.high{border-left:2px solid #ffc800}.fi.death{border-left:2px solid #ff4757}.fi.new_{border-left:2px solid #7209b7}
+.fi-t{font-size:0.75rem;color:rgba(255,255,255,0.85);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none}
+.fi-t:hover{color:#64ffda}
+.fi-m{display:flex;gap:0.2rem;margin-top:0.06rem;align-items:center;flex-wrap:wrap}
+.tg{padding:1px 4px;border-radius:1px;font-size:0.5rem}
+.tg-b{background:rgba(100,100,255,0.13);color:#8888ff}
+.tg-a{background:rgba(255,200,0,0.1);color:#ffc800}
+.tg-u{background:rgba(100,255,218,0.07);color:#64ffda}
+.tg-n{background:rgba(100,255,218,0.13);color:#64ffda;font-weight:600}
+.tg-m{background:rgba(255,200,0,0.15);color:#ffc800;font-weight:600}
+.tg-death{background:rgba(255,71,87,0.2);color:#ff4757;font-weight:700}
+.tg-new{background:rgba(114,9,183,0.2);color:#b388ff;font-weight:700}
+.tg-delta-p{background:rgba(100,255,218,0.1);color:#64ffda}
+.tg-delta-n{background:rgba(255,71,87,0.1);color:#ff4757}
+.fi-lang{font-size:0.5rem;color:rgba(255,255,255,0.25)}
+
+/* Sparkline */
+.spd{display:flex;align-items:center;gap:0.4rem;padding:0.3rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.04);flex-shrink:0}
+.spd-v{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:#fff;line-height:1}
+.spd-l{font-size:0.5rem;text-transform:uppercase;color:rgba(255,255,255,0.25);letter-spacing:0.06em}
+.spd-t{font-size:0.55rem;margin-top:2px}
+.spl{display:flex;align-items:flex-end;gap:2px;height:18px;flex:1}
+.sc_{border-radius:1px 1px 0 0;flex:1;min-width:2px}
+
+/* LANGS */
+.li{display:flex;align-items:center;gap:0.3rem;padding:0.16rem 0.7rem}
+.li-c{font-size:0.55rem;width:16px;color:rgba(255,255,255,0.4)}
+.li-t{flex:1;height:4px;background:rgba(255,255,255,0.04);border-radius:2px;overflow:hidden}
+.li-f{height:100%;border-radius:2px;transition:width 0.5s}
+.li-n{font-size:0.55rem;color:rgba(255,255,255,0.3);width:24px;text-align:right}
+
+
+
+
+
+/* TRADE JOURNAL */
+.tj-item{padding:0.35rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer;transition:background 0.1s}
+.tj-item:hover{background:rgba(255,255,255,0.02)}
+.tj-top{display:flex;align-items:center;gap:0.4rem;margin-bottom:0.1rem}
+.tj-title{font-size:0.75rem;color:rgba(255,255,255,0.88);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tj-dir{font-size:0.6rem;padding:1px 5px;border-radius:2px;flex-shrink:0;font-weight:600}
+.tj-long{background:rgba(100,255,218,0.1);color:#64ffda;border:1px solid rgba(100,255,218,0.2)}
+.tj-short{background:rgba(255,71,87,0.1);color:#ff4757;border:1px solid rgba(255,71,87,0.2)}
+.tj-straddle{background:rgba(255,200,0,0.1);color:#ffc800;border:1px solid rgba(255,200,0,0.2)}
+.tj-result{font-family:'Bebas Neue',sans-serif;font-size:1rem;flex-shrink:0}
+.tj-meta{font-size:0.55rem;color:rgba(255,255,255,0.35);display:flex;gap:0.4rem}
+.tj-add{width:100%;padding:6px;border-radius:2px;font-size:0.62rem;cursor:pointer;border:1px solid rgba(100,255,218,0.3);background:rgba(100,255,218,0.05);color:#64ffda;font-family:'IBM Plex Mono',monospace;transition:all 0.15s;margin-top:0.3rem}
+.tj-add:hover{background:rgba(100,255,218,0.12)}
+.tj-form{padding:0.5rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.05);display:none}
+.tj-form.open{display:block}
+.tj-row{display:flex;gap:0.3rem;margin-bottom:0.3rem;flex-wrap:wrap}
+.tj-input{flex:1;min-width:80px;padding:3px 6px;border-radius:2px;font-size:0.6rem;background:#0d0d1a;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);font-family:'IBM Plex Mono',monospace;outline:none}
+.tj-input:focus{border-color:rgba(100,255,218,0.3)}
+.tj-select{flex:1;min-width:70px;padding:3px 6px;border-radius:2px;font-size:0.6rem;background:#0d0d1a;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);font-family:'IBM Plex Mono',monospace;outline:none}
+.tj-save{padding:4px 10px;border-radius:2px;font-size:0.6rem;cursor:pointer;border:none;background:#64ffda;color:#07070f;font-family:'IBM Plex Mono',monospace;font-weight:600}
+
+/* DAILY DIGEST */
+.daily-card{padding:0.4rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer;transition:background 0.1s}
+.daily-card:hover{background:rgba(255,255,255,0.02)}
+.daily-card.urgent{border-left:2px solid #ff4757}
+.daily-card.high{border-left:2px solid #ffc800}
+.daily-card.medium{border-left:2px solid #64ffda}
+.daily-card.low{border-left:1px solid rgba(255,255,255,0.1)}
+.daily-top{display:flex;align-items:center;gap:0.4rem;margin-bottom:0.15rem}
+.daily-rank{font-family:'Bebas Neue',sans-serif;font-size:0.9rem;color:rgba(255,255,255,0.25);width:16px;flex-shrink:0}
+.daily-title{font-size:0.78rem;color:rgba(255,255,255,0.9);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+.daily-conv{font-size:0.52rem;padding:1px 5px;border-radius:2px;flex-shrink:0}
+.daily-pattern{font-size:0.52rem;color:rgba(255,255,255,0.3);margin-bottom:0.1rem;padding-left:20px}
+.daily-reason{font-size:0.6rem;color:rgba(255,255,255,0.5);line-height:1.4;padding-left:20px;font-style:italic}
+.daily-assets{display:flex;gap:0.25rem;flex-wrap:wrap;padding-left:20px;margin-top:0.15rem}
+.daily-asset{padding:1px 5px;border-radius:2px;font-size:0.5rem;background:rgba(100,255,218,0.08);color:#64ffda;border:1px solid rgba(100,255,218,0.2)}
+
+/* GRAPH */
+.graph-col{position:relative;overflow:hidden;background:#07070f}
+#graphSvg{width:100%;height:100%;display:block}
+.g-node{cursor:pointer}
+.g-node circle{transition:r 0.3s,stroke-width 0.2s}
+.g-node:hover circle{stroke-width:2px}
+.g-node text{pointer-events:none;font-family:'IBM Plex Mono',monospace;font-size:9px;fill:rgba(255,255,255,0.7)}
+.g-link{stroke:rgba(255,255,255,0.12);stroke-width:1;fill:none}
+.g-link.overlap{stroke:#ff8c00;stroke-width:1.5;stroke-dasharray:4,2}
+.g-link.graph_{stroke:#c77dff;stroke-width:1}
+.graph-hint{position:absolute;top:0.5rem;left:0.7rem;font-size:0.52rem;color:rgba(255,255,255,0.2);pointer-events:none}
+.graph-legend{position:absolute;bottom:0.5rem;left:0.7rem;display:flex;gap:0.6rem;font-size:0.5rem;color:rgba(255,255,255,0.3);flex-wrap:wrap}
+
+/* SLIDES */
+.slide-nav{display:flex;align-items:center;gap:0.3rem;margin-left:auto}
+.slide-btn{padding:2px 10px;border-radius:2px;font-size:0.58rem;cursor:pointer;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.35);font-family:'IBM Plex Mono',monospace;transition:all 0.15s}
+.slide-btn.on{border-color:#64ffda;color:#64ffda;background:rgba(100,255,218,0.07)}
+.slides-wrap{flex:1;overflow:hidden;min-height:0;position:relative}
+.slides-inner{display:flex;width:200%;height:100%;transition:transform 0.3s cubic-bezier(.4,0,.2,1)}
+.slide{width:50%;height:100%;display:grid;gap:1px;background:rgba(255,255,255,0.05);overflow:hidden;min-height:0}
+.slide-1-grid{grid-template-columns:1.4fr 1fr 0.9fr}
+.slide-2-grid{grid-template-columns:1fr 1fr 0.8fr 0.8fr 0.8fr 0.9fr}
+.macro-bar{display:flex;align-items:center;gap:1.2rem;padding:0 0.7rem;height:24px;border-top:1px solid rgba(255,255,255,0.05);flex-shrink:0;font-size:0.58rem;background:#09091a;overflow:hidden}
+.macro-item{display:flex;align-items:center;gap:0.3rem;flex-shrink:0}
+.macro-val{font-family:'Bebas Neue',sans-serif;font-size:0.9rem}
+.macro-lbl{font-size:0.48rem;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.05em}
+
+/* AI MODAL */
+#aiModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:9999;align-items:center;justify-content:center}
+.aim-box{background:#0d0d1a;border:1px solid rgba(100,255,218,0.2);border-radius:3px;width:min(560px,92vw);max-height:82vh;display:flex;flex-direction:column;overflow:hidden}
+.aim-hdr{display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0.9rem;border-bottom:1px solid rgba(255,255,255,0.07);flex-shrink:0}
+.aim-title{font-size:0.9rem;color:#fff;font-weight:600}
+.aim-close{background:transparent;border:none;color:rgba(255,255,255,0.3);font-size:1.4rem;cursor:pointer;line-height:1;padding:0}
+.aim-body{padding:0.75rem 0.9rem;overflow-y:auto;flex:1;font-size:0.75rem;line-height:1.75;color:#d0d0e8}
+.aim-src{font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.2rem}
+.aim-item{margin-bottom:0.35rem;padding-bottom:0.35rem;border-bottom:1px solid rgba(255,255,255,0.05)}
+.aim-item a{color:rgba(255,255,255,0.88);text-decoration:none;font-size:0.72rem;line-height:1.4;display:block}
+.aim-item a:hover{color:#64ffda}
+.aim-item-meta{font-size:0.55rem;color:rgba(255,255,255,0.3);margin-top:1px}
+.aim-src-row{display:flex;align-items:center;gap:0.5rem;padding:0.28rem 0.5rem;border:1px solid rgba(255,255,255,0.06);border-radius:2px;margin-bottom:0.25rem}
+.aim-src-label{font-size:0.55rem;width:110px;flex-shrink:0}
+.aim-src-status{font-size:0.52rem;color:rgba(255,255,255,0.4);flex:1}
+.aim-src-time{font-size:0.5rem;color:rgba(255,255,255,0.2);flex-shrink:0}
+
+.sec-item{display:flex;align-items:center;gap:0.35rem;padding:0.24rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:background 0.1s}
+.sec-item:hover{background:rgba(255,255,255,0.02)}
+.sec-emoji{font-size:0.7rem;flex-shrink:0;width:18px;text-align:center}
+.sec-body{flex:1;min-width:0}
+.sec-name{font-size:0.72rem;color:rgba(255,255,255,0.85);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sec-meta{font-size:0.52rem;color:rgba(255,255,255,0.3);margin-top:1px;display:flex;gap:0.3rem}
+.sec-form{padding:1px 5px;border-radius:2px;font-size:0.5rem;font-weight:600}
+.sec-ipo{background:rgba(100,255,218,0.1);color:#64ffda;border:1px solid rgba(100,255,218,0.2)}
+.sec-ma{background:rgba(72,202,228,0.1);color:#48cae4;border:1px solid rgba(72,202,228,0.2)}
+.sec-event{background:rgba(255,200,0,0.1);color:#ffc800;border:1px solid rgba(255,200,0,0.2)}
+.sec-other{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.1)}
+
+/* MINI RETRO */
+#retroModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9998;align-items:center;justify-content:center}
+.retro-box{background:#0d0d1a;border:1px solid rgba(247,37,133,0.2);border-radius:3px;width:min(680px,94vw);max-height:85vh;display:flex;flex-direction:column;overflow:hidden}
+.retro-hdr{display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0.9rem;border-bottom:1px solid rgba(255,255,255,0.07);flex-shrink:0}
+.retro-title{font-size:0.88rem;color:#fff;font-weight:600}
+.retro-close{background:transparent;border:none;color:rgba(255,255,255,0.3);font-size:1.3rem;cursor:pointer;line-height:1;padding:0}
+.retro-body{padding:0.75rem 0.9rem;overflow-y:auto;flex:1;font-size:0.72rem}
+.retro-bar-wrap{display:flex;align-items:flex-end;gap:2px;height:70px;margin:0.5rem 0 0.25rem}
+.retro-bar{flex:1;min-width:4px;border-radius:2px 2px 0 0;cursor:pointer;transition:opacity 0.1s}
+.retro-bar:hover{opacity:0.7}
+.retro-sig{text-align:center;padding:0.5rem;background:rgba(255,255,255,0.03);border-radius:3px;margin-bottom:0.5rem}
+.retro-sig-val{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1}
+.retro-sig-sub{font-size:0.6rem;color:rgba(255,255,255,0.4);margin-top:2px}
+.btn-retro{padding:1px 7px;border-radius:2px;font-size:0.5rem;cursor:pointer;border:1px solid rgba(247,37,133,0.4);background:rgba(247,37,133,0.08);color:#f72585;font-family:'IBM Plex Mono',monospace;transition:all 0.15s;font-weight:600}
+.btn-retro:hover{background:rgba(247,37,133,0.18)}
+.btn-brief{padding:2px 8px;border-radius:2px;font-size:0.55rem;cursor:pointer;border:1px solid rgba(255,200,0,0.4);background:rgba(255,200,0,0.08);color:#ffc800;font-family:'IBM Plex Mono',monospace;transition:all 0.15s;font-weight:600}
+.btn-brief:hover{background:rgba(255,200,0,0.18)}
+.sc-brief{padding:1px 5px;border-radius:2px;font-size:0.52rem;cursor:pointer;border:1px solid rgba(255,200,0,0.35);background:rgba(255,200,0,0.07);color:#ffc800;font-family:'IBM Plex Mono',monospace;transition:all 0.15s}
+.sc-brief:hover{background:rgba(255,200,0,0.18)}
+.hof-brief{padding:1px 4px;border-radius:2px;font-size:0.5rem;cursor:pointer;border:1px solid rgba(255,200,0,0.3);background:rgba(255,200,0,0.06);color:#ffc800;font-family:'IBM Plex Mono',monospace}
+.tr-ai{padding:1px 4px;border-radius:2px;font-size:0.5rem;cursor:pointer;border:1px solid rgba(100,255,218,0.3);background:rgba(100,255,218,0.06);color:#64ffda;font-family:'IBM Plex Mono',monospace}
+.tr-brief{padding:1px 4px;border-radius:2px;font-size:0.5rem;cursor:pointer;border:1px solid rgba(255,200,0,0.3);background:rgba(255,200,0,0.06);color:#ffc800;font-family:'IBM Plex Mono',monospace}
+
+/* INTEL CATEGORIES */
+.cat-badge{display:inline-flex;align-items:center;gap:0.25rem;padding:2px 8px;border-radius:2px;font-size:0.58rem;font-weight:600;letter-spacing:0.05em;margin-bottom:0.3rem}
+.cat-urgent{background:rgba(255,71,87,0.15);color:#ff4757;border:1px solid rgba(255,71,87,0.35)}
+.cat-impact{background:rgba(255,200,0,0.12);color:#ffc800;border:1px solid rgba(255,200,0,0.3)}
+.cat-watch{background:rgba(100,255,218,0.1);color:#64ffda;border:1px solid rgba(100,255,218,0.25)}
+.cat-noise{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.3);border:1px solid rgba(255,255,255,0.1)}
+.intel-bar{display:flex;gap:0.3rem;flex-wrap:wrap;margin-bottom:0.15rem;align-items:center}
+.intel-tag{padding:1px 5px;border-radius:2px;font-size:0.48rem;color:rgba(255,255,255,0.35);border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03)}
+.intel-tag.green{color:#64ffda;border-color:rgba(100,255,218,0.2);background:rgba(100,255,218,0.05)}
+.intel-tag.yellow{color:#ffc800;border-color:rgba(255,200,0,0.2);background:rgba(255,200,0,0.05)}
+.intel-tag.red{color:#ff4757;border-color:rgba(255,71,87,0.2);background:rgba(255,71,87,0.05)}
+.intel-pulse{display:inline-block;width:5px;height:5px;border-radius:50%;margin-right:2px;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
 </style>
 </head>
 <body>
 
+<!-- HEADER -->
 <div class="hdr">
-  <div class="logo">RESO<em>NANCE</em> <span style="font-family:'IBM Plex Mono',monospace;font-size:0.5rem;opacity:0.3">// intelligence brief</span></div>
-  <div class="status">
-    <div class="dot" id="statusDot"></div>
-    <span id="statusText">збираю дані...</span>
-    <span id="srcCount" style="color:rgba(255,255,255,0.2)">0/6</span>
+  <div style="display:flex;align-items:center;gap:0.8rem">
+    <div class="logo">RESO<em>NANCE</em><small>// signal detector</small></div>
+    <div class="stimer" id="stimer">0:00</div>
   </div>
-</div>
-
-<div class="main">
-  <!-- LEFT: BRIEF -->
-  <div class="brief-col" id="briefCol">
-    <div style="color:rgba(255,255,255,0.2);font-size:0.7rem;padding:2rem;text-align:center">
-      <div style="font-size:1.5rem;margin-bottom:0.5rem">⏳</div>
-      Збираю дані...
-    </div>
-  </div>
-
-  <!-- RIGHT: PROMPT -->
-  <div class="prompt-col">
-    <div class="prompt-hdr">
-      <div class="prompt-hdr-title">Режим аналізу Claude</div>
-      <div class="mode-btns">
-        <button class="mode-btn on" onclick="setMode('news')" data-m="news">📰 Новини</button>
-        <button class="mode-btn" onclick="setMode('market')" data-m="market">📊 Ринки</button>
-        <button class="mode-btn" onclick="setMode('risk')" data-m="risk">⚠️ Ризики</button>
-        <button class="mode-btn" onclick="setMode('predict')" data-m="predict">🎯 Прогноз</button>
-        <button class="mode-btn" onclick="setMode('deep')" data-m="deep">🔬 Глибокий</button>
-      </div>
-    </div>
-    <div class="prompt-box">
-      <div class="prompt-label">Готовий промпт для Claude</div>
-      <textarea id="promptText" placeholder="Збираю дані..."></textarea>
-      <button class="copy-btn" id="copyBtn" onclick="copyPrompt()">📋 Копіювати промпт</button>
-      <a href="https://claude.ai" target="_blank" class="open-claude-btn">↗ Відкрити Claude</a>
+  <div class="hstats">
+    <div class="hs"><div class="v" id="hEpm">0</div><div class="l">прав/хв</div></div>
+    <div class="hs"><div class="v" id="hAnom" style="color:#ff4757">0</div><div class="l">аном</div></div>
+    <div class="hs"><div class="v" id="hPv" style="color:#f72585">0</div><div class="l">👁 pv</div></div>
+    <div class="hs"><div class="v" id="hRes" style="color:#f72585">0</div><div class="l">★</div></div>
+    <div class="hs"><div class="v" id="hTotal" style="color:rgba(255,255,255,0.4)">0</div><div class="l">всього</div></div>
+    <div class="lbl"><div class="ldot wait" id="dot"></div><span id="stxt">connecting</span></div>
+    <div class="slide-nav">
+      <button class="slide-btn on" onclick="goSlide(0)" id="sBtn0">⚡ live</button>
+      <button class="slide-btn" onclick="goSlide(1)" id="sBtn1">📊 context</button>
     </div>
   </div>
 </div>
 
-<script>
-const PROXY = 'https://resonance-proxy-production.up.railway.app';
-const params = new URLSearchParams(location.search);
-const TITLE = params.get('title') || '';
-const LANG  = params.get('lang')  || 'en';
-const SCORE = params.get('score') || '';
-const TYPE  = params.get('type')  || '';
-const WIKI_URL = 'https://' + LANG + '.wikipedia.org/wiki/' + encodeURIComponent(TITLE.replace(/ /g,'_'));
+<!-- FILTER -->
+<div class="fbar">
+  <span class="fbl">мова:</span>
+  <button class="fb on" data-l="all" onclick="setLang(this)">всі</button>
+  <button class="fb" data-l="en" onclick="setLang(this)">en</button>
+  <button class="fb" data-l="de" onclick="setLang(this)">de</button>
+  <button class="fb" data-l="fr" onclick="setLang(this)">fr</button>
+  <button class="fb" data-l="es" onclick="setLang(this)">es</button>
+  <button class="fb" data-l="ru" onclick="setLang(this)">ru</button>
+  <button class="fb" data-l="uk" onclick="setLang(this)">uk</button>
+  <button class="fb" data-l="ja" onclick="setLang(this)">ja</button>
+  <div class="fsep"></div>
+  <span class="fbl">тип:</span>
+  <button class="fb" data-tp="СМЕРТЬ" onclick="toggleType(this)">💀</button>
+  <button class="fb" data-tp="ПОЛІТИК" onclick="toggleType(this)">🏛</button>
+  <button class="fb" data-tp="ГЕОПОЛІТИКА" onclick="toggleType(this)">🌏</button>
+  <button class="fb" data-tp="БІЗНЕС" onclick="toggleType(this)">💼</button>
+</div>
 
-document.title = 'BRIEF: ' + TITLE;
+<!-- MACRO BAR -->
+<div class="macro-bar" id="macroBar">
+  <div class="macro-item"><span class="macro-lbl">F&G</span><span class="macro-val" id="mFng" style="color:rgba(255,255,255,0.4)">—</span></div>
+  <div style="width:1px;height:14px;background:rgba(255,255,255,0.07)"></div>
+  <div id="mBinance" style="display:flex;gap:0.8rem"></div>
+  <div style="width:1px;height:14px;background:rgba(255,255,255,0.07);margin-left:auto"></div>
+  <div class="macro-item"><span class="macro-lbl">прав/хв</span><span class="macro-val" id="mEpm" style="color:#64ffda">0</span></div>
+  <div class="macro-item"><span class="macro-lbl">аном</span><span class="macro-val" id="mAnom" style="color:#ff4757">0</span></div>
+</div>
 
-let mode = 'news';
-let collectedData = {};
-let sourceDone = 0;
-const TOTAL_SOURCES = 5;
+<!-- SLIDES WRAPPER -->
+<div class="slides-wrap">
+  <div class="slides-inner" id="slidesInner">
 
-function setMode(m) {
-  mode = m;
-  document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('on', b.dataset.m === m));
-  buildPrompt();
-}
+    <!-- SLIDE 1: LIVE -->
+    <div class="slide slide-1-grid">
 
-function incSrc() {
-  sourceDone++;
-  document.getElementById('srcCount').textContent = sourceDone + '/' + TOTAL_SOURCES;
-  // Рендеримо одразу після першого джерела — не чекаємо всіх
-  renderBrief();
-  buildPrompt();
-  if (sourceDone >= TOTAL_SOURCES) {
-    document.getElementById('statusDot').className = 'dot done';
-    document.getElementById('statusText').textContent = 'готово';
-  }
-}
-
-// ── ЗБИРАЄМО ДАНІ ──
-async function collectAll() {
-  await Promise.all([
-    fetchWiki(),
-    fetchRetro(),
-    fetchPredictions(),
-    fetchNews(),
-    fetchGroqSignal(),
-  ]);
-}
-
-async function fetchWiki() {
-  try {
-    const r = await fetch('https://' + LANG + '.wikipedia.org/w/api.php?action=query&prop=extracts|categories|langlinks&titles=' + encodeURIComponent(TITLE) + '&exintro=1&exsentences=5&explaintext=1&cllimit=20&clshow=!hidden&lllimit=500&format=json&origin=*');
-    const d = await r.json();
-    const pg = Object.values(d.query?.pages||{})[0];
-    if (pg) {
-      collectedData.wiki = {
-        extract: pg.extract?.slice(0, 600) || '',
-        langCount: (pg.langlinks||[]).length + 1,
-        categories: (pg.categories||[]).map(c=>c.title.replace('Category:','')).slice(0,8)
-      };
-    }
-  } catch(e) {}
-  incSrc();
-}
-
-async function fetchRetro() {
-  try {
-    const today = new Date().toISOString().slice(0,10);
-    const r = await fetch('/api/retro?title=' + encodeURIComponent(TITLE) + '&event=' + today + '&lang=' + LANG + '&days=14');
-    const d = await r.json();
-    if (d.found) {
-      // Будуємо summary з timeline (retro.js не повертає summary)
-      const allComments = (d.timeline || []).flatMap(day => day.comments || []);
-      const maxEditors = (d.timeline || []).reduce((max, day) => Math.max(max, day.editors), 0);
-      const keywords = [...new Set(
-        allComments.flatMap(c => c.toLowerCase().split(/[\s\/\*\[\]\(\)]+/).filter(w => w.length > 4))
-      )].slice(0, 6);
-      d.summary = { editors: maxEditors, keywords };
-      collectedData.retro = d;
-    }
-  } catch(e) {}
-  incSrc();
-}
-
-async function fetchPredictions() {
-  try {
-    const r = await fetch(PROXY + '/predictions');
-    const d = await r.json();
-    if (d.items?.length) {
-      const words = TITLE.toLowerCase().split(/\s+/).filter(w=>w.length>4);
-      const matches = d.items.filter(p => {
-        const t = (p.title||'').toLowerCase();
-        return words.filter(w=>t.includes(w)).length >= 2 || words.some(w=>w.length>7&&t.includes(w));
-      }).slice(0,5);
-      collectedData.predictions = matches;
-    }
-  } catch(e) {}
-  incSrc();
-}
-
-async function fetchNews() {
-  try {
-    const r = await fetch(PROXY + '/rss?q=' + encodeURIComponent(TITLE));
-    const d = await r.json();
-    collectedData.news = (d.items||[]).slice(0,5);
-  } catch(e) {}
-  incSrc();
-}
-
-async function fetchDDG() {
-  try {
-    const r = await fetch(PROXY + '/ddg?q=' + encodeURIComponent(TITLE + ' news'));
-    const d = await r.json();
-    collectedData.ddg = (d.items||[]).slice(0,4);
-  } catch(e) {}
-  incSrc();
-}
-
-async function fetchGroqSignal() {
-  try {
-    const r = await fetch(PROXY + '/cross_signals_recent?title=' + encodeURIComponent(TITLE));
-    // Шукаємо WIKI+LLM сигнал з Supabase через proxy
-    const r2 = await fetch('https://ovedzfpptsnxzxioyzkr.supabase.co/rest/v1/cross_signals?wiki_title=eq.' +
-      encodeURIComponent(TITLE) + '&type=eq.WIKI%2BLLM&order=created_at.desc&limit=1', {
-      headers: {
-        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92ZWR6ZnBwdHNueHp4aW95emtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5NDIzNTIsImV4cCI6MjA5MTUxODM1Mn0.Z4XFvR7I4HcaoOckDSpsZ4_DDZRAlWENr2VQphTdTx0',
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92ZWR6ZnBwdHNueHp4aW95emtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5NDIzNTIsImV4cCI6MjA5MTUxODM1Mn0.Z4XFvR7I4HcaoOckDSpsZ4_DDZRAlWENr2VQphTdTx0'
-      }
-    });
-    const rows = await r2.json();
-    if (Array.isArray(rows) && rows.length) {
-      collectedData.groq = rows[0];
-    }
-  } catch(e) {}
-  incSrc();
-}
-
-async function fetchTrends() {
-  try {
-    const r = await fetch(PROXY + '/trends?q=' + encodeURIComponent(TITLE));
-    const d = await r.json();
-    collectedData.trends = d.items||[];
-  } catch(e) {}
-  incSrc();
-}
-
-// ── РЕНДЕРИНГ БРИФІНГУ ──
-function renderGroqSignal(g) {
-  if (!g) return '';
-  const parts = (g.detail || '').split(' · ');
-  const type = parts[0] || '';
-  const strength = parseFloat((parts[1] || '').replace('strength:','')) || 0;
-  const pimino = parseFloat((parts[2] || '').replace('pimino:','')) || 0;
-  const assets = (parts[3] || '').replace('assets:','');
-  const reasoning = parts[4] || '';
-  const dir = parts[5] || '';
-  const dirEmoji = dir.includes('LONG') ? '📈' : dir.includes('SHORT') ? '📉' : dir.includes('STRADDLE') ? '↕️' : '🤖';
-  return '<div class="section impact">'
-    + '<div class="sec-label">🤖 LLM Signal (Groq · Llama 3.3)</div>'
-    + '<div class="sec-content">'
-    + dirEmoji + ' <b style="color:#a855f7">' + type + '</b>'
-    + ' · strength: <b>' + strength + '</b>'
-    + ' · Píміno: <b>' + pimino + '</b>'
-    + (assets ? ' · assets: <b style="color:#64ffda">' + assets + '</b>' : '')
-    + (reasoning ? '<br><span style="color:rgba(255,255,255,0.5)">' + reasoning + '</span>' : '')
-    + '</div></div>';
-}
-
-function renderBrief() {
-  const col = document.getElementById('briefCol');
-  const w = collectedData.wiki || {};
-  const retro = collectedData.retro;
-  const preds = collectedData.predictions || [];
-  const news = collectedData.news || [];
-  const ddg = collectedData.ddg || [];
-  const trends = collectedData.trends || [];
-
-  // Категорія і колір
-  const catColor = TYPE.includes('res') || SCORE > 200 ? '#f72585' : SCORE > 80 ? '#ffc800' : '#64ffda';
-
-  // Ретро сигнал
-  const fs = retro?.firstSignal;
-  const retroStr = fs ? `T${fs.t}д (${fs.signal})` : 'не визначено';
-  const retroColor = fs ? (fs.t <= -3 ? '#ff4757' : fs.t <= -1 ? '#ffc800' : '#64ffda') : 'rgba(255,255,255,0.3)';
-
-  // Bars для ретро
-  let retroBars = '';
-  if (retro?.timeline?.length) {
-    const maxE = Math.max(...retro.timeline.map(d=>d.edits), 1);
-    retroBars = retro.timeline.map(d => {
-      const h = Math.max(2, Math.round(d.edits/maxE*38));
-      const c = d.t===0?'#fff':d.signal==='STRONG'?'#ff4757':d.signal==='MED'?'#ffc800':d.signal==='LOW'?'#64ffda':'rgba(255,255,255,0.1)';
-      return `<div class="r-bar" style="height:${h}px;background:${c}" title="${d.day}: ${d.edits}пр ${d.editors}ред"></div>`;
-    }).join('');
-  }
-
-  // News items
-  const allNews = [...news, ...ddg].filter((v,i,a)=>a.findIndex(x=>x.title===v.title)===i).slice(0,6);
-
-  col.innerHTML = `
-    <div class="brief-title">${TITLE}</div>
-    <div class="brief-sub">
-      <span>📖 <a href="${WIKI_URL}" target="_blank" style="color:#64ffda">${LANG}.wikipedia</a></span>
-      ${w.langCount ? `<span>🌍 ${w.langCount} мов</span>` : ''}
-      ${SCORE ? `<span style="color:${catColor}">⚡ score ${SCORE}</span>` : ''}
-      ${fs ? `<span style="color:${retroColor}">📊 сигнал ${retroStr}</span>` : ''}
-    </div>
-
-    ${w.extract ? `
-    <div class="section">
-      <div class="sec-label">📖 Wikipedia</div>
-      <div class="sec-content">${w.extract}…</div>
-      ${w.categories?.length ? `<div class="tags" style="margin-top:0.4rem">${w.categories.map(c=>`<span class="tag tag-default">${c}</span>`).join('')}</div>` : ''}
-    </div>` : ''}
-
-    ${retro?.total ? `
-    <div class="section ${fs?.t<=-3?'urgent':fs?.t<=-1?'watch':''}">
-      <div class="sec-label">📊 Wikipedia активність (14 днів · ${retro.total} правок · ${retro.summary?.editors||0} ред)</div>
-      <div class="retro-bars">${retroBars}</div>
-      <div class="sec-content" style="font-size:0.62rem">
-        ${fs ? `Перший сигнал: <b style="color:${retroColor}">T${fs.t} днів</b> до сьогодні · рівень: ${fs.signal}` : 'Активність в межах норми'}
-        ${retro.summary?.keywords?.length ? ` · ключові слова: <b>${retro.summary.keywords.join(', ')}</b>` : ''}
-      </div>
-    </div>` : ''}
-
-    ${preds.length ? `
-    <div class="section impact">
-      <div class="sec-label">🎯 Prediction Markets (${preds.length} збігів)</div>
-      ${preds.map(p => {
-        const prob = Math.round((p.probability||0)*100);
-        const col = prob>=70?'#64ffda':prob>=40?'#ffc800':'#ff4757';
-        return `<div class="pred-row">
-          <div class="pred-prob" style="color:${col}">${prob}%</div>
-          <div class="pred-title"><a href="${p.url}" target="_blank">${p.title}</a></div>
-          <div class="pred-src">${p.source}</div>
-        </div>`;
-      }).join('')}
-    </div>` : ''}
-
-    ${allNews.length ? `
-    <div class="section">
-      <div class="sec-label">📰 Новини (${allNews.length} джерел)</div>
-      ${allNews.map(n=>`<div style="padding:0.25rem 0;border-bottom:1px solid rgba(255,255,255,0.04)">
-        <a href="${n.url}" target="_blank" class="sec-content" style="font-size:0.68rem;display:block">${n.title}</a>
-        <div style="font-size:0.52rem;color:rgba(255,255,255,0.25);margin-top:2px">${n.source||''}</div>
-      </div>`).join('')}
-    </div>` : ''}
-
-    ${collectedData.groq ? renderGroqSignal(collectedData.groq) : ''}
-
-    ${collectedData.groq?.detail ? (() => {
-      const parts = (collectedData.groq.detail||'').split(' · ');
-      const assetsPart = parts.find(p => p.startsWith('assets:'));
-      const assets = assetsPart ? assetsPart.replace('assets:','').split(',').filter(Boolean) : [];
-      if (!assets.length) return '';
-      return `<div class="section impact">
-        <div class="sec-label">💹 Mapped Assets</div>
-        <div style="display:flex;gap:0.4rem;flex-wrap:wrap">${assets.map(a =>
-          `<a href="https://finance.yahoo.com/quote/${encodeURIComponent(a)}" target="_blank"
-            style="padding:3px 10px;border-radius:2px;font-size:0.65rem;background:rgba(100,255,218,0.08);color:#64ffda;border:1px solid rgba(100,255,218,0.2);text-decoration:none;font-weight:600">${a}</a>`
-        ).join('')}</div>
-      </div>`;
-    })() : ''}
-
-    ${trends.length ? `
-    <div class="section">
-      <div class="sec-label">📈 Google Trends (${[...new Set(trends.map(t=>t.geo))].join(', ')})</div>
-      <div class="sec-content">Тренд в країнах: <b style="color:#4285f4">${[...new Set(trends.map(t=>t.geo))].join(', ')}</b></div>
-    </div>` : ''}
-
-    <!-- Source status -->
-    <div class="section" style="margin-top:1.5rem">
-      <div class="sec-label">Джерела</div>
-      ${[
-        ['Wikipedia', !!w.extract, '📖'],
-        ['Ретро (14 днів)', !!retro?.total, '📊'],
-        ['Predictions', preds.length > 0, '🎯'],
-        ['RSS News', news.length > 0, '📰'],
-      ].map(([name, ok, ico]) => `
-        <div class="src-row">
-          <div class="src-dot" style="background:${ok?'#64ffda':'rgba(255,255,255,0.15)'}"></div>
-          <div class="src-name">${ico} ${name}</div>
-          <div class="src-status">${ok?'✓':'—'}</div>
+      <!-- COL 1: АНОМАЛІЇ -->
+      <div class="col">
+        <div class="ph">
+          <span>⚡ аномалії</span>
+          <span><span class="pk" id="cR">0</span><span style="opacity:0.3">★ </span><span class="gd" id="cM">0</span><span style="opacity:0.3">m</span></span>
         </div>
-      `).join('')}
+        <div class="pb" id="feedSignal"><div class="hint">Очікуємо аномалії...</div></div>
+      </div>
+
+      <!-- COL 2: ГРАФ + ПОТІК -->
+      <div class="col" style="display:flex;flex-direction:column">
+        <div class="ph"><span>🕸 граф</span><span class="ac" id="xsCnt">0</span></div>
+        <div class="graph-col" style="flex:1;min-height:0" id="graphContainer">
+          <svg id="graphSvg"></svg>
+          <div class="graph-hint">клік → Brief</div>
+          <div class="graph-legend">
+            <span style="color:#ff4757">● L3 act</span>
+            <span style="color:#ffc800">● L2 dir</span>
+            <span style="color:rgba(100,100,120,0.9)">● L1 sig</span>
+            <span style="color:#ff8c00">-- overlap</span>
+            <span style="color:#c77dff">— graph</span>
+          </div>
+        </div>
+        <div class="sec" style="flex-shrink:0;max-height:140px;display:flex;flex-direction:column">
+          <div class="ph"><span>📡 потік</span><span class="ac" id="lt">—</span></div>
+          <div class="pb" id="feedRecent" style="flex:1;overflow-y:auto"></div>
+        </div>
+      </div>
+
+      <!-- COL 3: PREDICTIONS + SEC -->
+      <div class="col">
+        <div class="ph"><span>🧪 сигнали ринку</span><span class="ac" id="predCnt">0</span></div>
+        <div class="pb" id="feedPred" style="flex:1"><div class="hint">...</div></div>
+        <div class="sec" style="flex-shrink:0">
+          <div class="ph"><span>📋 sec filings</span><span class="ac" id="secCnt">0</span></div>
+          <div id="feedSec" style="max-height:160px;overflow-y:auto"><div class="hint">...</div></div>
+        </div>
+      </div>
+
     </div>
-  `;
+
+    <!-- SLIDE 2: CONTEXT -->
+    <div class="slide slide-2-grid">
+
+      <!-- COL 0: DAILY DIGEST -->
+      <div class="col">
+        <div class="ph"><span>📊 daily digest</span><span class="ac" id="dailyCnt">0</span>
+          <button onclick="buildDaily()" style="padding:1px 6px;border-radius:2px;font-size:0.5rem;cursor:pointer;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.3);font-family:'IBM Plex Mono',monospace;margin-left:0.3rem">↻</button>
+        </div>
+        <div class="pb" id="feedDaily" style="flex:1"><div class="hint">завантаження...</div></div>
+      </div>
+
+      <!-- COL 1: ЗАЛ СЛАВИ -->
+      <div class="col">
+        <div class="ph">
+          <span>🏆 зал слави</span>
+          <div style="display:flex;align-items:center;gap:0.4rem">
+            <span class="gd" id="hofCnt">—</span>
+            <select id="hofSort" onchange="loadHof()" style="background:#09091a;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);font-family:IBM Plex Mono,monospace;font-size:0.5rem;padding:1px 3px;border-radius:2px;cursor:pointer">
+              <option value="score">score</option>
+              <option value="time">час</option>
+              <option value="editors">ред</option>
+              <option value="type">тип</option>
+            </select>
+          </div>
+        </div>
+        <div class="hint" id="hofSub" style="padding:0.25rem 0.7rem;font-size:0.58rem;color:rgba(255,255,255,0.35);border-bottom:1px solid rgba(255,255,255,0.04);flex-shrink:0">сьогодні · завантаження...</div>
+        <div class="pb" id="feedHof" style="flex:1"><div class="hint">...</div></div>
+      </div>
+
+      <!-- COL 2: TRENDING WIKI -->
+      <div class="col">
+        <div class="ph"><span>📈 trending вікі</span><span class="ac" id="tTime">...</span></div>
+        <div class="pb" id="feedTrend"><div class="hint">Завантаження...</div></div>
+      </div>
+
+      <!-- COL 3: GOOGLE TRENDS -->
+      <div class="col">
+        <div class="ph"><span>📊 google trends</span><span class="ac" id="trTime">...</span></div>
+        <div id="feedTrends" style="overflow-y:auto;flex:1"></div>
+      </div>
+
+      <!-- COL 4: SPEEDO + BINANCE деталі -->
+      <div class="col">
+        <div class="ph"><span>🌍 середовище</span></div>
+        <div class="spd">
+          <canvas id="speedo" width="48" height="30" style="flex-shrink:0"></canvas>
+          <div>
+            <div class="spd-v" id="sVal">0</div>
+            <div class="spd-l">прав/хв</div>
+            <div class="spd-t" id="sTrend" style="color:rgba(255,255,255,0.2)">—</div>
+          </div>
+          <div class="spl" id="sparkline"></div>
+        </div>
+        <div class="ctx-block" id="fngBlock">
+          <div class="ctx-title">😨 fear &amp; greed</div>
+          <div class="hint" style="padding:0.2rem 0;font-size:0.62rem">завантаження...</div>
+        </div>
+        <div class="ctx-block">
+          <div class="ctx-title">💰 binance топ мувери</div>
+          <div id="feedBinance"></div>
+        </div>
+        <div class="sec" style="flex:1;display:flex;flex-direction:column;min-height:0">
+          <div class="ph"><span>⚡ cross signals</span><span class="ac" id="xsCnt">0</span></div>
+          <div class="pb" id="feedXs" style="flex:1"><div class="hint">...</div></div>
+        </div>
+      </div>
+
+      <!-- COL 5: TRADE JOURNAL -->
+      <div class="col">
+        <div class="ph"><span>📒 trade journal</span><span class="ac" id="tjCnt">0</span></div>
+        <div class="pb" style="flex:1;overflow-y:auto">
+          <!-- ADD FORM -->
+          <div class="tj-form" id="tjForm">
+            <div class="tj-row">
+              <input class="tj-input" id="tjTitle" placeholder="назва сигналу" style="flex:2">
+              <select class="tj-select" id="tjDir">
+                <option value="LONG">LONG</option>
+                <option value="SHORT">SHORT</option>
+                <option value="STRADDLE">STRADDLE</option>
+                <option value="WATCH">WATCH</option>
+              </select>
+            </div>
+            <div class="tj-row">
+              <input class="tj-input" id="tjAsset" placeholder="актив (BTC, AAPL...)">
+              <input class="tj-input" id="tjEntry" placeholder="ціна входу" type="number">
+              <input class="tj-input" id="tjPattern" placeholder="паттерн (BRANCH...)">
+            </div>
+            <div class="tj-row">
+              <input class="tj-input" id="tjNotes" placeholder="нотатки" style="flex:3">
+              <button class="tj-save" onclick="saveJournalEntry()">+ Зберегти</button>
+            </div>
+          </div>
+          <!-- LIST -->
+          <div id="feedJournal"></div>
+          <div style="padding:0.4rem 0.7rem">
+            <button class="tj-add" onclick="toggleJournalForm()">+ Новий запис</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- RETRO MODAL -->
+<div id="retroModal">
+  <div class="retro-box">
+    <div class="retro-hdr">
+      <div class="retro-title" id="retroTitle">📊 Ретроспектива</div>
+      <div style="display:flex;gap:0.4rem;align-items:center">
+        <a id="retroFullLink" href="/retro.html" target="_blank" class="btn-g" style="font-size:0.52rem">↗ повний аналіз</a>
+        <button class="retro-close" onclick="document.getElementById('retroModal').style.display='none'">×</button>
+      </div>
+    </div>
+    <div class="retro-body" id="retroBody">
+      <div class="hint">Завантаження...</div>
+    </div>
+  </div>
+</div>
+
+<!-- AI MODAL -->
+<div id="aiModal">
+  <div class="aim-box">
+    <div class="aim-hdr">
+      <div class="aim-title" id="aimTitle"></div>
+      <div style="display:flex;gap:0.4rem;align-items:center">
+        <a id="aimGoogle" href="#" target="_blank" class="btn-g">🔍 Google</a>
+        <button class="aim-close" onclick="document.getElementById('aiModal').style.display='none'">×</button>
+      </div>
+    </div>
+    <div class="aim-body">
+      <div id="aimLoad"></div>
+      <div id="aimContent"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script>
+const PROXY='https://resonance-proxy-production.up.railway.app';
+const SB_URL='https://ovedzfpptsnxzxioyzkr.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92ZWR6ZnBwdHNueHp4aW95emtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5NDIzNTIsImV4cCI6MjA5MTUxODM1Mn0.Z4XFvR7I4HcaoOckDSpsZ4_DDZRAlWENr2VQphTdTx0';
+
+let totalEdits=0,anomCnt=0,resCnt=0,mulCnt=0,pvCnt=0;
+let editsTs=[],articles={},langs={},anomWin={},sustained={};
+let editAct=new Array(30).fill(0),hourAct=new Array(24).fill(0);
+let lastBin=Math.floor(Date.now()/2000);
+let prevEpm=0,trendData=[],es,sessStart=Date.now(),lastMsg=Date.now();
+let predCache={items:[]};// global prediction cache
+let langF='all',typeF=new Set();
+const pinned={},pvPinned={},sbCounts={anom:0,mul:0,res:0,sng:0};
+
+// ── UTILS ──
+function ts(){return new Date().toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+function ago(t){const s=Math.round((Date.now()-t)/1000);if(s<60)return s+'с';if(s<3600)return Math.floor(s/60)+'хв';return Math.floor(s/3600)+'г';}
+function fmt(n){if(n>=1000000)return(n/1e6).toFixed(1)+'М';if(n>=1000)return(n/1000).toFixed(0)+'К';return n.toLocaleString();}
+function getUrl(t,w){const l=(w||'enwiki').replace('wiki','');return'https://'+(l||'en')+'.wikipedia.org/wiki/'+encodeURIComponent(t.replace(/ /g,'_'));}
+function getDateStr(off){const d=new Date(Date.now()+off*86400000);return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');}
+function setLang(b){document.querySelectorAll('.fb[data-l]').forEach(x=>x.classList.remove('on'));b.classList.add('on');langF=b.dataset.l;}
+function toggleType(b){const t=b.dataset.tp;if(typeF.has(t)){typeF.delete(t);b.classList.remove('on');}else{typeF.add(t);b.classList.add('on');}}
+
+// ── COMMENT PARSER ──
+function parseCommentClient(comment){
+  if(!comment)return[];
+  const c=comment.toLowerCase(),kw=[];
+  if(/\bdied\b|\bdeath\b|\bkilled\b/.test(c))kw.push('DEATH');
+  if(/\bcrash\b|\bdisaster\b|\battack\b/.test(c))kw.push('DISASTER');
+  if(/\barrested\b|\bscandal\b|\bconvicted\b/.test(c))kw.push('SCANDAL');
+  if(/\belected\b|\bappointed\b|\bwon\b/.test(c))kw.push('APPOINTED');
+  if(/\bbankrupt\b|\bcollapsed\b/.test(c))kw.push('BANKRUPT');
+  if(/\breverted\b|\bundone\b/.test(c))kw.push('REVERT');
+  return kw;
 }
 
-// ── БУДУЄМО ПРОМПТ ──
-const PROMPTS = {
-  news: (t, w, r, p, n) => `Ти — аналітик розвідки. Тобі надано структурований брифінг по темі "${t}".
+// ── DECAY ──
+function decayScore(score, firstSeen, keywords) {
+  keywords = keywords || [];
+  const ageHr = (Date.now() - firstSeen) / 3600000;
+  const isDeath = keywords.includes('DEATH') || keywords.includes('DISASTER');
+  const f = isDeath ? 0.5 : 1.0;
+  let d;
+  if (ageHr < 1)       d = 1.0;
+  else if (ageHr < 3)  d = 0.9 - (ageHr-1)*0.05*f;
+  else if (ageHr < 6)  d = 0.7 - (ageHr-3)*0.05*f;
+  else if (ageHr < 12) d = 0.5 - (ageHr-6)*0.03*f;
+  else                 d = Math.max(0.1, 0.3 - (ageHr-12)*0.02*f);
+  return Math.round(score * Math.max(d, 0.1));
+}
 
-## БРИФІНГ
+// ── SCORE (нелінійна мультиплікативна формула) ──
+function calcScore(p){
+  const tr=trendData.find(t=>t.article.toLowerCase()===p.title.toLowerCase());
+  if(tr) p.trendPct=tr.delta;
+  const kw=p.commentKeywords||[];
+  const e=p.editors||1;
+  const lc=p.langCount||0;
 
-### Wikipedia
-${w.extract || 'немає даних'}
-Мовне охоплення: ${w.langCount || '?'} Wikipedia
+  // BASE — що сталось
+  const baseMap={'СМЕРТЬ':100,'ГЕОПОЛІТИКА':60,'ВІЙСЬКОВІ':55,
+    'ПОЛІТИК':50,'БІЗНЕС':40,'НАУКА':25,'КУЛЬТУРА':22,'СПОРТ':20,'ПЕРСОНА':15};
+  let base = baseMap[p.articleType] || 15;
+  // Якщо comment підтверджує тип — підсилюємо base
+  if(kw.includes('DEATH'))    base = Math.max(base, 100);
+  if(kw.includes('DISASTER')) base = Math.max(base, 80);
+  if(kw.includes('SCANDAL'))  base = Math.max(base, 60);
+  if(kw.includes('BANKRUPT')) base = Math.max(base, 55);
+  if(kw.includes('APPOINTED'))base = Math.max(base, 45);
 
-### Wikipedia активність (14 днів)
-${r ? `Всього правок: ${r.total}, редакторів: ${r.summary?.editors}
-Перший сигнал до сьогодні: ${r.firstSignal ? 'T' + r.firstSignal.t + ' днів (' + r.firstSignal.signal + ')' : 'немає'}
-${r.summary?.keywords?.length ? 'Ключові слова в коментарях: ' + r.summary.keywords.join(', ') : ''}` : 'немає даних'}
+  // AMPLIFIERS — множники > 1
+  let amp = 1.0;
+  // Редактори (найважливіший сигнал)
+  if(e >= 15)     amp *= 4.0;
+  else if(e >= 10)amp *= 3.0;
+  else if(e >= 5) amp *= 2.0;
+  else if(e >= 3) amp *= 1.4;
+  else if(e >= 2) amp *= 1.1;
+  // Мови
+  if(lc >= 50)      amp *= 2.5;
+  else if(lc >= 30) amp *= 1.8;
+  else if(lc >= 10) amp *= 1.3;
+  // Trending
+  if(p.trendPct >= 500) amp *= 2.0;
+  else if(p.trendPct >= 100) amp *= 1.5;
+  else if(p.trendPct >= 50)  amp *= 1.2;
+  // Delta bytes
+  if((p.deltaBytes||0) > 8000)     amp *= 1.5;
+  else if((p.deltaBytes||0) > 3000)amp *= 1.2;
+  else if((p.deltaBytes||0) < -3000)amp *= 1.2; // видалення теж сигнал
+  // Нова стаття
+  if(p.isNewArticle) amp *= 1.8;
+  // Non-minor (якщо є ця інформація)
+  if(p.isMinor === false) amp *= 1.2;
+  // Резонанс — 2+ вікі
+  if(p.type === 'res') amp *= 1.6;
+  // Pageview spike
+  if((p.pvRatio||0) >= 10) amp *= 1.8;
+  else if((p.pvRatio||0) >= 3) amp *= 1.3;
 
-### Prediction Markets
-${p?.length ? p.map(x=>`- ${x.title}: ${Math.round((x.probability||0)*100)}% (${x.source})`).join('\n') : 'збігів не знайдено'}
+  // PENALTIES — множники < 1
+  let pen = 1.0;
+  if(p.isMinor)          pen *= 0.35;
+  if(e <= 1)             pen *= 0.6;
+  if(kw.includes('REVERT')) pen *= 0.7;
 
-### Новини
-${n?.length ? n.map(x=>`- ${x.title} (${x.source})`).join('\n') : 'немає новин'}
+  const raw = base * amp * pen;
+  // Sustained бонус — лінійний додаток
+  const spanMin = (Date.now()-p.firstSeen)/60000;
+  const sus = Math.min(spanMin/5, 20);
 
-## ЗАВДАННЯ
-1. Що саме відбувається з "${t}" прямо зараз?
-2. Чому Wikipedia так активно редагується?
-3. Які наслідки цієї події в короткостроковій перспективі (48 годин)?
-4. На які суміжні теми/активи звернути увагу?
-Відповідай конкретно, без загальних фраз. Максимум 300 слів.`,
+  return Math.round(raw + sus);
+}
 
-  market: (t, w, r, p, n) => `Ти — фінансовий аналітик. Тема сигналу: "${t}"
+// ── KEYWORD → CSS клас ──
+function kwClass(kw){
+  const map={DEATH:'kw-death',DISASTER:'kw-disaster',SCANDAL:'kw-scandal',BANKRUPT:'kw-bankrupt',APPOINTED:'kw-appointed',REVERT:'kw-war'};
+  return map[kw]||'kw-trend';
+}
+function kwLabel(kw){
+  const map={DEATH:'💀 DEATH',DISASTER:'🔴 DISASTER',SCANDAL:'⚠ SCANDAL',BANKRUPT:'💸 BANKRUPT',APPOINTED:'✅ APPOINTED',REVERT:'↩ REVERT'};
+  return map[kw]||kw;
+}
 
-## КОНТЕКСТ
-${w.extract?.slice(0,300) || ''}
+// ── TYPE → CSS клас для картки ──
+function cardTypeClass(p){
+  if(p.commentKeywords?.includes('DEATH')||p.articleType==='СМЕРТЬ')return'type-death';
+  if(p.isNewArticle)return'type-new';
+  if(p.type==='res')return'type-res';
+  if(p.articleType==='ГЕОПОЛІТИКА'||p.articleType==='ПОЛІТИК')return'type-geo';
+  return'type-default';
+}
 
-Wikipedia burst: ${r?.firstSignal ? 'T' + r.firstSignal.t + ' днів' : 'сьогодні'}, ${r?.total || 0} правок
+// ── SPEEDO ──
+function drawSpeedo(v,mx){
+  const c=document.getElementById('speedo');if(!c)return;
+  const ctx=c.getContext('2d'),cx=24,cy=26,r=18;
+  ctx.clearRect(0,0,48,30);
+  ctx.beginPath();ctx.arc(cx,cy,r,Math.PI,2*Math.PI);ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=3;ctx.stroke();
+  const p=Math.min(v/mx,1);const col=p>0.8?'#ff4757':p>0.5?'#ffc800':'#64ffda';
+  if(p>0){ctx.beginPath();ctx.arc(cx,cy,r,Math.PI,Math.PI+p*Math.PI);ctx.strokeStyle=col;ctx.lineWidth=3;ctx.lineCap='round';ctx.stroke();}
+  const a=Math.PI+p*Math.PI;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+(r-4)*Math.cos(a),cy+(r-4)*Math.sin(a));
+  ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.lineCap='round';ctx.stroke();
+  ctx.beginPath();ctx.arc(cx,cy,2,0,2*Math.PI);ctx.fillStyle=col;ctx.fill();
+}
+drawSpeedo(0,300);
 
-Prediction markets:
-${p?.length ? p.map(x=>`- ${x.title}: ${Math.round((x.probability||0)*100)}%`).join('\n') : 'немає'}
+function updSpark(){
+  const now=Date.now();editsTs=editsTs.filter(t=>now-t<60000);
+  const epm=editsTs.length;
+  const b=Math.floor(now/2000);
+  if(b!==lastBin){editAct.shift();editAct.push(0);lastBin=b;}
+  editAct[editAct.length-1]++;
+  const mx=Math.max(...editAct,1);
+  const el=document.getElementById('sparkline');
+  if(el)el.innerHTML=editAct.map((v,i)=>{
+    const h=Math.max(2,Math.round(v/mx*18));const op=0.25+(i/editAct.length)*0.75;
+    return'<div class="sc_" style="height:'+h+'px;background:'+(v>mx*0.7?'#64ffda':v>mx*0.4?'#0096c7':'#1a1a2e')+';opacity:'+op+'"></div>';
+  }).join('');
+  drawSpeedo(epm,300);document.getElementById('sVal').textContent=epm;
+  const diff=epm-prevEpm;const tr=document.getElementById('sTrend');
+  tr.textContent=diff>5?'▲ зростає':diff<-5?'▼ спадає':'● стабільно';
+  tr.style.color=diff>5?'#64ffda':diff<-5?'#ff4757':'rgba(255,255,255,0.2)';
+  prevEpm=epm;
+}
 
-## ПИТАННЯ
-1. Які фінансові активи (акції, валюти, commodities) пов'язані з "${t}"?
-2. Який вектор руху очікується найближчі 24-72 години?
-3. Де ключові рівні підтримки/опору або event risk?
-4. Яка торгова ідея з цього сигналу?`,
+function updHdr(){
+  const now=Date.now();editsTs=editsTs.filter(t=>now-t<60000);
+  document.getElementById('hEpm').textContent=editsTs.length;
+  document.getElementById('hTotal').textContent=totalEdits.toLocaleString();
+  document.getElementById('hAnom').textContent=sbCounts.anom||anomCnt;
+  document.getElementById('hPv').textContent=pvCnt;
+  document.getElementById('hRes').textContent=sbCounts.res||resCnt;
+  document.getElementById('cR').textContent=sbCounts.res||resCnt;
+  document.getElementById('cM').textContent=sbCounts.mul||mulCnt;
+  const sec=Math.floor((now-sessStart)/1000);
+  document.getElementById('stimer').textContent=Math.floor(sec/60)+':'+(sec%60<10?'0':'')+sec%60;
+}
 
-  risk: (t, w, r, p, n) => `Ти — аналітик ризиків. Тема: "${t}"
+function updLangs(){
+  const sorted=Object.entries(langs).sort((a,b)=>b[1]-a[1]).slice(0,8);if(!sorted.length)return;
+  const mx=sorted[0][1];
+  const cols=['#64ffda','#48cae4','#0096c7','#023e8a','#7209b7','#b5179e','#f72585','#ff4757'];
+  document.getElementById('feedLang')||void 0;
+}
 
-## ДАНІ
-Wikipedia (${w.langCount || '?'} мов): ${w.extract?.slice(0,250) || ''}
-Активність: ${r?.total || 0} правок, перший сигнал T${r?.firstSignal?.t || 0}
-Prediction markets: ${p?.map(x=>x.title.slice(0,50)+': '+Math.round((x.probability||0)*100)+'%').join(' | ') || 'немає'}
+// ── RENDER COL 1: ЖИВИЙ СИГНАЛ ──
 
-## ЗАВДАННЯ
-Оціни ризики по шкалі HIGH/MED/LOW:
-1. Ризик ескалації події
-2. Фінансовий ризик (ринки, компанії)
-3. Геополітичний ризик
-4. Репутаційний ризик
-Для кожного — 1-2 речення обґрунтування.`,
+// ════════════════════════════════════
+// BACKGROUND INTEL
+// ════════════════════════════════════
 
-  predict: (t, w, r, p, n) => `Ти — аналітик-прогнозист. Тема: "${t}"
-
-## ВХІДНІ ДАНІ
-- Wikipedia burst: ${r?.total || 0} правок за 14 днів, перший сигнал T${r?.firstSignal?.t || 0}
-- Мовне охоплення: ${w.langCount || '?'} Вікіпедій
-- Prediction markets: ${p?.map(x=>Math.round((x.probability||0)*100)+'% '+x.title.slice(0,40)).join('; ') || 'немає'}
-- Контекст: ${w.extract?.slice(0,200) || ''}
-
-## ЗАВДАННЯ
-Дай 3 сценарії розвитку подій:
-1. 🟢 Базовий (найімовірніший)
-2. 🟡 Альтернативний
-3. 🔴 Екстремальний
-Для кожного: ймовірність (%), часовий горизонт, ключовий тригер.`,
-
-  deep: (t, w, r, p, n) => `Ти — аналітик розвідки з доступом до Wikipedia сигналів реального часу.
-
-## ПОВНИЙ БРИФІНГ: "${t}"
-
-### 1. ЕНЦИКЛОПЕДИЧНИЙ КОНТЕКСТ
-${w.extract || 'немає'}
-Мовне охоплення: ${w.langCount || '?'} мов Wikipedia
-Категорії: ${w.categories?.join(', ') || 'невідомо'}
-
-### 2. WIKIPEDIA СИГНАЛ
-Активність за 14 днів: ${r?.total || 0} правок · ${r?.summary?.editors || 0} редакторів
-Перший аномальний сигнал: ${r?.firstSignal ? 'T' + r.firstSignal.t + ' днів, рівень ' + r.firstSignal.signal : 'відсутній'}
-${r?.summary?.keywords?.length ? 'Теми з коментарів: ' + r.summary.keywords.join(', ') : ''}
-${r?.topHours?.[0] ? 'Пік активності: ' + r.topHours[0].hour + ' UTC (' + r.topHours[0].editors + ' ред)' : ''}
-
-### 3. PREDICTION MARKETS
-${p?.length ? p.map(x=>`- [${Math.round((x.probability||0)*100)}%] ${x.title} (${x.source})`).join('\n') : 'збігів не знайдено'}
-
-### 4. МЕДІА-ПОКРИТТЯ
-${[...(n||[])].slice(0,5).map(x=>`- ${x.title} (${x.source})`).join('\n') || 'немає'}
-
----
-Проведи ПОВНИЙ розвідувальний аналіз:
-1. **ЩО** відбувається (факти без спекуляцій)
-2. **ЧОМУ** Wikipedia фіксує це зараз (мотивація редакторів)
-3. **ХТО** зацікавлений у розвитку/стримуванні події
-4. **КОЛИ** очікувати розвитку подій (тайм-лайн)
-5. **КУДИ** дивитися далі (суміжні сигнали, активи, персони)
-6. **ВИСНОВОК** у 2-3 реченнях для прийняття рішення`
+const CATEGORIES = {
+  URGENT: { label: '🔴 НЕГАЙНА УВАГА', cls: 'cat-urgent', priority: 4 },
+  IMPACT: { label: '🟡 ЗНАЧНИЙ ВПЛИВ', cls: 'cat-impact', priority: 3 },
+  WATCH:  { label: '🔵 ВАРТО СТЕЖИТИ', cls: 'cat-watch',  priority: 2 },
+  NOISE:  { label: '⚪ ШУМ',           cls: 'cat-noise',  priority: 1 },
 };
 
-function buildPrompt() {
-  const w = collectedData.wiki || {};
-  const r = collectedData.retro;
-  const p = collectedData.predictions || [];
-  const n = [...(collectedData.news||[]), ...(collectedData.ddg||[])].slice(0,5);
-  const fn = PROMPTS[mode] || PROMPTS.news;
-  document.getElementById('promptText').value = fn(TITLE, w, r, p, n);
+
+
+// ── CONVERGENCE SCORE — скільки незалежних джерел підтверджують подію ──
+function calcConvergence(p) {
+  const signals = [];
+  if ((p.editors||0) >= 5)                                    signals.push('👥 редактори');
+  if ((p.langCount||0) >= 20)                                 signals.push('🌍 мови');
+  if (p.intel?.retroSignal !== null && p.intel?.retroSignal !== undefined && p.intel.retroSignal <= -3) signals.push('📊 ретро');
+  if (p.intel?.predMatch)                                     signals.push('🎯 prediction');
+  if ((p.trendPct||0) >= 100)                                 signals.push('📈 trends');
+  if ((p.pvRatio||0) >= 5)                                    signals.push('👁 pageview');
+  if (p.type === 'res')                                       signals.push('★ резонанс');
+  const total = 7;
+  const count = signals.length;
+  return { count, total, signals, actionable: count >= 3 };
 }
 
-function copyPrompt() {
-  const txt = document.getElementById('promptText').value;
-  navigator.clipboard.writeText(txt).then(() => {
-    const btn = document.getElementById('copyBtn');
-    btn.textContent = '✓ Скопійовано!';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = '📋 Копіювати промпт'; btn.classList.remove('copied'); }, 2000);
+// ── RQ (Resonance Quotient) — накопичувальний індекс ──
+function calcRQ(p) {
+  const current = p.rq || 0;
+  const sc = p.score || 0;
+
+  // Бонуси
+  let bonus = 0;
+  const cat = p.intel?.category;
+  if (cat === 'URGENT') bonus += 40;
+  else if (cat === 'IMPACT') bonus += 25;
+  else if (cat === 'WATCH') bonus += 10;
+
+  if (p.intel?.predMatch) bonus += 20;
+  if (p.intel?.retroSignal !== null && p.intel?.retroSignal <= -3) bonus += 15;
+  else if (p.intel?.retroSignal <= -1) bonus += 8;
+  if ((p.langCount||0) >= 20) bonus += 10;
+  if (p.type === 'res') bonus += 15;
+
+  const newRQ = sc + bonus;
+  // RQ тільки росте
+  return Math.max(current, newRQ);
+}
+
+function calcCategory(p) {
+  const kw = p.commentKeywords || [];
+  const ed = p.editors || 0;
+  const lc = p.langCount || 0;
+  const sc = p.score || 0;
+  const pvR = p.pvRatio || 0;
+  const atype = (p.articleType || '').toUpperCase();
+  const retroT = p.intel?.retroSignal;
+  const hasPred = p.intel?.predMatch;
+
+  if (kw.includes('CRISIS') || kw.includes('CURRENT') && ed >= 5 ||
+      atype.includes('СМЕРТЬ') && ed >= 3) return 'URGENT';
+
+  if (kw.includes('MILESTONE') || kw.includes('CORPORATE') ||
+      kw.includes('GEOPOLITICAL') && lc >= 15 ||
+      hasPred && sc >= 80 ||
+      retroT !== null && retroT !== undefined && retroT <= -3 && ed >= 3 ||
+      lc >= 30 && ed >= 5) return 'IMPACT';
+
+  if (retroT !== null && retroT !== undefined && retroT <= -1 ||
+      lc >= 15 && ed >= 3 || kw.includes('CRYPTO') ||
+      hasPred || pvR >= 5 || sc >= 60) return 'WATCH';
+
+  return 'NOISE';
+}
+
+function buildIntelTags(p) {
+  const tags = [];
+  const kw = p.commentKeywords || [];
+  const retroT = p.intel?.retroSignal;
+  const hasPred = p.intel?.predMatch;
+  const kwColors = {CRISIS:'#ff4757',MILESTONE:'#ffc800',CORPORATE:'#48cae4',GEOPOLITICAL:'#f72585',CRYPTO:'#06d6a0',REWRITE:'#b5179e',CURRENT:'#ff9f1c'};
+
+  if (retroT !== null && retroT !== undefined) {
+    const c = retroT <= -3 ? '#ff4757' : retroT <= -1 ? '#ffc800' : '#64ffda';
+    tags.push(`<span class="intel-tag" style="color:${c};border-color:${c}44">📊 T${retroT}д</span>`);
+  }
+  kw.filter(k => kwColors[k]).forEach(k =>
+    tags.push(`<span class="intel-tag" style="color:${kwColors[k]};border-color:${kwColors[k]}33">${k}</span>`)
+  );
+  if (hasPred) {
+    const prob = Math.round((p.intel.predProb||0)*100);
+    tags.push(`<span class="intel-tag" style="color:#06d6a0;border-color:#06d6a044">🎯 ${prob}%</span>`);
+  }
+  if ((p.langCount||0) >= 20)
+    tags.push(`<span class="intel-tag" style="color:#64ffda;border-color:#64ffda33">🌍 ${p.langCount}мов</span>`);
+  return tags.join('');
+}
+
+const intelQueue = new Set();
+
+async function runBackgroundIntel(key) {
+  if (intelQueue.has(key)) return;
+  const p = pinned[key]; if (!p) return;
+  if (p.intel?.done) return;
+  intelQueue.add(key);
+  if (!p.intel) p.intel = {};
+
+  const today = new Date().toISOString().slice(0,10);
+
+  // Ретро через /api/retro
+  const retroP = fetch('/api/retro?title='+encodeURIComponent(p.title)+'&event='+today+'&lang='+(p.lang||'en')+'&days=7')
+    .then(r=>r.json())
+    .then(d => { p.intel.retroSignal = d.found && d.firstSignal ? d.firstSignal.t : null; })
+    .catch(() => { p.intel.retroSignal = null; });
+
+  // Prediction match з кешу
+  const predP = Promise.resolve().then(() => {
+    if (!predCache?.items?.length) { return; }
+    try {
+    const words = p.title.toLowerCase().split(/\s+/).filter(w=>w.length>4);
+    const m = predCache.items.find(pm => {
+      const t = (pm.title||'').toLowerCase();
+      return words.filter(w=>t.includes(w)).length >= 2 || words.some(w=>w.length>7&&t.includes(w));
+    });
+    if (m) { p.intel.predMatch=true; p.intel.predProb=m.probability; p.intel.predTitle=m.title; p.intel.predUrl=m.url; }
+    } catch(e) {}
+  });
+
+  try { await Promise.all([retroP, predP]); } catch(e) {}
+  p.intel.done = true;
+  // Оновлюємо RQ після intel
+  const newRQ = calcRQ(p);
+  p.rq = Math.max(p.rq||0, newRQ);
+  intelQueue.delete(key);
+  renderSignal();
+}
+
+function renderSignal(){
+  const sec=document.getElementById('feedSignal');if(!sec)return;
+  const now=Date.now();
+  Object.keys(pinned).forEach(k=>{if(now-pinned[k].lastSeen>7200000)delete pinned[k];});
+  
+
+  // Merge по title
+  const byTitle={};
+  Object.values(pinned).forEach(p=>{
+    p.score=calcScore(p);
+    if(!byTitle[p.title]){
+      byTitle[p.title]={...p,wikis:new Set([p.wiki]),allEditors:p.editors,allEdits:p.edits};
+    }else{
+      const m=byTitle[p.title];
+      m.wikis.add(p.wiki);m.allEditors+=p.editors;m.allEdits+=p.edits;
+      m.langCount=m.wikis.size;
+      if(p.lastSeen>m.lastSeen)m.lastSeen=p.lastSeen;
+      if(p.score>m.score){m.score=p.score;m.badges=p.badges;m.desc=p.desc;m.commentKeywords=p.commentKeywords;}
+      if(m.wikis.size>=2)m.type='res';
+    }
+  });
+  Object.values(byTitle).forEach(m=>{
+    m.editors=m.allEditors;m.edits=m.allEdits;
+    m.langCount=m.wikis?m.wikis.size:m.langCount;
+    m.score=decayScore(calcScore(m), m.firstSeen, m.commentKeywords||[]);
+    // RQ оновлюємо тільки якщо новий більший
+    const newRQ = calcRQ(m);
+    // Зберігаємо в оригінальний pinned
+    const origKey = m.key || (m.wiki+':'+m.title);
+    if (pinned[origKey]) {
+      pinned[origKey].rq = Math.max(pinned[origKey].rq||0, newRQ);
+      m.rq = pinned[origKey].rq;
+    } else {
+      m.rq = Math.max(m.rq||0, newRQ);
+    }
+  });
+
+  const sorted=Object.values(byTitle).sort((a,b)=>b.score-a.score);
+  if(!sorted.length){sec.innerHTML='<div class="hint">Очікуємо аномалії...</div>';return;}
+  sec.innerHTML='';
+  
+
+  sorted.forEach((p,rank)=>{
+    const col=p.score>=50?'#ff4757':p.score>=25?'#ffc800':'#64ffda';
+    const typeClass=cardTypeClass(p);
+    const gUrl='https://www.google.com/search?q='+encodeURIComponent(p.title+' news '+new Date().getFullYear())+'&udm=50';
+    const ageMin=Math.round((now-p.firstSeen)/60000);
+    const kws=(p.commentKeywords||[]).filter(k=>k!=='REVERT');
+    const kwsHtml=kws.map(k=>'<span class="kw '+kwClass(k)+'">'+kwLabel(k)+'</span>').join('');
+    const isNew=p.isNewArticle?'<span class="kw kw-new">🆕 NEW</span>':'';
+    const deltaHtml=p.deltaBytes>3000?'<span style="color:#64ffda;font-size:0.62rem">+'+Math.round(p.deltaBytes/1000)+'KB</span>':p.deltaBytes<-1000?'<span style="color:#ff4757;font-size:0.62rem">'+Math.round(p.deltaBytes/1000)+'KB</span>':'';
+    const trendHtml=p.trendPct?'<span class="kw kw-trend">📈+'+p.trendPct+'%</span>':'';
+
+    if(rank===0){
+      // HERO картка
+      const d=document.createElement('div');
+      d.className='hero '+typeClass;
+      // Background intel
+      runBackgroundIntel(p.key||('enwiki:'+p.title));
+      const catKey = p.intel?.done ? calcCategory(p) : null;
+      const cat = catKey ? CATEGORIES[catKey] : null;
+      const intelTagsHtml = p.intel?.done ? buildIntelTags(p) : '<span class="intel-tag"><span style="display:inline-block;width:4px;height:4px;border-radius:50%;background:#64ffda;animation:blink 1s infinite;margin-right:3px"></span>аналіз...</span>';
+      d.innerHTML=
+        (cat ? '<div style="margin-bottom:0.25rem"><span class="cat-badge '+cat.cls+'">'+cat.label+'</span></div>' : '')
+        +'<div class="hero-top">'
+          +'<div class="hero-kw">'+isNew+kwsHtml+trendHtml+'</div>'
+          +'<div class="hero-score-wrap">'
+          +'<div class="hero-score" style="color:'+col+'">'+p.score+'<div class="hero-score-label">score</div></div>'
+          +(() => { const cv = calcConvergence(p); const cvCol = cv.actionable ? '#64ffda' : cv.count >= 2 ? '#ffc800' : 'rgba(255,255,255,0.25)'; return '<div style="text-align:center;margin-left:0.4rem"><div style="font-family:Bebas Neue,sans-serif;font-size:1rem;color:'+cvCol+'">'+cv.count+'/'+cv.total+'</div><div style="font-size:0.44rem;color:'+cvCol+'55;letter-spacing:0.05em">CONV</div>'+(cv.actionable?'<div style="font-size:0.42rem;color:#64ffda;letter-spacing:0.04em">⚡ ACT</div>':'')+'</div>'; })()
+          +(p.rq && p.rq > p.score ? '<div style="text-align:center;margin-left:0.5rem"><div style="font-family:Bebas Neue,sans-serif;font-size:1rem;color:#ffc800">'+p.rq+'</div><div style="font-size:0.44rem;color:rgba(255,200,0,0.5);letter-spacing:0.05em">RQ</div></div>' : '')
+          +'</div>'
+        +'</div>'
+        +'<div class="hero-title"><a href="'+p.url+'" target="_blank">'+p.title+'</a></div>'
+        +'<div class="hero-prog"><div class="hero-prog-f" style="width:'+Math.min(p.score,100)+'%;background:'+col+'"></div></div>'
+        +'<div class="hero-stats">'
+          +'<div class="hstat"><div class="v" style="color:'+col+'">'+p.edits+'</div><div class="l">✏️ правок</div></div>'
+          +'<div class="hstat"><div class="v" style="color:#64ffda">'+p.editors+'</div><div class="l">👥 ред</div></div>'
+          +'<div class="hstat"><div class="v" style="color:rgba(255,255,255,0.5)">'+new Date(p.lastSeen).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'})+'</div><div class="l">🕐</div></div>'
+          +(p.langCount>1?'<div class="hstat"><div class="v" style="color:#4285f4">'+p.langCount+'</div><div class="l">мов</div></div>':'')
+        +'</div>'
+        +(p.deltaBytes?'<div class="hero-delta">'+deltaHtml+'</div>':'')
+        +'<div class="hero-intel" style="display:flex;flex-wrap:wrap;gap:0.2rem;margin:0.2rem 0">'+intelTagsHtml+'</div>'
+        +(p.desc?'<div class="hero-desc">'+p.desc.slice(0,140)+'…</div>':'')
+        +'<div class="hero-acts">'
+          +'<a class="btn-g" href="'+gUrl+'" target="_blank">🔍</a>'
+          +'<button class="btn-ai" data-t="'+p.title.replace(/"/g,'')+'">✦ AI</button>'
+          +'<button class="btn-sp" data-t="'+p.title.replace(/"/g,'')+'">🕸</button>'
+          +'<button class="btn-brief" data-t="'+p.title.replace(/"/g,'')+'" data-l="'+(p.lang||'en')+'" data-s="'+p.score+'" data-tp="'+(p.type||'')+'">📋</button>'
+          +(Date.now()-p.lastSeen<120000?'<span style="width:5px;height:5px;border-radius:50%;background:#64ffda;display:inline-block;animation:blink 1s infinite;margin-right:0.3rem"></span>':'')+'<span class="hero-timer">з '+new Date(p.firstSeen).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'})+'</span>'
+        +'</div>';
+      d.querySelector('.btn-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
+      d.querySelector('.btn-sp').addEventListener('click',function(e){e.stopPropagation();openSpider(this.dataset.t);});
+      d.querySelector('.btn-brief').addEventListener('click',function(e){e.stopPropagation();openBrief(this.dataset.t,this.dataset.l,this.dataset.s,this.dataset.tp);});
+      sec.appendChild(d);
+    } else if(rank<4){
+      // MEDIUM картка
+      runBackgroundIntel(p.key||('enwiki:'+p.title));
+      const d=document.createElement('div');
+      d.className='mc '+typeClass;
+      d.addEventListener('click',()=>window.open(p.url,'_blank'));
+      const mcCat = p.intel?.done ? calcCategory(p) : null;
+      const mcDot = mcCat==='URGENT'?'🔴 ':mcCat==='IMPACT'?'🟡 ':mcCat==='WATCH'?'🔵 ':'';
+      d.innerHTML=
+        '<div class="mc-top">'
+          +'<div class="mc-title">'+mcDot+p.title+'</div>'
+          +'<div class="mc-score" style="color:'+col+'">'+p.score+'</div>'
+          +(() => { const cv = calcConvergence(p); return cv.count >= 2 ? '<div style="font-size:0.52rem;color:'+(cv.actionable?'#64ffda':'#ffc800')+';margin-left:0.25rem;font-family:Bebas Neue,sans-serif">'+cv.count+'/'+cv.total+'</div>' : ''; })()
+        +'</div>'
+        +'<div class="mc-meta">'
+          +'<span>✏️'+p.edits+'</span><span>👥'+p.editors+'</span>'
+          +'<span>🕐'+new Date(p.lastSeen).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'})+'</span>'
+          +'<div class="mc-kws">'+isNew+kwsHtml+'</div>'
+          +'<button class="sc-ai" data-t="'+p.title.replace(/"/g,'')+'" style="margin-left:auto">✦</button>'
+          +'<button class="sc-sp" data-t="'+p.title.replace(/"/g,'')+'">🕸</button>'
+          +'<button class="sc-brief" data-t="'+p.title.replace(/"/g,'')+'" data-l="'+(p.lang||'en')+'" data-s="'+p.score+'">📋</button>'
+        +'</div>';
+      d.querySelector('.sc-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
+      d.querySelector('.sc-sp').addEventListener('click',function(e){e.stopPropagation();openSpider(this.dataset.t);});
+      d.querySelector('.sc-brief').addEventListener('click',function(e){e.stopPropagation();openBrief(this.dataset.t,this.dataset.l,this.dataset.s);});
+      sec.appendChild(d);
+    } else {
+      // SMALL рядок
+      const d=document.createElement('div');
+      d.className='sc';
+      d.addEventListener('click',()=>window.open(p.url,'_blank'));
+      const dotCol=kws.includes('DEATH')?'#ff4757':kws.includes('DISASTER')?'#ff6b6b':p.type==='res'?'#f72585':col;
+      d.innerHTML=''
+        +'<div class="sc-title">'+p.title+'</div>'
+        +(p.isMinor?'<div class="sc-dot" style="background:rgba(255,255,255,0.15)"></div>':'<div class="sc-dot" style="background:'+dotCol+'"></div>')
+        +'<div class="sc-meta">'+( p.isMinor?'<span style="color:rgba(255,255,255,0.25)">minor</span> ':'')
+        +'👥'+p.editors+' '+new Date(p.lastSeen).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'})+'</div>'
+        +'<div class="sc-score" style="color:'+col+'">'+p.score+(p.rq&&p.rq>p.score?'<span style="font-size:0.5rem;color:#ffc800;margin-left:3px">'+p.rq+'★</span>':'')+'</div>'
+        +(() => { const cv = calcConvergence(p); return cv.actionable ? '<div style="font-size:0.5rem;color:#64ffda;font-family:Bebas Neue,sans-serif;width:22px;text-align:center">'+cv.count+'/7</div>' : ''; })()
+        +'<button class="sc-ai" data-t="'+p.title.replace(/"/g,'')+'">✦</button>'
+        +'<button class="sc-sp" data-t="'+p.title.replace(/"/g,'')+'">🕸</button>'
+        +'<button class="sc-brief" data-t="'+p.title.replace(/"/g,'')+'" data-l="'+(p.lang||'en')+'" data-s="'+p.score+'">📋</button>';
+      d.querySelector('.sc-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
+      d.querySelector('.sc-sp').addEventListener('click',function(e){e.stopPropagation();openSpider(this.dataset.t);});
+      d.querySelector('.sc-brief').addEventListener('click',function(e){e.stopPropagation();openBrief(this.dataset.t,this.dataset.l,this.dataset.s);});
+      sec.appendChild(d);
+    }
   });
 }
 
-// Показуємо заголовок одразу
-if (TITLE) {
-  document.getElementById('briefCol').innerHTML = `
-    <div class="brief-title">${TITLE}</div>
-    <div class="brief-sub"><span>Збираю дані з 6 джерел...</span></div>
-    ${[['📖 Wikipedia',''],['📊 Ретро',''],['🎯 Predictions',''],['📰 RSS News',''],['🦆 DuckDuckGo',''],['📈 Trends','']].map(([n]) =>
-      `<div class="loading-sec"><div class="dot"></div>${n}</div>`
-    ).join('')}
-  `;
-  buildPrompt();
-  collectAll();
-} else {
-  document.getElementById('briefCol').innerHTML = '<div style="padding:2rem;color:#ff4757">Помилка: title не вказано</div>';
+// ── RENDER COL 2: РЕЙТИНГИ (відключено — дублювання) ──
+function renderRank(){return;
+  const sec=document.getElementById('feedRank');if(!sec)return;
+  const now=Date.now();
+  const byTitle={};
+  Object.values(pinned).forEach(p=>{
+    if(!byTitle[p.title]||byTitle[p.title].score<p.score)byTitle[p.title]=p;
+  });
+  const sorted=Object.values(byTitle).sort((a,b)=>b.score-a.score);
+  if(!sorted.length){sec.innerHTML='<div class="hint">Очікуємо...</div>';return;}
+  sec.innerHTML='';
+  sorted.forEach((p,i)=>{
+    const col=p.score>=50?'#ff4757':p.score>=25?'#ffc800':'#64ffda';
+    const kws=(p.commentKeywords||[]);
+    const typeIco={'СМЕРТЬ':'💀','ПОЛІТИК':'🏛','ГЕОПОЛІТИКА':'🌏','БІЗНЕС':'💼','СПОРТ':'⚽','КУЛЬТУРА':'🎭','НАУКА':'🔬','ПЕРСОНА':'👤'}[p.articleType]||'◆';
+    const d=document.createElement('div');
+    d.className='rank-item';
+    d.addEventListener('click',()=>window.open(p.url,'_blank'));
+    d.innerHTML='<div class="rank-n">'+(i+1)+'</div>'
+      +'<div class="rank-body">'
+        +'<div class="rank-title">'+typeIco+' '+p.title+'</div>'
+        +'<div class="rank-meta">'+p.editors+'ред · '+p.edits+'пр'+(kws.includes('DEATH')?' · <span style="color:#ff4757">💀</span>':kws.includes('SCANDAL')?' · <span style="color:#ffa500">⚠</span>':'')+'</div>'
+      +'</div>'
+      +'<div class="rank-score" style="color:'+col+'">'+p.score+'</div>'
+      +'<button class="rank-ai" data-t="'+p.title.replace(/"/g,'')+'">✦</button>'
+      +'<button class="rank-sp" data-t="'+p.title.replace(/"/g,'')+'">🕸</button>';
+    d.querySelector('.rank-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
+    d.querySelector('.rank-sp').addEventListener('click',function(e){e.stopPropagation();openSpider(this.dataset.t);});
+    sec.appendChild(d);
+  });
+  
 }
+
+// ── RENDER COL 2: PAGEVIEW ──
+const pvPinnedArr=[];
+function renderPvRank(){
+  const sec=document.getElementById('feedPv');if(!sec)return;
+  const now=Date.now();
+  Object.keys(pvPinned).forEach(k=>{if(now-pvPinned[k].lastSeen>7200000)delete pvPinned[k];});
+  const sorted=Object.values(pvPinned).sort((a,b)=>b.pvRatio-a.pvRatio);
+  pvCnt=sorted.length;
+  document.getElementById('pvCnt').textContent=pvCnt;
+  if(!sorted.length){sec.innerHTML='<div class="hint">...</div>';return;}
+  sec.innerHTML='';
+  sorted.forEach(p=>{
+    const ratio=p.pvRatio||0;
+    const col=ratio>=10?'#ff4757':ratio>=5?'#ffc800':'#f72585';
+    const url=p.url||'https://en.wikipedia.org/wiki/'+encodeURIComponent(p.title.replace(/ /g,'_'));
+    const d=document.createElement('div');d.className='pv-item';
+    d.addEventListener('click',()=>window.open(url,'_blank'));
+    d.innerHTML='<div class="pv-title">'+p.title+'</div>'
+      +'<div class="pv-views">'+fmt(p.views||0)+'</div>'
+      +'<div class="pv-ratio" style="color:'+col+'">×'+ratio.toFixed(1)+'</div>';
+    sec.appendChild(d);
+  });
+}
+
+// ── RENDER COL 3: ЗАЛ СЛАВИ ──
+async function loadHof(){
+  try{
+    const sort=document.getElementById('hofSort')?.value||'score';
+    const orderMap={score:'score.desc',time:'created_at.desc',editors:'editors.desc',type:'article_type.asc'};
+    const order=orderMap[sort]||'score.desc';
+    const since=new Date(Date.now()-20*3600000).toISOString();
+    const r=await fetch(SB_URL+'/rest/v1/anomalies?created_at=gte.'+since+'&order='+order+'&limit=50',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+    const rows=await r.json();if(!Array.isArray(rows))return;
+    const today=new Date();today.setHours(0,0,0,0);
+    const todayRows=rows.filter(r=>new Date(r.created_at)>=today);
+    const seen={};const uniq=todayRows.filter(r=>{
+      if(seen[r.title])return false;
+      seen[r.title]=true;
+      // Фільтр шуму — тільки значимі події
+      const lc = r.lang_count||0;
+      const ed = r.editors||0;
+      const hasType = !!r.article_type;
+      const isMultiLang = lc >= 5;
+      const isMultiEditor = ed >= 4;
+      const isKnownType = hasType && ed >= 3;
+      return isMultiLang || isMultiEditor || isKnownType;
+    });
+    // Додаємо live pinned які не в Supabase
+    const sbTitles = new Set(uniq.map(r=>r.title));
+    Object.values(pinned).forEach(p=>{
+      if(sbTitles.has(p.title)) return;
+      if(p.score < 30) return;
+      uniq.push({
+        title: p.title, score: p.score, editors: p.editors,
+        article_type: p.articleType, created_at: new Date(p.firstSeen).toISOString(),
+        url: p.url, comment_keywords: (p.commentKeywords||[]).join(','),
+        is_new_article: p.isNewArticle, _live: true
+      });
+    });
+    // Сортування після dedup
+    if(sort==='type') uniq.sort((a,b)=>(a.article_type||'').localeCompare(b.article_type||''));
+    else if(sort==='editors') uniq.sort((a,b)=>(b.editors||0)-(a.editors||0));
+    else if(sort==='time') uniq.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+    else uniq.sort((a,b)=>decayScore(b.score||0,new Date(b.created_at).getTime(),[]) - decayScore(a.score||0,new Date(a.created_at).getTime(),[]));
+    document.getElementById('hofSub').textContent='сьогодні · '+uniq.length+' подій';
+    document.getElementById('hofCnt').textContent=uniq.length;
+    const el=document.getElementById('feedHof');el.innerHTML='';
+    uniq.forEach((row,i)=>{
+      const rawSc=Math.round(row.score||0);
+      const kws=(row.comment_keywords||'').split(',').filter(Boolean);
+      const sc=decayScore(rawSc, new Date(row.created_at).getTime(), kws);
+      const col=sc>=50?'#ff4757':sc>=25?'#ffc800':'#64ffda';
+      const rankCls=i===0?'gold':i===1?'silver':i===2?'bronze':'';
+      const rankIco=['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩'][i]||(i+1)+'.';
+      const time=new Date(row.created_at).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
+      const kwHtml=kws.includes('DEATH')?'<span class="hof-kw kw-death">💀</span>':kws.includes('SCANDAL')?'<span class="hof-kw kw-scandal">⚠</span>':row.is_new_article?'<span class="hof-kw kw-new">🆕</span>':'';
+      const ageHr=(Date.now()-new Date(row.created_at).getTime())/3600000;
+      const isActive=ageHr<2||row._live;
+      const d=document.createElement('div');d.className='hof-item';
+      d.addEventListener('click',()=>window.open(row.url||'#','_blank'));
+      const dotStyle='width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:6px;background:'+(isActive?'#64ffda':'rgba(255,255,255,0.12)')+(isActive?';animation:blink 2s infinite':'');
+      d.innerHTML='<div style="'+dotStyle+'"></div><div class="hof-rank '+rankCls+'">'+rankIco+'</div>'
+        +'<div class="hof-body">'
+          +'<div class="hof-title">'+row.title+'</div>'
+          +'<div class="hof-meta">'+kwHtml+'<span style="color:rgba(255,255,255,0.4)">'+time+'</span>'+(row.article_type?'<span style="color:rgba(255,255,255,0.35)"> · '+row.article_type+'</span>':'')+'</div>'
+        +'</div>'
+        +'<div style="text-align:right">'
+        +'<div class="hof-score" style="color:'+col+'">'+sc+'</div>'
+        // RQ з pinned якщо є
+        +(() => {
+          const pk = Object.values(pinned).find(p=>p.title===row.title);
+          return pk?.rq && pk.rq > sc ? '<div style="font-size:0.5rem;color:#ffc800">'+pk.rq+'★</div>' : '';
+        })()
+        +'</div>'
+        +'<a class="btn-g" href="https://www.google.com/search?q='+encodeURIComponent(row.title+' news')+'&udm=50" target="_blank" onclick="event.stopPropagation()" style="padding:1px 4px">🔍</a>'
+        +'<button class="rank-ai" data-t="'+row.title.replace(/"/g,'')+'">✦</button>'
+        +'<button class="rank-sp" data-t="'+row.title.replace(/"/g,'')+'">🕸</button>'
+        +'<button class="hof-brief" data-t="'+row.title.replace(/"/g,'')+'" data-s="'+sc+'">📋</button>';
+      d.querySelector('.rank-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
+      d.querySelector('.rank-sp').addEventListener('click',function(e){e.stopPropagation();openSpider(this.dataset.t);});
+      el.appendChild(d);
+    });
+  }catch(e){}
+}
+
+// ── SUSTAINED ──
+function updSustained(title,wiki,user,isBot){
+  const now=Date.now();const url=getUrl(title,wiki);
+  if(!sustained[title])sustained[title]={title,first:now,last:now,edits:0,editors:new Set(),ret:{},score:0,url};
+  const s=sustained[title];s.last=now;s.edits++;
+  if(user&&!isBot){
+    if(!s.ret[user])s.ret[user]=[];
+    const prev=s.ret[user];if(prev.length>0&&now-prev[prev.length-1]>1200000)s.score+=5;
+    prev.push(now);s.editors.add(user);
+  }
+  const span=(s.last-s.first)/60000;
+  s.score=s.edits+s.editors.size*3+Math.min(span/10,20);
+  Object.keys(sustained).forEach(k=>{if(now-sustained[k].last>10800000)delete sustained[k];});
+}
+function updSustPanel(){
+  const sorted=Object.values(sustained).filter(s=>(Date.now()-s.first)/60000>=5&&s.edits>=3).sort((a,b)=>b.score-a.score).slice(0,5);
+  const el=document.getElementById('feedSust');if(!el)return;
+  if(!sorted.length){el.innerHTML='';return;}
+  el.innerHTML='';
+  sorted.forEach(s=>{
+    const sc=Math.round(s.score);const col=sc>=40?'#ff4757':sc>=20?'#ffc800':'#64ffda';
+    const ageM=Math.round((Date.now()-s.first)/60000);
+    const d=document.createElement('div');d.className='sus-item';
+    d.addEventListener('click',()=>window.open(s.url,'_blank'));
+    d.innerHTML='<div class="sus-body"><div class="sus-title">'+s.title+'</div>'
+      +'<div class="sus-meta">'+(ageM>=60?Math.floor(ageM/60)+'г':ageM+'хв')+' · '+s.edits+'пр · '+s.editors.size+'ред</div></div>'
+      +'<div class="sus-sc" style="color:'+col+'">'+sc+'</div>'
+      +'<div class="sus-bar"><div class="sus-fill" style="width:'+Math.min(sc,100)+'%;background:'+col+'"></div></div>';
+    el.appendChild(d);
+  });
+  document.getElementById('sCnt').textContent=sorted.length;
+}
+
+// ── RENDER COL 4: КОНТЕКСТ ──
+async function loadFng(){
+  try{
+    const r=await fetch(PROXY+'/fng');const d=await r.json();
+    if(!d.value)return;
+    const col=d.value<=25?'#ff4757':d.value<=45?'#ffc800':d.value<=55?'#64ffda':d.value<=75?'#48cae4':'#06d6a0';
+    const el=document.getElementById('fngBlock');
+    // update macro bar
+    document.getElementById('mFng').textContent = d.value + ' ' + (d.value<=25?'Fear':d.value<=55?'Neutral':'Greed');
+    document.getElementById('mFng').style.color = d.value<=25?'#ff4757':d.value<=55?'#ffc800':'#64ffda';
+    el.innerHTML='<div class="ctx-title">😨 fear &amp; greed</div>'
+      +'<div style="display:flex;align-items:baseline;gap:0.4rem">'
+      +'<div class="fng-val" style="color:'+col+'">'+d.value+'</div>'
+      +'<div class="fng-label" style="color:'+col+'">'+d.classification+'</div></div>'
+      +'<div class="fng-bar"><div class="fng-fill" style="width:'+d.value+'%;background:'+col+'"></div></div>';
+  }catch(e){}
+}
+
+async function loadBinance(){
+  try{
+    const r=await fetch(PROXY+'/binance');const d=await r.json();
+    if(!d.items)return;
+    const el=document.getElementById('feedBinance');el.innerHTML='';
+    // macro bar top 3
+    const mb = document.getElementById('mBinance'); if(mb){mb.innerHTML=d.items.slice(0,3).map(t=>{const col=t.change>0?'#64ffda':'#ff4757';return '<div class="macro-item"><span class="macro-lbl">'+t.symbol.replace('USDT','')+'</span><span class="macro-val" style="color:'+col+'">'+( t.change>0?'+':'')+t.change+'%</span></div>';}).join('');}
+    d.items.slice(0,6).forEach(t=>{
+      const col=t.change>0?'#64ffda':'#ff4757';
+      const sym=t.symbol.replace('USDT','');
+      const url='https://www.binance.com/en/trade/'+sym+'_USDT';
+      const row=document.createElement('div');row.className='bn-item';
+      row.style.cursor='pointer';
+      row.addEventListener('click',()=>window.open(url,'_blank'));
+      row.innerHTML='<div class="bn-sym" style="color:rgba(255,255,255,0.85)">'+sym+'</div>'
+        +'<div class="bn-pct" style="color:'+col+'">'+(t.change>0?'+':'')+t.change+'%</div>'
+        +'<div class="bn-vol">'+fmt(t.vol)+'</div>'
+        +'<div style="font-size:0.52rem;color:rgba(255,255,255,0.2);margin-left:auto">↗</div>';
+      el.appendChild(row);
+    });
+  }catch(e){}
+}
+
+async function loadGoogleTrends(){
+  try{
+    const r=await fetch(PROXY+'/trends');const d=await r.json();
+    if(!d.items?.length)return;
+    document.getElementById('trTime').textContent=new Date(d.fetchedAt||Date.now()).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
+    const el=document.getElementById('feedTrends');el.innerHTML='';
+    const byGeo={};
+    d.items.forEach(it=>{if(!byGeo[it.geo])byGeo[it.geo]=[];byGeo[it.geo].push(it.title);});
+    Object.entries(byGeo).slice(0,5).forEach(([geo,titles])=>{
+      const row=document.createElement('div');row.className='tr-item';
+      row.innerHTML='<div class="tr-geo">'+geo+'</div>'
+        +'<div class="tr-title">'+titles.slice(0,2).join(' · ')+'</div>';
+      el.appendChild(row);
+    });
+  }catch(e){}
+}
+
+// Groq статус для cross signals
+function getGroqStatus() {
+  // Перевіряємо чи є WIKI+LLM в cross signals
+  return predCache?.items?.filter(p => p.source === 'groq') || [];
+}
+
+async function loadSec(){
+  try{
+    const r=await fetch(PROXY+'/sec');
+    const d=await r.json();
+    if(!d.items?.length)return;
+    document.getElementById('secCnt').textContent=d.count;
+    const el=document.getElementById('feedSec');if(!el)return;
+    el.innerHTML='';
+    d.items.slice(0,12).forEach(item=>{
+      const formCls = item.form.startsWith('S-1')?'sec-ipo':
+                      ['425','DEFM14A'].includes(item.form)?'sec-ma':
+                      item.form==='8-K'?'sec-event':'sec-other';
+      const div=document.createElement('div');div.className='sec-item';
+      div.addEventListener('click',()=>window.open(item.url,'_blank'));
+      const gLink='https://www.google.com/search?q='+encodeURIComponent(item.company+' '+item.label)+'&udm=50';
+      div.innerHTML='<div class="sec-emoji">'+item.emoji+'</div>'
+        +'<div class="sec-body">'
+          +'<div class="sec-name">'+(item.ticker?'<b style="color:#64ffda">'+item.ticker+'</b> ':'')+item.company+'</div>'
+          +'<div class="sec-meta"><span class="sec-form '+formCls+'">'+item.form+'</span>'
+          +'<span>'+item.label+'</span>'
+          +(item.state?'<span>'+item.state+'</span>':'')
+          +'</div>'
+        +'</div>'
+        +'<a href="'+gLink+'" target="_blank" onclick="event.stopPropagation()" style="flex-shrink:0;padding:1px 5px;border-radius:2px;font-size:0.5rem;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.3);text-decoration:none">🔍</a>';
+      el.appendChild(div);
+    });
+  }catch(e){}
+}
+
+async function loadPredictions(){
+  try{
+    const r=await fetch(PROXY+'/predictions');
+    const d=await r.json();
+    if(!d.items?.length)return;
+    // Фільтруємо тільки цікаві — з обсягом або близьким закриттям
+    const now = Date.now();
+    predCache = d; // зберігаємо глобально для intel
+    const interesting = d.items
+      .filter(p => p.probability !== null)
+      .filter(p => {
+        const daysLeft = p.closeTime ? (new Date(p.closeTime) - now) / 86400000 : 999;
+        const prob = p.probability || 0;
+        // Показуємо тільки актуальні:
+        // 1. Закривається < 21 день
+        // 2. Дуже висока впевненість (майже вирішено) < 60 днів
+        // 3. Великий обсяг + не далеке майбутнє
+        return daysLeft < 21
+          || (prob > 0.85 && daysLeft < 60)
+          || (p.volume > 50000 && daysLeft < 90);
+      })
+      // Фільтр мотлоху — прибираємо безглузді ринки
+      .filter(p => {
+        const t = p.title.toLowerCase();
+        return !t.includes('jesus christ')
+            && !t.includes('lebron james')
+            && !t.includes('mrbeast')
+            && !t.includes('kim kardashian')
+            && !t.includes('george clooney')
+            && !t.includes('chelsea clinton')
+            && !t.includes('oprah')
+            && !t.includes('obama win')
+            && !t.includes('hillary clinton win')
+            && !t.includes('aliens exist');
+      })
+      .sort((a, b) => {
+        const da = a.closeTime ? (new Date(a.closeTime) - now) / 86400000 : 999;
+        const db = b.closeTime ? (new Date(b.closeTime) - now) / 86400000 : 999;
+        // Спочатку найближчі до закриття
+        return da - db;
+      })
+      .slice(0, 15);
+    const el=document.getElementById('feedPred');if(!el)return;
+    document.getElementById('predCnt').textContent=interesting.length;
+    el.innerHTML='';
+    interesting.forEach(p=>{
+      const prob=Math.round((p.probability||0)*100);
+      const col=prob>=70?'#64ffda':prob>=40?'#ffc800':'#ff4757';
+      const srcIcon={'polymarket':'🔮','manifold':'🌀','predictit':'🇺🇸'}[p.source]||'📊';
+      const daysLeft=p.closeTime?(new Date(p.closeTime)-Date.now())/86400000:999;
+      const div=document.createElement('div');div.className='pred-item';
+      div.addEventListener('click',()=>window.open(p.url,'_blank'));
+      const closeStr=daysLeft<999?'<span style="font-size:0.5rem;color:rgba(255,255,255,0.3);margin-left:2px">'+Math.round(daysLeft)+'д</span>':'';
+      div.innerHTML='<div class="pred-src">'+srcIcon+'</div>'
+        +'<div class="pred-title">'+p.title+'</div>'
+        +'<div class="pred-prob" style="color:'+col+'">'+prob+'%'+closeStr+'</div>';
+      el.appendChild(div);
+    });
+  }catch(e){}
+}
+
+async function loadCrossSignals(){
+  try{
+    const since=new Date(Date.now()-6*3600000).toISOString();
+    const r=await fetch(SB_URL+'/rest/v1/cross_signals?created_at=gte.'+since+'&order=score.desc&limit=15',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+    const rows=await r.json();if(!Array.isArray(rows)||!rows.length)return;
+    window.xsCache = rows; renderGraph();
+    const el=document.getElementById('feedXs');el.innerHTML='';
+    // xsCnt вже встановлено вище
+    const typeMap={'WIKI+GDELT':'xs-wiki','WIKI+TRENDS':'xs-trends','WIKI+POLYMARKET':'xs-poly','WIKI+PAGEVIEW':'xs-pv','WIKI+PREDICT':'xs-pred','WIKI+LLM':'xs-llm','EDITOR+OVERLAP':'xs-overlap','WIKI+GRAPH':'xs-graph','WIKI+HISTORY':'xs-history','WIKI+ORACLE':'xs-oracle','TRACKED+HIT':'xs-tracked'};
+    // Фільтр шуму
+    const filtered = rows.filter(row => {
+      const sc = row.score || 0;
+      if (row.type === 'WIKI+PAGEVIEW') return sc >= 150;
+      if (row.type === 'SEC+WIKI') return sc >= 200;
+      if (row.type === 'WIKI+LLM') return true; // LLM сигнали завжди
+      return true;
+    });
+    document.getElementById('xsCnt').textContent=filtered.length;
+    filtered.forEach(row=>{
+      const cls=typeMap[row.type]||'xs-wiki';
+      const sc=Math.round(row.score||0);
+      const div=document.createElement('div');div.className='xs-item';
+      div.style.cursor='pointer';
+      let xsUrl;
+      if (row.source_url && !row.source_url.includes('CIK=&')) {
+        xsUrl = row.source_url;
+      } else {
+        xsUrl = 'https://www.google.com/search?q='+encodeURIComponent(row.title+' '+row.type.replace('+',' '))+'&udm=50';
+      }
+      div.addEventListener('click',()=>window.open(xsUrl,'_blank'));
+      const isOverlap = row.type === 'EDITOR+OVERLAP';
+      const isHistory = row.type === 'WIKI+HISTORY';
+      const isOracle = row.type === 'WIKI+ORACLE';
+      const oraclePattern = isOracle ? (row.detail?.match(/^(BRANCH|FLY|SUSTAINED)/)?.[1]||'') : '';
+      const oracleEmoji = oraclePattern==='BRANCH'?'🌿':oraclePattern==='FLY'?'🪰':'🔄';
+      const histPattern = isHistory ? (row.detail?.match(/^(BRANCH|FLY|SUSTAINED)/)?.[1]||'') : '';
+      const histEmoji = histPattern==='BRANCH'?'🌿':histPattern==='FLY'?'🪰':histPattern==='SUSTAINED'?'🔄':'';
+      div.innerHTML='<span class="xs-type '+cls+'">'+(isOverlap?'🔗':isHistory?histEmoji:isOracle?oracleEmoji:'')+row.type+'</span>'
+        +'<div class="xs-body"><div class="xs-title" style="'+(isOverlap?'color:#ff8c00;font-weight:600':'')+'">'+row.title+'</div>'
+        +'<div class="xs-detail">'+row.detail+'</div></div>'
+        +'<div class="xs-score" style="'+(isOverlap?'color:#ff8c00':'')+'">'+sc+'</div>';
+      el.appendChild(div);
+    });
+  }catch(e){}
+}
+
+// ── LIVE FEED (col 4) ──
+function addFeedItem(data){
+  const title=data.title,wiki=data.wiki||'enwiki';
+  const lang=(wiki.replace('wiki','')||'en').slice(0,8);
+  const url=getUrl(title,wiki);
+  const isBot=!!data.bot,user=data.user||'';
+  const isNew=data.isNewArticle||data.type==='new';
+  const deltaBytes=data.deltaBytes||0;
+  const kws=parseCommentClient(data.comment||'');
+
+  if(langF!=='all'&&lang!==langF)return;
+
+  const count=(articles[title]?.count||0);
+  let cls='';
+  if(kws.includes('DEATH'))cls='death';
+  else if(isNew)cls='new_';
+  else if(count>=8)cls='spike';
+  else if(count>=4)cls='high';
+
+  const tags=[
+    isBot?'<span class="tg tg-b">bot</span>':(!user||/^\d+\.\d+/.test(user))?'<span class="tg tg-a">anon</span>':'<span class="tg tg-u">user</span>',
+    isNew?'<span class="tg tg-new">🆕</span>':'',
+    kws.includes('DEATH')?'<span class="tg tg-death">💀</span>':'',
+    articles[title]?.editors?.size>=2?'<span class="tg tg-m">👥'+articles[title].editors.size+'</span>':'',
+    deltaBytes>3000?'<span class="tg tg-delta-p">+'+Math.round(deltaBytes/1000)+'K</span>':'',
+    deltaBytes<-1000?'<span class="tg tg-delta-n">'+Math.round(deltaBytes/1000)+'K</span>':'',
+  ].join('');
+
+  const html='<div class="fi '+cls+'" onclick="window.open(\''+url+'\',\'_blank\')">'
+    +'<a class="fi-t" href="'+url+'" target="_blank" onclick="event.stopPropagation()">'+title+'</a>'
+    +'<div class="fi-m">'+tags+'<span class="fi-lang">'+lang+'</span></div></div>';
+
+  const feed=document.getElementById('feedRecent');
+  if(feed){feed.innerHTML=html+feed.innerHTML;const ch=Array.from(feed.children);if(ch.length>60)ch.slice(60).forEach(el=>feed.removeChild(el));}
+  document.getElementById('lt').textContent=ts();
+}
+
+// ── UPSERT PINNED ──
+function upsertPinned(title,wiki,type,edits,editors,lang,url,meta={}){
+  const key=(wiki||lang+'wiki')+':'+title;
+  const now=Date.now();
+  const ir=trendData.some(t=>t.article.toLowerCase()===title.toLowerCase()&&t.delta>=50);
+  const ftype=ir?'res':type;
+  if(!pinned[key]){
+    pinned[key]={key,title,wiki:wiki||lang+'wiki',type:ftype,edits,editors,firstSeen:now,lastSeen:now,
+      url:url||getUrl(title,wiki),lang,score:0,isWar:false,isRet:0,isProt:false,desc:'',pvText:'',
+      badges:'',trendPct:null,langCount:0,articleType:'',pvRatio:0,
+      deltaBytes:meta.deltaBytes||0,commentKeywords:meta.commentKeywords||[],
+      isNewArticle:meta.isNewArticle||false,sentiment:meta.sentiment||0};
+    anomCnt++;if(ftype==='res')resCnt++;else if(ftype==='mul')mulCnt++;
+  }else{
+    pinned[key].edits=Math.max(pinned[key].edits,edits);
+    pinned[key].editors=Math.max(pinned[key].editors,editors);
+    pinned[key].lastSeen=now;
+    if(comment){if(!pinned[key].recentComments)pinned[key].recentComments=[];pinned[key].recentComments.push(comment);if(pinned[key].recentComments.length>20)pinned[key].recentComments=pinned[key].recentComments.slice(-20);}
+    if(deltaBytes)pinned[key].deltaBytes=(pinned[key].deltaBytes||0)+deltaBytes;
+    if(ir)pinned[key].type='res';
+    if(meta.deltaBytes)pinned[key].deltaBytes=meta.deltaBytes;
+    if(meta.commentKeywords?.length)pinned[key].commentKeywords=meta.commentKeywords;
+    if(meta.isNewArticle)pinned[key].isNewArticle=true;
+    if(meta.isMinor!==undefined)pinned[key].isMinor=meta.isMinor;
+    if(meta.section)pinned[key].section=meta.section;
+  }
+  renderSignal();renderRank();
+  if(currentSlide===0) setTimeout(renderGraph,500);
+  setTimeout(()=>runBackgroundIntel(key),1500);
+  setTimeout(()=>enrich(title,lang,key),600);
+}
+
+// ── ENRICH ──
+async function enrich(title,lang,key){
+  try{
+    const[mr,pvr]=await Promise.all([
+      fetch('https://'+lang+'.wikipedia.org/w/api.php?action=query&prop=categories|langlinks|extracts|info&titles='+encodeURIComponent(title)+'&cllimit=30&clshow=!hidden&lllimit=500&exintro=1&exsentences=2&explaintext=1&inprop=protection&format=json&origin=*'),
+      fetch('https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/'+lang+'.wikipedia/all-access/all-agents/'+encodeURIComponent(title.replace(/ /g,'_'))+'/daily/'+getDateStr(-8)+'/'+getDateStr(-1),{headers:{'User-Agent':'ResonanceDash/1.0'}}).catch(()=>null)
+    ]);
+    const d=await mr.json();const pg=Object.values(d.query?.pages||{})[0];if(!pg)return;
+    const cats=(pg.categories||[]).map(c=>c.title.toLowerCase()).join(' ');
+    const lc=(pg.langlinks||[]).length+1;
+    const ex=pg.extract?pg.extract.split('.')[0].trim():'';
+    const isProt=(pg.protection||[]).some(p=>p.type==='edit');
+    let pvRatio=0;
+    if(pvr&&pvr.ok){try{const pv=await pvr.json();const its=pv.items||[];if(its.length>=2){const td=its[its.length-1].views;const avg=Math.round(its.slice(0,-1).reduce((s,i)=>s+i.views,0)/(its.length-1));pvRatio=avg>0?td/avg:0;}}catch(e){}}
+    let atype='';
+    if(/deaths in 20|died 20/.test(cats))atype='СМЕРТЬ';
+    else if(/politician|president|minister|senator|parliament/.test(cats))atype='ПОЛІТИК';
+    else if(/businessperson|ceo|billionaire|executive/.test(cats))atype='БІЗНЕС';
+    else if(/sportsperson|athlete|footballer|olympic/.test(cats))atype='СПОРТ';
+    else if(/actor|musician|singer|director|comedian/.test(cats))atype='КУЛЬТУРА';
+    else if(/military|general|colonel/.test(cats))atype='ВІЙСЬКОВІ';
+    else if(/scientist|professor|physicist/.test(cats))atype='НАУКА';
+    else if(/strait|conflict|crisis|war/.test(cats))atype='ГЕОПОЛІТИКА';
+    else if(/living people/.test(cats))atype='ПЕРСОНА';
+    const p=pinned[key];if(!p)return;
+    p.desc=ex.slice(0,140)+(ex.length>140?'…':'');
+    p.pvRatio=pvRatio;p.isProt=isProt;p.langCount=lc;p.articleType=atype;
+    renderSignal();renderRank();
+  }catch(e){}
+}
+
+// ── TRENDING WIKI (col 2) ──
+async function loadTrendWiki(){
+  try{
+    const r=await fetch(PROXY+'/trending');const d=await r.json();
+    if(!d.items?.length)return;
+    trendData=d.items;
+    const el=document.getElementById('feedTrend');if(!el)return;
+    document.getElementById('tTime').textContent=new Date(d.fetchedAt).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
+    el.innerHTML='';
+    d.items.slice(0,25).forEach((item,i)=>{
+      const col=item.delta>=200?'#64ffda':item.delta>=50?'#48cae4':item.delta<0?'#ff4757':'rgba(255,255,255,0.4)';
+      const ic=item.delta>=500?'🚀':item.delta>=100?'📈':item.delta<-50?'💥':'';
+      const url='https://en.wikipedia.org/wiki/'+encodeURIComponent(item.article.replace(/ /g,'_'));
+      const d2=document.createElement('div');
+      d2.style.cssText='display:flex;align-items:center;gap:0.35rem;padding:0.24rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:background 0.1s';
+      d2.onmouseenter=function(){this.style.background='rgba(255,255,255,0.02)'};
+      d2.onmouseleave=function(){this.style.background=''};
+      d2.onclick=()=>window.open(url,'_blank');
+      const nm=item.article.length>22?item.article.slice(0,22)+'…':item.article;
+      d2.innerHTML='<div style="font-size:0.76rem;color:rgba(255,255,255,0.88);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+ic+(ic?' ':'')+nm+'</div>'
+        +'<div style="font-size:0.6rem;color:rgba(255,255,255,0.3);flex-shrink:0">'+fmt(item.views)+'</div>'
+        +'<div style="font-family:Bebas Neue,sans-serif;font-size:0.9rem;color:'+col+';flex-shrink:0;width:44px;text-align:right">'+(item.delta>0?'+':'')+item.delta+'%</div>'
+        +'<a href="https://www.google.com/search?q='+encodeURIComponent(item.article+' news')+'&udm=50" target="_blank" onclick="event.stopPropagation()" style="flex-shrink:0;padding:1px 4px;border-radius:2px;font-size:0.5rem;border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.3);text-decoration:none">🔍</a>'
+        +'<button class="tr-ai" data-t="'+item.article.replace(/"/g,'')+'">✦</button>'
+        +'<button class="tr-brief" data-t="'+item.article.replace(/"/g,'')+'">📋</button>';
+      d2.querySelector('.tr-ai').addEventListener('click',function(e){e.stopPropagation();openAiModal(this.dataset.t);});
+      d2.querySelector('.tr-brief').addEventListener('click',function(e){e.stopPropagation();openBrief(this.dataset.t,'en',0);});
+      el.appendChild(d2);
+    });
+  }catch(e){}
+}
+
+// ── TRENDING ──
+async function loadTrend(){
+  try{
+    const r=await fetch(PROXY+'/trending');const d=await r.json();
+    if(!d.items?.length)return;
+    trendData=d.items;
+  }catch(e){}
+}
+
+// ── PROCESS EDIT ──
+function processEdit(data){
+  const title=data.title||'',wiki=data.wiki||'enwiki';
+  const comment=data.comment||'';
+  const deltaBytesVal=(data.length?.new||0)-(data.length?.old||0);
+  const user=data.user||'',isBot=!!data.bot;
+  const lang=(wiki.replace('wiki','')||'en').slice(0,8);
+  const url=getUrl(title,wiki);
+  const deltaBytes=data.deltaBytes||0;
+  const commentKeywords=parseCommentClient(data.comment||'');
+  const isNewArticle=data.isNewArticle||data.type==='new';
+  const meta={deltaBytes,commentKeywords,isNewArticle};
+
+  totalEdits++;editsTs.push(Date.now());
+  langs[lang]=(langs[lang]||0)+1;
+  if(!articles[title])articles[title]={count:0,editors:new Set(),wiki,url,lang};
+  articles[title].count++;
+  if(user&&!isBot)articles[title].editors.add(user);
+  updSustained(title,wiki,user,isBot);
+
+  const key=wiki+':'+title,now=Date.now();
+  if(!anomWin[key])anomWin[key]={ts60:[],u60:new Set(),ts300:[],u300:new Set(),fM:false,fS:false,firstSeen:now};
+  const w=anomWin[key];
+  w.ts60.push(now);w.ts300.push(now);
+  if(user&&!isBot){w.u60.add(user);w.u300.add(user);}
+  w.ts60=w.ts60.filter(t=>now-t<60000);w.ts300=w.ts300.filter(t=>now-t<300000);
+  if(w.ts60.length===0)w.u60=new Set();
+  if(w.ts300.length===0){w.u300=new Set();w.fM=false;w.fS=false;}
+  const h60=w.ts60.length,u60=w.u60.size,h300=w.ts300.length,u300=w.u300.size;
+  const ir=trendData.some(t=>t.article.toLowerCase()===title.toLowerCase()&&t.delta>=50);
+
+  // Автоматична аномалія при keywords
+  const hasImportantKW=commentKeywords.some(k=>['DEATH','DISASTER','SCANDAL','BANKRUPT'].includes(k));
+
+  if((u300>=2&&h300>=2&&!w.fM)||(hasImportantKW&&h60>=2&&!w.fM)){
+    w.fM=true;upsertPinned(title,wiki,ir?'res':'mul',h300||h60,u300||u60,lang,url,meta);
+  }else if(h60>=4&&u60<=1&&!w.fS){
+    w.fS=true;upsertPinned(title,wiki,'sng',h60,1,lang,url,meta);
+  }else{
+    const pt=pinned[key]||Object.values(pinned).find(p=>p.title===title);
+    if(pt){pt.edits=Math.max(pt.edits,h300||h60);pt.editors=Math.max(pt.editors,u300||u60);pt.lastSeen=now;
+      if(meta.deltaBytes)pt.deltaBytes=meta.deltaBytes;
+      if(meta.commentKeywords?.length)pt.commentKeywords=meta.commentKeywords;
+    }
+  }
+
+  addFeedItem({...data,deltaBytes,commentKeywords,isNewArticle});
+  updHdr();updSpark();
+  if(totalEdits%8===0)updLangs();
+}
+
+// ── SUPABASE LOAD ──
+function rowToPinned(row){
+  const key=(row.wiki||row.lang+'wiki')+':'+row.title;
+  const created=new Date(row.created_at).getTime();
+  return{key,title:row.title,wiki:row.wiki||row.lang+'wiki',type:row.type||'sng',
+    edits:row.edits||0,editors:row.editors||0,firstSeen:created,lastSeen:created,
+    url:row.url||getUrl(row.title,row.wiki),lang:row.lang||'en',score:row.score||0,
+    isWar:false,isRet:0,isProt:false,desc:'',pvText:'',badges:'',
+    trendPct:row.trend_pct,langCount:row.lang_count||0,articleType:row.article_type||'',pvRatio:0,
+    deltaBytes:row.delta_bytes||0,
+    commentKeywords:(row.comment_keywords||'').split(',').filter(Boolean),
+    isNewArticle:row.is_new_article||false,sentiment:row.sentiment||0};
+}
+
+async function loadFromSupabase(){
+  try{
+    const since=new Date(Date.now()-6*3600000).toISOString();
+    const r=await fetch(SB_URL+'/rest/v1/anomalies?created_at=gte.'+since+'&order=score.desc&limit=100',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+    const rows=await r.json();console.log('Supabase rows:',Array.isArray(rows)?rows.length:rows);if(!Array.isArray(rows)||!rows.length)return;
+    const best={};
+    // Фільтр шуму
+    const filtered = rows.filter(row => {
+      const sc = row.score || 0;
+      if (row.type === 'WIKI+PAGEVIEW') return sc >= 150;
+      if (row.type === 'SEC+WIKI') return sc >= 200;
+      if (row.type === 'WIKI+LLM') return true; // LLM сигнали завжди
+      return true;
+    });
+    document.getElementById('xsCnt').textContent=filtered.length;
+    filtered.forEach(row=>{
+      if(Date.now()-new Date(row.created_at).getTime()>7200000)return;
+      const key=(row.wiki||row.lang+'wiki')+':'+row.title;
+      if(!best[key]||best[key].score<(row.score||0))best[key]=row;
+    });
+    Object.values(best).forEach(row=>{
+      const p=rowToPinned(row);
+      if(!pinned[p.key]||pinned[p.key].score<p.score)pinned[p.key]=p;
+    });
+    renderSignal();renderRank();
+  }catch(e){}
+}
+
+// ── REALTIME ──
+function subscribeRealtime(){
+  const url=SB_URL.replace('https://','wss://')+'/realtime/v1/websocket?apikey='+SB_KEY+'&vsn=1.0.0';
+  const ws=new WebSocket(url);let hb;
+  ws.onopen=()=>{
+    ws.send(JSON.stringify({topic:'realtime:public:anomalies',event:'phx_join',
+      payload:{config:{broadcast:{self:false},presence:{key:''},postgres_changes:[{event:'INSERT',schema:'public',table:'anomalies'}]}},ref:'1'}));
+    hb=setInterval(()=>ws.send(JSON.stringify({topic:'phoenix',event:'heartbeat',payload:{},ref:'0'})),20000);
+  };
+  ws.onmessage=(e)=>{
+    try{
+      const msg=JSON.parse(e.data);
+      if(msg.event!=='postgres_changes')return;
+      const row=msg.payload?.data?.record;if(!row)return;
+      const p=rowToPinned(row);pinned[p.key]=p;
+      anomCnt++;if(row.type==='res')resCnt++;else if(row.type==='mul')mulCnt++;
+      syncCounts();renderSignal();renderRank();loadHof();loadCrossSignals();
+    }catch(err){}
+  };
+  ws.onclose=()=>{clearInterval(hb);setTimeout(subscribeRealtime,5000);};
+  ws.onerror=()=>ws.close();
+}
+
+async function syncCounts(){
+  try{
+    const since=new Date();since.setHours(0,0,0,0);
+    const r=await fetch(SB_URL+'/rest/v1/anomalies?created_at=gte.'+since.toISOString()+'&select=type',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+    const rows=await r.json();if(!Array.isArray(rows))return;
+    sbCounts.anom=rows.length;sbCounts.mul=rows.filter(r=>r.type==='mul').length;
+    sbCounts.res=rows.filter(r=>r.type==='res').length;sbCounts.sng=rows.filter(r=>r.type==='sng').length;
+  }catch(e){}
+}
+
+// ── SPIDER ──
+function openSpider(title){
+  window.open('/spider?title='+encodeURIComponent(title.replace(/ /g,'_')),'_blank');
+}
+
+// ── RETRO MODAL ──
+function openBrief(title, lang, score, type) {
+  const url = '/brief.html?title=' + encodeURIComponent(title)
+    + '&lang=' + (lang||'en')
+    + '&score=' + (score||0)
+    + '&type=' + (type||'');
+  window.open(url, '_blank', 'width=1100,height=800,left=100,top=50');
+}
+
+function openRetroModal(title, lang) {
+  const modal = document.getElementById('retroModal');
+  modal.style.display = 'flex';
+  document.getElementById('retroTitle').textContent = '📊 ' + title;
+  document.getElementById('retroFullLink').href = '/retro.html?title='+encodeURIComponent(title)+'&event='+new Date().toISOString().slice(0,10)+'&lang='+(lang||'en')+'&label='+encodeURIComponent(title);
+  const body = document.getElementById('retroBody');
+  body.innerHTML = '<div class="hint">Завантажую дані Wikipedia за 14 днів...</div>';
+
+  fetch('/api/retro?title='+encodeURIComponent(title)+'&event='+new Date().toISOString().slice(0,10)+'&lang='+(lang||'en')+'&days=14')
+    .then(r=>r.json())
+    .then(data => {
+      if (!data.found) { body.innerHTML = '<div class="hint">Стаття не знайдена на '+( lang||'en')+'.wikipedia</div>'; return; }
+      if (!data.total) { body.innerHTML = '<div class="hint">Правок за 14 днів не знайдено</div>'; return; }
+
+      const tl = data.timeline || [];
+      const maxE = Math.max(...tl.map(d=>d.edits),1);
+      const fs = data.firstSignal;
+      const sigCol = fs ? (fs.signal==='STRONG'?'#ff4757':fs.signal==='MED'?'#ffc800':'#64ffda') : 'rgba(255,255,255,0.2)';
+
+      // Bars
+      const bars = tl.map(d=>{
+        const h=Math.max(3,Math.round(d.edits/maxE*66));
+        const col=d.t===0?'#fff':d.signal==='STRONG'?'#ff4757':d.signal==='MED'?'#ffc800':d.signal==='LOW'?'#64ffda':'rgba(255,255,255,0.12)';
+        return '<div class="retro-bar" style="height:'+h+'px;background:'+col+'" title="'+d.day+' T'+(d.t>0?'+':'')+d.t+': '+d.edits+'пр '+d.editors+'ред"></div>';
+      }).join('');
+
+      // Top bursts
+      const burstRows = (data.topHours||[]).slice(0,3).map(h=>{
+        const pre = h.t_hours<0?'<span style="color:#64ffda">ДО '+Math.abs(h.t_hours)+'г</span>':h.t_hours===0?'<span style="color:#fff">В МОМЕНТ</span>':'<span style="color:rgba(255,255,255,0.3)">після '+h.t_hours+'г</span>';
+        return '<div style="display:flex;gap:0.5rem;padding:0.18rem 0;font-size:0.62rem;border-bottom:1px solid rgba(255,255,255,0.04)">'
+          +'<span style="color:rgba(255,255,255,0.4);width:120px;flex-shrink:0">'+h.hour+':00 UTC</span>'
+          +'<span>'+pre+'</span>'
+          +'<span style="color:#64ffda;margin-left:auto">'+h.editors+'ред · '+h.edits+'пр</span>'
+          +'</div>';
+      }).join('');
+
+      body.innerHTML =
+        '<div style="display:flex;gap:0.5rem;margin-bottom:0.6rem">'
+          +'<div class="retro-sig" style="flex:1">'
+            +'<div class="retro-sig-val" style="color:'+sigCol+'">'+(fs?'T'+fs.t+'д':'—')+'</div>'
+            +'<div class="retro-sig-sub">'+(fs?fs.editors+'ред · '+fs.signal:'сигналу не виявлено')+'</div>'
+          +'</div>'
+          +'<div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:0.5rem;background:rgba(255,255,255,0.02);border-radius:3px;font-size:0.65rem">'
+            +'<div>✏️ <b style="color:#64ffda">'+data.total+'</b> правок за 14 днів</div>'
+            +'<div style="margin-top:4px">👥 <b style="color:#64ffda">'+(new Set(tl.map(d=>d.editors))).size+'</b> унікальних редакторів</div>'
+          +'</div>'
+        +'</div>'
+        +'<div class="retro-bar-wrap">'+bars+'</div>'
+        +'<div style="display:flex;justify-content:space-between;font-size:0.5rem;color:rgba(255,255,255,0.2);margin-bottom:0.6rem">'
+          +'<span>'+(tl[0]?.day?.slice(5)||'')+'</span>'
+          +'<span style="color:#fff">← сьогодні</span>'
+          +'<span>'+(tl[tl.length-1]?.day?.slice(5)||'')+'</span>'
+        +'</div>'
+        +(burstRows?'<div style="font-size:0.55rem;color:rgba(255,255,255,0.3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.25rem">⚡ burst windows</div>'+burstRows:'');
+    })
+    .catch(e => { body.innerHTML = '<div class="hint" style="color:#ff4757">'+e.message+'</div>'; });
+}
+document.getElementById('retroModal').addEventListener('click',function(e){if(e.target===this)this.style.display='none';});
+
+// ── AI MODAL ──
+let _aimAbort=null;
+fetchAiCtx.ver=0;
+function openAiModal(article){
+  if(_aimAbort){try{_aimAbort.abort();}catch(e){}}
+  _aimAbort=new AbortController();
+  const modal=document.getElementById('aiModal');modal.style.display='flex';
+  document.getElementById('aimTitle').textContent=article;
+  document.getElementById('aimGoogle').href='https://www.google.com/search?q='+encodeURIComponent(article+' news '+new Date().getFullYear())+'&udm=50';
+  document.getElementById('aimContent').innerHTML='';
+  document.getElementById('aimLoad').innerHTML='<div style="display:flex;flex-direction:column;gap:0.25rem;margin-bottom:0.5rem">'
+    +[{id:'src-wiki',icon:'📖',label:'Wikipedia',col:'#64ffda'},
+      {id:'src-ddg',icon:'🦆',label:'DuckDuckGo',col:'#ffc800'},
+      {id:'src-rss',icon:'📡',label:'RSS',col:'#ff9f1c'},
+      {id:'src-hn',icon:'🔶',label:'Hacker News',col:'#ff6600'},
+      {id:'src-tr',icon:'📊',label:'Google Trends',col:'#4285f4'},
+      {id:'src-gdelt',icon:'🌍',label:'GDELT',col:'#48cae4'}]
+    .map(s=>'<div class="aim-src-row" id="'+s.id+'">'
+      +'<span class="aim-src-label" style="color:'+s.col+'">'+s.icon+' '+s.label+'</span>'
+      +'<span class="aim-src-status" id="'+s.id+'-st">очікування...</span>'
+      +'<span class="aim-src-time" id="'+s.id+'-t">0.0с</span>'
+      +'</div>').join('')+'</div>';
+  fetchAiCtx(article);
+}
+document.getElementById('aiModal').addEventListener('click',function(e){if(e.target===this)this.style.display='none';});
+
+async function fetchAiCtx(article){
+  const version=++fetchAiCtx.ver;
+  const el=document.getElementById('aimContent');
+  const tStart=Date.now();
+  const timerIds={};
+  ['src-wiki','src-ddg','src-rss','src-hn','src-tr','src-gdelt'].forEach(id=>{
+    timerIds[id]=setInterval(()=>{
+      const t=document.getElementById(id+'-t');
+      if(t)t.textContent=((Date.now()-tStart)/1000).toFixed(1)+'с';
+      if((Date.now()-tStart)>7000){clearInterval(timerIds[id]);const s=document.getElementById(id+'-st');if(s&&s.textContent==='очікування...')s.textContent='⚠ не відповів';}
+    },100);
+  });
+  function done(id,status,ok){
+    clearInterval(timerIds[id]);
+    const s=document.getElementById(id+'-st');const t=document.getElementById(id+'-t');
+    if(s)s.textContent=status;if(t)t.textContent=((Date.now()-tStart)/1000).toFixed(1)+'с';
+    const row=document.getElementById(id);if(row)row.style.borderColor=ok?'rgba(100,255,218,0.2)':'rgba(255,71,87,0.15)';
+  }
+  function append(html){if(fetchAiCtx.ver!==version)return;el.innerHTML+=html;}
+
+  fetch('https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&exsentences=3&explaintext=1&titles='+encodeURIComponent(article)+'&format=json&origin=*')
+    .then(r=>r.json()).then(d=>{
+      const pg=Object.values(d.query?.pages||{})[0];
+      if(pg?.extract){append('<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#64ffda">📖 Wikipedia</div><div style="font-size:0.72rem;color:rgba(255,255,255,0.4);line-height:1.6;font-style:italic">'+pg.extract.slice(0,280)+'…</div></div>');done('src-wiki','✓',true);}
+      else done('src-wiki','— немає',false);
+    }).catch(()=>done('src-wiki','⚠ помилка',false));
+
+  fetch(PROXY+'/ddg?q='+encodeURIComponent(article+' news'))
+    .then(r=>r.json()).then(d=>{
+      const items=(d.items||[]).slice(0,4);if(!items.length){done('src-ddg','— немає',false);return;}
+      let h='<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#ffc800">🦆 DuckDuckGo</div>';
+      items.forEach(it=>{h+='<div class="aim-item"><a href="'+it.url+'" target="_blank">'+it.title+'</a>'+(it.source?'<div class="aim-item-meta">'+it.source+'</div>':'')+'</div>';});
+      append(h+'</div>');done('src-ddg','✓ '+items.length,true);
+    }).catch(()=>done('src-ddg','⚠ помилка',false));
+
+  fetch(PROXY+'/rss?q='+encodeURIComponent(article))
+    .then(r=>r.json()).then(d=>{
+      const items=(d.items||[]).slice(0,4);if(!items.length){done('src-rss','— не знайдено',false);return;}
+      let h='<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#ff9f1c">📡 RSS</div>';
+      items.forEach(it=>{h+='<div class="aim-item"><a href="'+it.url+'" target="_blank">'+it.title+'</a><div class="aim-item-meta">'+it.source+'</div></div>';});
+      append(h+'</div>');done('src-rss','✓ '+items.length,true);
+    }).catch(()=>done('src-rss','⚠ помилка',false));
+
+  fetch(PROXY+'/hn?q='+encodeURIComponent(article))
+    .then(r=>r.json()).then(d=>{
+      const items=(d.items||[]).slice(0,4);if(!items.length){done('src-hn','— не знайдено',false);return;}
+      let h='<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#ff6600">🔶 Hacker News</div>';
+      items.forEach(it=>{h+='<div class="aim-item"><a href="'+it.url+'" target="_blank">'+it.title+'</a><div class="aim-item-meta">'+it.source+'</div></div>';});
+      append(h+'</div>');done('src-hn','✓ '+items.length,true);
+    }).catch(()=>done('src-hn','⚠ помилка',false));
+
+  fetch(PROXY+'/trends?q='+encodeURIComponent(article))
+    .then(r=>r.json()).then(d=>{
+      const items=(d.items||[]).slice(0,6);if(!items.length){done('src-tr','— не в trending',false);return;}
+      const geos=[...new Set(items.map(i=>i.geo))];
+      let h='<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#4285f4">📊 Google Trends · '+geos.join(', ')+'</div><div style="display:flex;flex-wrap:wrap;gap:0.22rem;margin-top:0.2rem">';
+      items.forEach(it=>{h+='<span style="padding:2px 5px;border-radius:2px;font-size:0.52rem;background:rgba(66,133,244,0.1);color:#4285f4;border:1px solid rgba(66,133,244,0.2)">'+it.geo+': '+it.title+'</span>';});
+      append(h+'</div></div>');done('src-tr','✓ '+geos.length+' країн',true);
+    }).catch(()=>done('src-tr','⚠ помилка',false));
+
+  fetch(PROXY+'/gdelt?q='+encodeURIComponent(article))
+    .then(r=>r.json()).then(d=>{
+      const items=(d.items||[]).slice(0,5);if(!items.length){done('src-gdelt',d.rateLimited?'⚠ rate limit':'— не знайдено',false);return;}
+      const countries=[...new Set(items.map(i=>i.country).filter(Boolean))];
+      let h='<div style="margin-bottom:0.8rem"><div class="aim-src" style="color:#48cae4">🌍 GDELT · '+countries.slice(0,4).join(', ')+'</div>';
+      items.forEach(it=>{h+='<div class="aim-item"><a href="'+it.url+'" target="_blank">'+it.title+'</a><div class="aim-item-meta">'+(it.source||'')+(it.country?' · '+it.country:'')+'</div></div>';});
+      append(h+'</div>');done('src-gdelt','✓ '+items.length,true);
+    }).catch(()=>done('src-gdelt','⚠ помилка',false));
+}
+
+
+// ── SLIDES ──
+let currentSlide = 0;
+function goSlide(n) {
+  currentSlide = n;
+  document.getElementById('slidesInner').style.transform = 'translateX(-' + (n * 50) + '%)';
+  document.getElementById('sBtn0').classList.toggle('on', n === 0);
+  document.getElementById('sBtn1').classList.toggle('on', n === 1);
+  // Завантажуємо context при першому переході
+  if (n === 1) { loadHof(); loadTrendWiki(); loadGoogleTrends(); loadDaily(); loadJournal(); }
+}
+
+// Свайп підтримка
+(function(){
+  let sx = 0;
+  const el = document.querySelector('.slides-wrap');
+  if (!el) return;
+  el.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, {passive:true});
+  el.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - sx;
+    if (Math.abs(dx) > 50) goSlide(dx < 0 ? 1 : 0);
+  }, {passive:true});
+})();
+
+// Macro bar updater
+function updMacroBar() {
+  document.getElementById('mEpm').textContent = editsTs.filter(t => Date.now()-t < 60000).length;
+  document.getElementById('mAnom').textContent = sbCounts.anom || anomCnt;
+}
+setInterval(updMacroBar, 2000);
+
+
+// ── GRAPH ──
+let graphSim = null;
+let graphNodes = [];
+let graphLinks = [];
+let graphInited = false;
+
+function initGraph() {
+  const container = document.getElementById('graphContainer');
+  const svg = document.getElementById('graphSvg');
+  if (!container || !svg) return;
+  graphInited = true;
+}
+
+function buildGraphData() {
+  // Nodes з pinned
+  const nodes = [];
+  const nodeMap = {};
+  const sorted = Object.values(pinned)
+    .filter(p => Date.now() - p.lastSeen < 3600000)
+    .filter(p => (p.score||0) >= 35 || calcConvergence(p).actionable)
+    .sort((a,b) => (b.score||0)-(a.score||0))
+    .slice(0, 20);
+  sorted.forEach(p => {
+    if (false) return; // placeholder
+    const cat = calcCategory(p);
+    const cv = calcConvergence(p);
+    // Три стани: convergence визначає рівень
+    const col = cv.count >= 5 ? '#ff4757'   // Рівень 3: червоний — actionable
+              : cv.count >= 3 ? '#ffc800'   // Рівень 2: жовтий — напрямок є
+              : cv.count >= 1 ? 'rgba(100,100,120,0.8)' // Рівень 1: сірий — тремтіння
+              : 'rgba(60,60,80,0.6)';        // нульовий
+    const r = Math.max(10, Math.min(20, 8 + (p.score||0) / 15));
+    nodes.push({ id: p.title, label: p.title.slice(0,18), col, r, score: p.score||0, p, actionable: cv.actionable, cvCount: cv.count });
+    nodeMap[p.title.toLowerCase()] = p.title;
+  });
+
+  // Links + ghost nodes з cross_signals
+  const links = [];
+  const seen = new Set();
+  function ensureNode(title) {
+    if (nodeMap[title.toLowerCase()]) return nodeMap[title.toLowerCase()];
+    const ghostId = title;
+    nodes.push({ id: ghostId, label: title.slice(0,16), col: 'rgba(199,125,255,0.45)', r: 7, score: 0,
+      p: { title, lang:'en', score:0, type:'', url:'https://en.wikipedia.org/wiki/'+encodeURIComponent(title.replace(/ /g,'_')) },
+      actionable: false, ghost: true });
+    nodeMap[title.toLowerCase()] = ghostId;
+    return ghostId;
+  }
+  if (window.xsCache) {
+    window.xsCache.forEach(row => {
+      if (row.type === 'EDITOR+OVERLAP') {
+        const parts = row.title.split(' ↔ ');
+        if (parts.length < 2) return;
+        const aId = ensureNode(parts[0].trim());
+        const bId = ensureNode(parts[1].trim());
+        const lkey = [aId,bId].sort().join('|');
+        if (seen.has(lkey)) return;
+        seen.add(lkey); links.push({ source: aId, target: bId, type: 'overlap' });
+      } else if (row.type === 'WIKI+GRAPH') {
+        const m = row.detail.match(/активні вузли: ([^·]+)/);
+        if (!m) return;
+        const mainId = ensureNode(row.title);
+        m[1].split(',').map(s=>s.trim()).filter(Boolean).forEach(rel => {
+          const relId = ensureNode(rel);
+          const lkey = [mainId,relId].sort().join('|');
+          if (seen.has(lkey)) return;
+          seen.add(lkey); links.push({ source: mainId, target: relId, type: 'graph_' });
+        });
+      }
+    });
+  }
+  return { nodes, links };
+}
+
+function renderGraph() {
+  if (typeof d3 === 'undefined') return;
+  const container = document.getElementById('graphContainer');
+  const svgEl = document.getElementById('graphSvg');
+  if (!container || !svgEl) return;
+
+  const W = container.clientWidth || 300;
+  const H = container.clientHeight || 300;
+  if (W < 50 || H < 50) return;
+
+  const { nodes, links } = buildGraphData();
+  if (!nodes.length) {
+    svgEl.innerHTML = '<text x="50%" y="50%" text-anchor="middle" style="font-size:0.6rem;fill:rgba(255,255,255,0.2);font-family:IBM Plex Mono,monospace">очікуємо аномалії...</text>';
+    return;
+  }
+
+  svgEl.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+  // Stop old sim
+  if (graphSim) graphSim.stop();
+
+  const svg = d3.select(svgEl);
+  svg.selectAll('*').remove();
+
+  // Defs — arrow
+  const defs = svg.append('defs');
+  defs.append('marker').attr('id','arr').attr('viewBox','0 -3 6 6').attr('refX',12).attr('markerWidth',6).attr('markerHeight',6).attr('orient','auto')
+    .append('path').attr('d','M0,-3L6,0L0,3').attr('fill','rgba(255,255,255,0.15)');
+
+  const g = svg.append('g');
+
+  // Zoom
+  svg.call(d3.zoom().scaleExtent([0.3,3]).on('zoom', e => g.attr('transform', e.transform)));
+
+  // Links
+  const link = g.append('g').selectAll('line').data(links).enter().append('line')
+    .attr('class', d => 'g-link ' + d.type)
+    .style('stroke', d => d.type==='overlap'?'#ff8c00':'#c77dff')
+    .style('stroke-width', d => d.type==='overlap'?1.5:1)
+    .style('stroke-dasharray', d => d.type==='overlap'?'4,2':'none')
+    .style('opacity', 0.6);
+
+  // Nodes
+  const node = g.append('g').selectAll('.g-node').data(nodes).enter().append('g')
+    .attr('class', 'g-node')
+    .call(d3.drag()
+      .on('start', (e,d) => { if(!e.active) graphSim.alphaTarget(0.3).restart(); d.fx=d.x; d.fy=d.y; })
+      .on('drag',  (e,d) => { d.fx=e.x; d.fy=e.y; })
+      .on('end',   (e,d) => { if(!e.active) graphSim.alphaTarget(0); d.fx=null; d.fy=null; })
+    )
+    .on('click', (e,d) => { e.stopPropagation(); openBrief(d.p.title, d.p.lang||'en', d.p.score, d.p.type||''); });
+
+  node.append('circle')
+    .attr('r', d => d.r)
+    .style('fill', 'rgba(0,0,0,0.5)')
+    .style('stroke', d => d.col)
+    .style('stroke-width', d => d.actionable ? 2 : 1);
+
+  // Pulse ring для actionable
+  // Рівень 3 — пульс
+  node.filter(d => d.col === '#ff4757').append('circle')
+    .attr('r', d => d.r + 5)
+    .style('fill', 'none')
+    .style('stroke', '#ff4757')
+    .style('stroke-width', 1)
+    .style('opacity', 0.4);
+
+  // Рівень 2 — статичне кільце
+  node.filter(d => d.col === '#ffc800').append('circle')
+    .attr('r', d => d.r + 3)
+    .style('fill', 'none')
+    .style('stroke', '#ffc800')
+    .style('stroke-width', 0.5)
+    .style('opacity', 0.25);
+
+  node.append('text')
+    .attr('dy', d => d.r + 10)
+    .attr('text-anchor', 'middle')
+    .style('font-size', '11px')
+    .style('fill', 'rgba(255,255,255,0.75)')
+    .text(d => d.label);
+
+  // Score в центрі вузла
+  node.append('text')
+    .attr('text-anchor', 'middle')
+    .attr('dy', '-0.1em')
+    .style('font-size', d => Math.max(8, Math.min(11, d.r * 0.8)) + 'px')
+    .style('fill', d => d.col)
+    .style('font-family', 'Bebas Neue,sans-serif')
+    .text(d => d.score > 0 ? d.score : '');
+
+  // Convergence під score
+  node.append('text')
+    .attr('text-anchor', 'middle')
+    .attr('dy', '0.9em')
+    .style('font-size', '7px')
+    .style('fill', d => d.cvCount >= 3 ? d.col : 'rgba(255,255,255,0.3)')
+    .text(d => d.cvCount > 0 ? d.cvCount+'/7' : '');
+
+  // Simulation
+  graphSim = d3.forceSimulation(nodes)
+    .force('link', d3.forceLink(links).id(d => d.id).distance(45).strength(0.8))
+    .force('charge', d3.forceManyBody().strength(-60))
+    .force('center', d3.forceCenter(W/2, H/2))
+    .force('collision', d3.forceCollide(d => d.r + 6))
+    .on('tick', () => {
+      link.attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+          .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+      node.attr('transform', d => 'translate(' + d.x + ',' + d.y + ')');
+    });
+
+  document.getElementById('xsCnt').textContent = nodes.length;
+}
+
+// xsCache — зберігаємо cross signals для графу
+window.xsCache = [];
+
+// Оновлюємо граф кожні 30 сек
+setInterval(() => { if (currentSlide === 0) renderGraph(); }, 30000);
+
+
+// ── DAILY DIGEST ──
+async function loadDaily() {
+  try {
+    const r = await fetch(PROXY + '/daily');
+    const d = await r.json();
+    if (d.building) {
+      document.getElementById('feedDaily').innerHTML = '<div class="hint">⏳ будується... оновіть за хвилину</div>';
+      return;
+    }
+    const items = d.items || [];
+    document.getElementById('dailyCnt').textContent = items.length;
+    const el = document.getElementById('feedDaily');
+    if (!items.length) { el.innerHTML = '<div class="hint">немає даних</div>'; return; }
+    el.innerHTML = '';
+    items.forEach(item => {
+      const urgCls = item.urgency==='URGENT'?'urgent':item.urgency==='HIGH'?'high':item.urgency==='MEDIUM'?'medium':'low';
+      const urgEmoji = item.urgency==='URGENT'?'🔴':item.urgency==='HIGH'?'🟡':item.urgency==='MEDIUM'?'🔵':'⚪';
+      const convCol = item.convergence>=5?'#ff4757':item.convergence>=3?'#ffc800':'#64ffda';
+      const d = document.createElement('div');
+      d.className = 'daily-card ' + urgCls;
+      d.addEventListener('click', () => openBrief(item.title, 'en', 0, ''));
+      d.innerHTML =
+        '<div class="daily-top">'
+          + '<div class="daily-rank">' + (item.rank||'') + '</div>'
+          + '<div class="daily-title">' + urgEmoji + ' ' + item.title + '</div>'
+          + '<div class="daily-conv" style="background:rgba(0,0,0,0.3);color:' + convCol + ';border:1px solid ' + convCol + '44">' + (item.convergence||0) + '/7</div>'
+        + '</div>'
+        + '<div class="daily-pattern">' + (item.pattern||'') + '</div>'
+        + '<div class="daily-reason">' + (item.reasoning||'') + '</div>'
+        + (item.assets?.length ? '<div class="daily-assets">' + item.assets.map(a => '<span class="daily-asset">' + a + '</span>').join('') + '</div>' : '');
+      el.appendChild(d);
+    });
+  } catch(e) { document.getElementById('feedDaily').innerHTML = '<div class="hint" style="color:#ff4757">помилка</div>'; }
+}
+
+async function buildDaily() {
+  document.getElementById('feedDaily').innerHTML = '<div class="hint">⏳ будується...</div>';
+  try {
+    await fetch(PROXY + '/daily/refresh');
+    setTimeout(loadDaily, 3000);
+  } catch(e) {}
+}
+
+setInterval(loadDaily, 3600000); // оновлюємо кожну годину
+
+
+// ── TRADE JOURNAL ──
+async function loadJournal() {
+  try {
+    const r = await fetch(SB_URL+'/rest/v1/trade_journal?order=created_at.desc&limit=20',
+      {headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+    const rows = await r.json();
+    if (!Array.isArray(rows)) return;
+    document.getElementById('tjCnt').textContent = rows.filter(r=>r.status==='open').length + ' відкр';
+    const el = document.getElementById('feedJournal');
+    if (!rows.length) { el.innerHTML = '<div class="hint">Немає записів</div>'; return; }
+    el.innerHTML = '';
+
+    // Статистика
+    const closed = rows.filter(r=>r.status==='closed'&&r.result_pct!==null);
+    if (closed.length) {
+      const wins = closed.filter(r=>r.result_pct>0).length;
+      const avgR = closed.reduce((s,r)=>s+(r.result_pct||0),0)/closed.length;
+      const statDiv = document.createElement('div');
+      statDiv.style.cssText='padding:0.3rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;gap:0.8rem;font-size:0.58rem';
+      statDiv.innerHTML='<span style="color:#64ffda">W:'+wins+'/'+closed.length+'</span>'
+        +'<span style="color:'+(avgR>0?'#64ffda':'#ff4757')+'">avg: '+(avgR>0?'+':'')+avgR.toFixed(1)+'%</span>';
+      el.appendChild(statDiv);
+    }
+
+    rows.forEach(row => {
+      const isOpen = row.status === 'open';
+      const result = row.result_pct;
+      const resultCol = result === null ? 'rgba(255,255,255,0.3)' : result > 0 ? '#64ffda' : '#ff4757';
+      const dirCls = row.direction==='LONG'?'tj-long':row.direction==='SHORT'?'tj-short':'tj-straddle';
+      const d = document.createElement('div');
+      d.className = 'tj-item';
+      d.innerHTML =
+        '<div class="tj-top">'
+          +'<div class="tj-title">'+(row.asset?'<b style="color:#64ffda">'+row.asset+'</b> ':'')+row.signal_title+'</div>'
+          +'<span class="tj-dir '+dirCls+'">'+row.direction+'</span>'
+          +(result!==null?'<div class="tj-result" style="color:'+resultCol+'">'+(result>0?'+':'')+result+'%</div>':'<div class="tj-result" style="color:rgba(255,255,255,0.2)">—</div>')
+        +'</div>'
+        +'<div class="tj-meta">'
+          +(row.pattern?'<span>'+row.pattern+'</span>':'')
+          +'<span>'+new Date(row.created_at).toLocaleDateString('uk-UA')+'</span>'
+          +(isOpen?'<span style="color:#ffc800">● відкрита</span>':'<span style="color:rgba(255,255,255,0.2)">закрита</span>')
+          +(row.notes?'<span style="color:rgba(255,255,255,0.3)">'+row.notes.slice(0,30)+'</span>':'')
+        +'</div>';
+      // Клік — закрити позицію
+      // Кнопка Brief
+      const briefBtn = document.createElement('button');
+      briefBtn.textContent = '📋';
+      briefBtn.style.cssText = 'padding:1px 5px;border-radius:2px;font-size:0.52rem;cursor:pointer;border:1px solid rgba(255,200,0,0.3);background:rgba(255,200,0,0.06);color:#ffc800;font-family:IBM Plex Mono,monospace;position:absolute;top:0.35rem;right:0.4rem';
+      briefBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openBrief(row.signal_title, 'en', 0, '');
+      });
+      d.style.position = 'relative';
+      d.appendChild(briefBtn);
+
+      if (isOpen) {
+        d.addEventListener('click', () => closeJournalEntry(row.id));
+        d.title = 'Клік щоб закрити позицію';
+      }
+      el.appendChild(d);
+    });
+  } catch(e) { console.log('Journal error:', e.message); }
+}
+
+function toggleJournalForm() {
+  const f = document.getElementById('tjForm');
+  f.classList.toggle('open');
+}
+
+async function saveJournalEntry() {
+  const title = document.getElementById('tjTitle').value.trim();
+  if (!title) return;
+  const entry = {
+    signal_title: title,
+    direction: document.getElementById('tjDir').value,
+    asset: document.getElementById('tjAsset').value.trim() || null,
+    entry_price: parseFloat(document.getElementById('tjEntry').value) || null,
+    pattern: document.getElementById('tjPattern').value.trim() || null,
+    notes: document.getElementById('tjNotes').value.trim() || null,
+    entry_date: new Date().toISOString().slice(0,10),
+    status: 'open'
+  };
+  try {
+    await fetch(SB_URL+'/rest/v1/trade_journal',{
+      method:'POST',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+      body: JSON.stringify(entry)
+    });
+    document.getElementById('tjTitle').value='';
+    document.getElementById('tjAsset').value='';
+    document.getElementById('tjEntry').value='';
+    document.getElementById('tjPattern').value='';
+    document.getElementById('tjNotes').value='';
+    document.getElementById('tjForm').classList.remove('open');
+    loadJournal();
+  } catch(e) {}
+}
+
+async function closeJournalEntry(id) {
+  const exitPrice = prompt('Ціна виходу:');
+  if (!exitPrice) return;
+  const exit = parseFloat(exitPrice);
+  // Беремо entry_price для розрахунку result
+  const r = await fetch(SB_URL+'/rest/v1/trade_journal?id=eq.'+id,
+    {headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+  const rows = await r.json();
+  const row = rows[0];
+  let result_pct = null;
+  if (row?.entry_price && exit) {
+    result_pct = +((exit - row.entry_price) / row.entry_price * 100 * (row.direction==='SHORT'?-1:1)).toFixed(2);
+  }
+  await fetch(SB_URL+'/rest/v1/trade_journal?id=eq.'+id,{
+    method:'PATCH',
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    body: JSON.stringify({status:'closed',exit_price:exit,exit_date:new Date().toISOString().slice(0,10),result_pct})
+  });
+  loadJournal();
+}
+
+setInterval(loadJournal, 300000);
+
+// ── CONNECT ──
+function connect(){
+  document.getElementById('dot').className='ldot wait';document.getElementById('stxt').textContent='connecting';
+  if(es)try{es.close();}catch(e){}
+  es=new EventSource(PROXY);
+  es.onopen=()=>{document.getElementById('dot').className='ldot';document.getElementById('stxt').textContent='live';lastMsg=Date.now();};
+  es.onmessage=e=>{lastMsg=Date.now();try{const d=JSON.parse(e.data);if(d.type==='edit'||d.type==='new')processEdit(d);}catch(err){}};
+  es.onerror=()=>{document.getElementById('dot').className='ldot off';document.getElementById('stxt').textContent='reconnecting';es.close();setTimeout(connect,5000);};
+}
+setInterval(()=>{if(Date.now()-lastMsg>25000&&document.visibilityState==='visible'){connect();lastMsg=Date.now();}},8000);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&Date.now()-lastMsg>20000){if(Date.now()-lastMsg>60000)window.location.reload();else{connect();lastMsg=Date.now();}}});
+setInterval(()=>{try{fetch(PROXY+'/ping').catch(()=>{});}catch(e){}},25000);
+
+// ── INTERVALS ──
+setInterval(updHdr,1000);
+setInterval(updSustPanel,15000);
+setInterval(loadTrendWiki,300000);
+setInterval(loadGoogleTrends,900000);
+setInterval(loadFng,600000);
+setInterval(loadBinance,180000);
+setInterval(loadCrossSignals,120000);
+setInterval(loadPredictions,600000);
+setInterval(loadSec,900000);
+setInterval(loadHof,20000);
+setInterval(syncCounts,30000);
+setInterval(()=>{Object.values(pinned).forEach(p=>{p.score=calcScore(p);});renderSignal();renderRank();},30000);
+
+// ── INIT ──
+connect();
+loadTrendWiki();
+loadFromSupabase();
+subscribeRealtime();
+loadHof();
+loadFng();
+loadBinance();
+loadGoogleTrends();
+loadCrossSignals();
+loadPredictions();
+// Граф — з затримкою щоб D3 і дані встигли
+setTimeout(renderGraph, 2000);
+loadSec();
+syncCounts();
+loadDaily();
+document.getElementById('sparkline').innerHTML=new Array(30).fill('<div class="sc_" style="height:2px;background:#1a1a2e"></div>').join('');
 </script>
 </body>
 </html>
