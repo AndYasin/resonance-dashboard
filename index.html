@@ -264,6 +264,9 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 .ac-btn.reject:hover{border-color:#ff5252;color:#ff5252}
 .ac-conf-bar{height:2px;background:rgba(100,255,218,0.1);border-radius:1px;overflow:hidden;margin:0.3rem 0}
 .ac-conf-bar > div{height:100%;background:#64ffda;transition:width 0.3s}
+.ac-tab{flex:1;padding:6px 4px;background:transparent;border:none;color:#666;font-size:0.6rem;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;font-family:inherit;text-transform:uppercase;letter-spacing:0.05em}
+.ac-tab:hover{color:#aaa}
+.ac-tab.active{color:#64ffda;border-bottom-color:#64ffda}
 .tj-item{padding:0.35rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer;transition:background 0.1s}
 .tj-item:hover{background:rgba(255,255,255,0.02)}
 .tj-top{display:flex;align-items:center;gap:0.4rem;margin-bottom:0.1rem}
@@ -562,7 +565,16 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 
       <!-- COL 5: TRADE JOURNAL + ACTION CARDS -->
       <div class="col">
-        <div class="ph"><span>🎴 action cards</span><span class="ac" id="acCnt">0</span></div>
+        <div class="ph">
+          <span>🎴 action cards</span>
+          <span class="ac" id="acCnt">0</span>
+        </div>
+        <div style="display:flex;gap:0;border-bottom:1px solid rgba(100,255,218,0.1);background:rgba(0,0,0,0.2)">
+          <button class="ac-tab active" data-status="pending" onclick="switchCardTab('pending')">Pending</button>
+          <button class="ac-tab" data-status="watching" onclick="switchCardTab('watching')">Watch</button>
+          <button class="ac-tab" data-status="approved" onclick="switchCardTab('approved')">Approved</button>
+          <button class="ac-tab" data-status="rejected" onclick="switchCardTab('rejected')">Rejected</button>
+        </div>
         <div class="pb" style="max-height:380px;overflow-y:auto;border-bottom:1px solid rgba(100,255,218,0.1)">
           <div id="feedCards"></div>
         </div>
@@ -2188,21 +2200,33 @@ setInterval(loadDaily, 3600000); // оновлюємо кожну годину
 
 
 // ── ACTION CARDS ──
+let currentCardStatus = 'pending';
+
+function switchCardTab(status) {
+  currentCardStatus = status;
+  document.querySelectorAll('.ac-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.status === status);
+  });
+  loadCards();
+}
+
 async function loadCards() {
   try {
-    const r = await fetch(PROXY + '/cards?status=pending');
+    const r = await fetch(PROXY + '/cards?status=' + currentCardStatus);
     const cards = await r.json();
     const cnt = document.getElementById('acCnt');
     const feed = document.getElementById('feedCards');
     if (!feed) return;
     cnt.textContent = cards.length || 0;
     if (!cards.length) {
-      feed.innerHTML = '<div style="padding:1rem;color:#666;font-size:0.7rem;text-align:center">Немає pending карток</div>';
+      feed.innerHTML = '<div style="padding:1rem;color:#666;font-size:0.7rem;text-align:center">Немає карток у статусі "' + currentCardStatus + '"</div>';
       return;
     }
     feed.innerHTML = cards.map(c => {
       const conf = Math.round((c.confidence||0)*100);
       const asym = Math.round((c.asymmetry_score||0)*100);
+      const showActions = c.status === 'pending';
+      const statusBadge = c.status !== 'pending' ? `<span style="font-size:0.55rem;color:#888;float:right">${c.status}${c.decision_at ? ' · ' + new Date(c.decision_at).toLocaleDateString() : ''}</span>` : '';
       return `
       <div class="ac-card">
         <div class="ac-head">
@@ -2218,12 +2242,12 @@ async function loadCards() {
           <span><b>⏱</b> ${c.timeframe||'?'}</span>
         </div>
         <div class="ac-row"><b>❌ Invalidation:</b> ${(c.invalidation||'').slice(0,150)}</div>
-        <div class="ac-row" style="font-size:0.6rem;color:#666">${c.signal_type} · ${c.position_size||'?'} · asym ${asym}%</div>
-        <div class="ac-actions">
+        <div class="ac-row" style="font-size:0.6rem;color:#666">${c.signal_type} · ${c.position_size||'?'} · asym ${asym}% ${statusBadge}</div>
+        ${showActions ? `<div class="ac-actions">
           <button class="ac-btn approve" onclick="decideCard(${c.id},'approve')">✓ Approve</button>
           <button class="ac-btn" onclick="decideCard(${c.id},'watch')">👁 Watch</button>
           <button class="ac-btn reject" onclick="decideCard(${c.id},'reject')">✗ Reject</button>
-        </div>
+        </div>` : ''}
       </div>`;
     }).join('');
   } catch(e) {
@@ -2237,7 +2261,6 @@ async function decideCard(id, decision) {
     const data = await r.json();
     console.log('Card decision:', data);
     setTimeout(loadCards, 500);
-    setTimeout(loadJournal, 800);
   } catch(e) {
     console.log('Decide error:', e);
   }
