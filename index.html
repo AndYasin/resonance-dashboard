@@ -196,6 +196,7 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 .xs-graph{background:rgba(114,9,183,0.12);color:#c77dff;border:1px solid rgba(114,9,183,0.3)}
 .xs-history{background:rgba(6,214,160,0.1);color:#06d6a0;border:1px solid rgba(6,214,160,0.25)}
 .xs-oracle{background:rgba(255,200,0,0.1);color:#ffc800;border:1px solid rgba(255,200,0,0.25)}
+.xs-tracked{background:rgba(247,37,133,0.12);color:#f72585;border:1px solid rgba(247,37,133,0.3);font-weight:600}
 .pred-item{display:flex;align-items:center;gap:0.3rem;padding:0.22rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:background 0.1s}
 .pred-item:hover{background:rgba(255,255,255,0.02)}
 .pred-src{font-size:0.5rem;width:20px;flex-shrink:0;text-align:center}
@@ -245,6 +246,24 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
 
 
 /* TRADE JOURNAL */
+.ac-card{padding:0.6rem 0.7rem;border-bottom:1px solid rgba(100,255,218,0.06);font-size:0.7rem;line-height:1.5}
+.ac-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem}
+.ac-dir{padding:2px 8px;border-radius:2px;font-weight:700;font-size:0.65rem}
+.ac-LONG{background:rgba(76,175,80,0.15);color:#4caf50}
+.ac-SHORT{background:rgba(255,82,82,0.15);color:#ff5252}
+.ac-STRADDLE{background:rgba(255,193,7,0.15);color:#ffc107}
+.ac-WATCH{background:rgba(150,150,150,0.15);color:#aaa}
+.ac-instr{font-weight:600;color:#64ffda}
+.ac-conf{font-size:0.6rem;color:#888}
+.ac-row{display:flex;gap:0.5rem;font-size:0.65rem;margin:0.15rem 0;color:#aaa}
+.ac-row b{color:#ddd}
+.ac-actions{display:flex;gap:0.4rem;margin-top:0.4rem}
+.ac-btn{flex:1;padding:4px 8px;border:1px solid rgba(100,255,218,0.2);background:transparent;color:#888;font-size:0.65rem;cursor:pointer;border-radius:2px;transition:all 0.15s}
+.ac-btn:hover{border-color:#64ffda;color:#64ffda}
+.ac-btn.approve:hover{border-color:#4caf50;color:#4caf50}
+.ac-btn.reject:hover{border-color:#ff5252;color:#ff5252}
+.ac-conf-bar{height:2px;background:rgba(100,255,218,0.1);border-radius:1px;overflow:hidden;margin:0.3rem 0}
+.ac-conf-bar > div{height:100%;background:#64ffda;transition:width 0.3s}
 .tj-item{padding:0.35rem 0.7rem;border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer;transition:background 0.1s}
 .tj-item:hover{background:rgba(255,255,255,0.02)}
 .tj-top{display:flex;align-items:center;gap:0.4rem;margin-bottom:0.1rem}
@@ -541,8 +560,12 @@ body{background:#07070f;color:#d0d0e8;font-family:'IBM Plex Mono',monospace;heig
         </div>
       </div>
 
-      <!-- COL 5: TRADE JOURNAL -->
+      <!-- COL 5: TRADE JOURNAL + ACTION CARDS -->
       <div class="col">
+        <div class="ph"><span>🎴 action cards</span><span class="ac" id="acCnt">0</span></div>
+        <div class="pb" style="max-height:380px;overflow-y:auto;border-bottom:1px solid rgba(100,255,218,0.1)">
+          <div id="feedCards"></div>
+        </div>
         <div class="ph"><span>📒 trade journal</span><span class="ac" id="tjCnt">0</span></div>
         <div class="pb" style="flex:1;overflow-y:auto">
           <!-- ADD FORM -->
@@ -1417,7 +1440,7 @@ async function loadCrossSignals(){
     window.xsCache = rows; renderGraph();
     const el=document.getElementById('feedXs');el.innerHTML='';
     // xsCnt вже встановлено вище
-    const typeMap={'WIKI+GDELT':'xs-wiki','WIKI+TRENDS':'xs-trends','WIKI+POLYMARKET':'xs-poly','WIKI+PAGEVIEW':'xs-pv','WIKI+PREDICT':'xs-pred','WIKI+LLM':'xs-llm','EDITOR+OVERLAP':'xs-overlap','WIKI+GRAPH':'xs-graph','WIKI+HISTORY':'xs-history','WIKI+ORACLE':'xs-oracle'};
+    const typeMap={'WIKI+GDELT':'xs-wiki','WIKI+TRENDS':'xs-trends','WIKI+POLYMARKET':'xs-poly','WIKI+PAGEVIEW':'xs-pv','WIKI+PREDICT':'xs-pred','WIKI+LLM':'xs-llm','EDITOR+OVERLAP':'xs-overlap','WIKI+GRAPH':'xs-graph','WIKI+HISTORY':'xs-history','WIKI+ORACLE':'xs-oracle','TRACKED+HIT':'xs-tracked'};
     // Фільтр шуму
     const filtered = rows.filter(row => {
       const sc = row.score || 0;
@@ -1900,7 +1923,7 @@ function goSlide(n) {
   document.getElementById('sBtn0').classList.toggle('on', n === 0);
   document.getElementById('sBtn1').classList.toggle('on', n === 1);
   // Завантажуємо context при першому переході
-  if (n === 1) { loadHof(); loadTrendWiki(); loadGoogleTrends(); loadDaily(); loadJournal(); }
+  if (n === 1) { loadHof(); loadTrendWiki(); loadGoogleTrends(); loadDaily(); loadJournal(); loadCards(); }
 }
 
 // Свайп підтримка
@@ -2164,6 +2187,62 @@ async function buildDaily() {
 setInterval(loadDaily, 3600000); // оновлюємо кожну годину
 
 
+// ── ACTION CARDS ──
+async function loadCards() {
+  try {
+    const r = await fetch(PROXY + '/cards?status=pending');
+    const cards = await r.json();
+    const cnt = document.getElementById('acCnt');
+    const feed = document.getElementById('feedCards');
+    if (!feed) return;
+    cnt.textContent = cards.length || 0;
+    if (!cards.length) {
+      feed.innerHTML = '<div style="padding:1rem;color:#666;font-size:0.7rem;text-align:center">Немає pending карток</div>';
+      return;
+    }
+    feed.innerHTML = cards.map(c => {
+      const conf = Math.round((c.confidence||0)*100);
+      const asym = Math.round((c.asymmetry_score||0)*100);
+      return `
+      <div class="ac-card">
+        <div class="ac-head">
+          <span class="ac-dir ac-${c.direction||'WATCH'}">${c.direction||'WATCH'} ${c.instrument||c.signal_source||'?'}</span>
+          <span class="ac-conf">${conf}%</span>
+        </div>
+        <div class="ac-conf-bar"><div style="width:${conf}%"></div></div>
+        <div style="margin:0.3rem 0;color:#ccc">${(c.what_happened||'').slice(0,180)}</div>
+        <div class="ac-row"><b>Asymmetry:</b> ${(c.asymmetry||'').slice(0,140)}</div>
+        <div class="ac-row">
+          <span><b>🎯</b> ${c.target||'?'}</span>
+          <span><b>🛑</b> ${c.stop_loss||'?'}</span>
+          <span><b>⏱</b> ${c.timeframe||'?'}</span>
+        </div>
+        <div class="ac-row"><b>❌ Invalidation:</b> ${(c.invalidation||'').slice(0,150)}</div>
+        <div class="ac-row" style="font-size:0.6rem;color:#666">${c.signal_type} · ${c.position_size||'?'} · asym ${asym}%</div>
+        <div class="ac-actions">
+          <button class="ac-btn approve" onclick="decideCard(${c.id},'approve')">✓ Approve</button>
+          <button class="ac-btn" onclick="decideCard(${c.id},'watch')">👁 Watch</button>
+          <button class="ac-btn reject" onclick="decideCard(${c.id},'reject')">✗ Reject</button>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    console.log('Cards error:', e);
+  }
+}
+
+async function decideCard(id, decision) {
+  try {
+    const r = await fetch(PROXY + '/card/decide?id=' + id + '&decision=' + decision);
+    const data = await r.json();
+    console.log('Card decision:', data);
+    setTimeout(loadCards, 500);
+    setTimeout(loadJournal, 800);
+  } catch(e) {
+    console.log('Decide error:', e);
+  }
+}
+
 // ── TRADE JOURNAL ──
 async function loadJournal() {
   try {
@@ -2284,6 +2363,8 @@ async function closeJournalEntry(id) {
 }
 
 setInterval(loadJournal, 300000);
+setInterval(loadCards, 60000);
+loadCards();
 
 // ── CONNECT ──
 function connect(){
